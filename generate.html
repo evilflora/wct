@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data Generator</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/generate.css" />
+</head>
+<body>
+  <header>
+    <h1>Data Generator</h1>
+  </header>
+
+  <main id="app">
+    <div class="generate-panel">
+      <label class="file-label" for="raw-file-input">
+        <span>1. README</span>
+      </label>
+      <div class="info-modal-body">
+      <section>
+        <p>If you don't know what you're doing, PLEASE do nothing.</p>
+        <p>Download the newest version from GitHub if you're afraid of doing something wrong, do nothing.</p>
+      </section>
+      <section>
+        <p>You can update data yourself by following these steps:</p>
+        <p>a. Download <a href="https://github.com/WFCD/warframe-items/blob/master/data/json/All.json" target="_blank" rel="noopener noreferrer">All.json from GitHub (by WFCD)</a>
+        <p>b. Select the downloaded file in section <b>2.</b>, the status message will be shown below the file input</p>
+        <p>c. Result will be shown in <b>3.</b>, if no error is indicated, you can now copy the <b>whole</b> result and replace the content of the file js/data/data_generated.js</p>
+      </section>
+      </div>
+      <label class="file-label" for="raw-file-input">
+        <span>2. Select the raw JSON file</span>
+        <input type="file" id="raw-file-input" accept="application/json" />
+      </label>
+
+      <p id="file-status" class="file-status">No file loaded.</p>
+
+      <p class="step-label">3. Result (paste into js/data/data_generated.js)</p>
+      <textarea id="output-area" class="output-area" readonly placeholder="Generated code will appear here..."></textarea>
+      <div class="output-actions">
+        <button id="btn-clear-output" class="toolbar-btn">Clear result</button>
+        <button id="btn-copy-output" class="toolbar-btn">Copy</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/constants.js"></script>
+  <script src="js/registry.js"></script>
+  <script src="js/generate/custom_data.js"></script>
+  <script src="js/generate/generate_data.js"></script>
+  <script src="js/generate.js"></script>
+</body>
+</html>
