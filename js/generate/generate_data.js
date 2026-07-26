@@ -10,6 +10,7 @@ const FOCUS_WAYBOUND         = ["/MoreAmmoFocusUpgrade", "/RegenAmmoFocusUpgrade
 const FOUNDER_EXCLUSIVE      = ["/Powersuits/Excalibur/ExcaliburPrime", "LatoPrime", "SkanaPrime"];
 const GEAR_INCLUDE           = ["LureGearItem", "/FishBait/", "RarityBoost"];
 const GLOBAL_EXCLUDE         = ["/Lotus/Upgrades/Mods/Randomized/Lotus", "/Lotus/Upgrades/Mods/Randomized/Player", "/Lotus/StoreItems/Upgrades/Mods/Randomized",  "/TransmuteCores/", "/Engineering/Base", "CloakPullFocusUpgrade", "DashElectricityFocusUpgrade", "CloakStaticFocusUpgrade", "BlastBurstFocusUpgrade", "DashFireFocusUpgrade", "BlastFireballFocusUpgrade", "DashDamageFocusUpgrade", "ElementalDamageFocusUpgrade", "BlastChargeFocusUpgrade", "CloakBlindFocusUpgrade", "BlastRadiusFocusUpgrade", "ArmourIncreaseFocusUpgrade", "DashReduceDamageFocusUpgrade", "MagneticFieldFocusUpgrade", "DashReduceArmourFocusUpgrade", "BlastDamagePickupFocusUpgrade", "CloakReduceDamageFocusUpgrade", "CloakAllyCloakFocusUpgrade", "ReflectDamageFocusUpgrade", "BlastSelfShieldFocusUpgrade", "BlastDisarmFocusUpgrade", "BlastConfuseFocusUpgrade", "DashFinisherFocusUpgrade", "DashSpeedFocusUpgrade", "CloakRevealFocusUpgrade", "SonarPvPAugmentCard", "CloakMeleeCritFocusUpgrade", "CloakShieldFocusUpgrade", "CloakHealOthersFocusUpgrade", "DashShockwaveFocusUpgrade", "DashWaveFocusUpgrade", "AirborneMeleeAutoTargetBonus", "GroundingMeleeMod", "/Lotus/Upgrades/CosmeticEnhancers/Defensive/PoisonProcResist", "/Lotus/Upgrades/CosmeticEnhancers/Defensive/GasProcResist", "/Lotus/Upgrades/CosmeticEnhancers/Defensive/CorrosiveProcResist", "/Lotus/Upgrades/CosmeticEnhancers/Utility/SlowerBleedOutOnPredeath", "/Lotus/Upgrades/CosmeticEnhancers/Utility/DamageReductionDuringRevive", "/Lotus/Upgrades/CosmeticEnhancers/Utility/NoCostCastChanceAbility", "SiriusOrion/OrionSuit", "/Lotus/Types/Keys/DojoKey", "SolNode254", "SolNode255", "SolNode256", "AvatarResistanceOnDamageMod", "AvatarDamageResistanceLaserExpert", "AvatarDamageResistanceFireExpert", "HealthPickupGivesArmourMax", "AvatarDamageResistanceIceExpert", "AvatarAbilityStrengthModExpert", "AvatarDamageResistanceElectricityExpert", "AvatarShieldRechargeRateModExpert", "AvatarAbilityEfficiencyModExpert", "AvatarDamageToEnergyModExpert", "AvatarParryReflectModExpert", "AvatarDamageResistanceStun", "AvatarAbilityRangeModExpert", "/DangerRoomKey"];
+const NODE_LOCATIONS         = { "SolNode": WF.SUBTYPES.node[0], "ClanNode": WF.SUBTYPES.node[0], "Junction": WF.SUBTYPES.node[0], "SettlementNode": WF.SUBTYPES.node[0], "CrewBattleNode": WF.SUBTYPES.node[1] };
 const MOD_BEASTS             = ["beast", "kavat", "kubrow", "predasite", "vulpaphyla", "helminth charger"];
 const MOD_DO_NOT_EXCLUDE     = ["/Lotus/Upgrades/Mods/Melee/Expert/WeaponFireRateModExpert", "/Lotus/Upgrades/Mods/Melee/Expert/WeaponToxinDamageModExpert", "/Lotus/Upgrades/Mods/Melee/Expert/WeaponImpactDamageModExpert", "/Lotus/Upgrades/Mods/Pistol/Expert/WeaponFireDamageModExpert", "Shotgun/Expert/WeaponElectricityDamageModExpert", "Shotgun/Expert/WeaponFreezeDamageModExpert", "Rifle/Expert/WeaponFreezeDamageModExpert", "Mods/Shotgun/Expert/WeaponCritDamageModExpert"];
 const MOD_EXCLUDE_INC        = ["SampleAntiqueUpgrade", "/Railjack/Gunnery/Base", "/Railjack/Piloting/Base", "DamageRandomMod", "RateRandomMod"];
@@ -24,12 +25,15 @@ const MOD_VEHICLES           = ["archwing", "k-drive", "necramech", "elytron", "
 const NODE_MAPPING           = {"SolNode203": 138, "SolNode4": 51, "SolNode181": 177, "SolNode88": 51, "SolNode106": 51, "SolNode97": 51, "SolNode73": 51, "SolNode31": 55, "SolNode2": 18, "SolNode45": 51, "SolNode113": 51, "SolNode33": 69, "SolNode204": 138, "SolNode41": 51, "SolNode16": 51, "SolNode205": 138, "SolNode185": 50, "SolNode132": 163, "SolNode223": 3, "SolNode153": 279, "SolNode907": 69, "SolNode60": 69, "SolNode25": 51, "SolNode119": 3, "SolNode82": 55, "SolNode79": 24, "SolNode74": 51, "SolNode121": 51, "SolNode70": 55, "SolNode149": 163, "SolNode43": 51, "SolNode75": 24, "SolNode196": 177, "SolNode147": 163, "SolNode83": 69, "SolNode56": 51, "SolNode23": 18, "SolNode98": 69, "SolNode6": 52, "SolNode67": 55, "SolNode146": 163, "SolNode128": 18, "SolNode27": 24, "SolNode100": 51, "SolNode12": 3, "SolNode19": 49, "SolNode903": 24, "SolNode59": 24, "SolNode39": 24, "SolNode144": 163, "SolNode104": 41, "SolNode85": 20, "SolNode1": 52, "SolNode905": 51, "SolNode87": 51, "SolNode65": 45, "SettlementNode11": 157, "SolNode51": 51, "SolNode42": 55, "SolNode58": 51, "SolNode76": 51, "SolNode195": 177, "SettlementNode20": 100, "SolNode125": 51, "SolNode61": 24, "SolNode162": 279, "SolNode164": 279, "SolNode177": 177, "SolNode93": 55, "SolNode188": 177, "SettlementNode10": 157, "SolNode141": 163, "SolNode101": 18, "SolNode140": 163, "SolNode220": 138, "SolNode118": 52, "SolNode130": 3, "SolNode49": 52, "SolNode139": 163, "SolNode109": 18, "SolNode26": 24, "SolNode138": 163, "SolNode103": 3, "SolNode63": 24, "SolNode89": 24, "SolNode191": 177, "SolNode36": 51, "SolNode193": 100, "SolNode126": 51, "SolNode38": 51, "SettlementNode12": 157, "SolNode902": 18, "SolNode209": 138, "SolNode210": 138, "SolNode175": 279, "SolNode189": 177, "SolNode190": 177, "SolNode21": 51, "SolNode84": 52, "SolNode62": 52, "SolNode166": 279, "SolNode50": 55, "SolNode137": 163, "SolNode102": 51, "SolNode224": 3, "SolNode167": 279, "SolNode30": 51, "SolNode69": 69, "SolNode129": 24, "SolNode217": 138, "SolNode24": 24, "SolNode211": 138, "SolNode72": 51, "SolNode15": 24, "SolNode212": 138, "SolNode131": 163, "SolNode81": 51, "SolNode906": 55, "SolNode226": 3, "SolNode228": 24, "SolNode17": 52, "SolNode127": 52, "SolNode114": 44, "SolNode48": 51, "SolNode18": 55, "SettlementNode1": 157, "SolNode9": 69, "SolNode184": 177, "SolNode908": 52, "SolNode57": 52, "SolNode171": 279, "SolNode187": 177, "SettlementNode15": 157, "SettlementNode14": 157, "SettlementNode2": 157, "SolNode173": 279, "SolNode214": 138, "SolNode46": 51, "SolNode122": 69, "SettlementNode3": 157, "SolNode225": 3, "SolNode34": 69, "SolNode904": 51, "SolNode20": 55, "SolNode22": 18, "SolNode32": 55, "SolNode11": 51, "SolNode740": 55, "SolNode10": 51, "SolNode53": 51, "SolNode135": 163, "SolNode96": 55, "SolNode105": 69, "SolNode108": 25, "SolNode78": 52, "SolNode450": 18, "SolNode14": 51, "SolNode64": 69, "SolNode66": 18, "SolNode123": 18, "SolNode215": 138, "SolNode216": 138, "SolNode68": 51, "SolNode107": 18, "SolNode239": 50, "SolNode183": 177, "SolNode99": 51, "SolNode172": 279, "SolNode199": 177,};
 const QUEST_SIDE             = ["KubrowQuestKeyChain", "SpyQuestKeyChain", "KahlQuestKeyChain", "InfestedAladVQuestKeyChain", "GetClemQuestKeyChain", "GlassQuestKeyChain"];
 const QUEST_WARFRAME         = ["ProteaQuestKeyChain", "WraithQuestKeyChain", "DragonQuestKeyChain", "IndexQuestKeyChain", "BardQuestKeyChain", "MummyQuestKeyChain", "MirageQuestKeyChain", "RevenantQuestKeyChain", "FairyQuestKeyChain", "YareliQuestKeyChain", "LimboQuestKeyChain", "GolemQuestKeyChainItem"];
-const RAILJACK_TIERS         = ["TierA", "TierB", "TierC", "TierD"];
+const RAILJACK_EXCLUDE       = ["TierA", "TierB", "TierC"];
+const RAILJACK_TIERS         = [...RAILJACK_EXCLUDE, "TierD"];
 const RECLIC_EXCLUDE_END     = ["T5VoidProjectionImmortal", "T5VoidProjectionImmortalOmni", "VoidProjection"];
 const SENTITEL_EXCEPTION     = ["ZanukaPetMeleeWeaponPS", "ZanukaPetMeleeWeaponIP", "ZanukaPetMeleeWeaponIS"];
 const WEAPON_FIVE_EVOLUTION  = ["ZarimanPumpShotgun", "ZarimanDaggerWeapon", "ZarimanHeavyPistol", "EntratiWristGunWeapon", "ZarimanSemiAutoRifle", "ZarimanTonfaWeapon", "EntFistIncarnon", "ZarimanHeavyScytheWeapon"];
 const WEAPON_INCARNON        = ["ParisScythe", "/Staff/Staff", "PrimeBoWeapon", "DualInfestedAxesWeapon", "Fist/Fist", "FuraxWraith", "LongSword/LongSword", "SkanaPrime", "PrismaSkana", "PaladinMaceWeapon", "NLMagistar", ...WEAPON_FIVE_EVOLUTION];
 const WEAPON_INCARNON_FILTER = ["Incarnon", "Spectral"];
+
+const NULL = "null";
 
 //
 
@@ -60,7 +64,7 @@ const CATEGORY_MAPPERS = {
   "Pets": mapPet,                  // 17/17
   "Primary": mapPrimary,           // 203/203 (194 normal + 9 amp)
   "Quests": mapQuest,              // 45/45 prelude to war ? the new war ?
-  "Railjack": mapRailjack,         // KO
+  "Railjack": mapArmament,         // KO
   "Relics": mapRelic,              // 772/772 (197 lith + 188 meso + 187 neo + 196 axi + 9 requiem)
   "Resources": mapResource,        // KO
   "Scene": mapScene,               // 200/200
@@ -129,8 +133,8 @@ function mapAirSupport(raw) {
 function mapArcane(raw) {
   const itemName    = WF.escapeQuotes(raw.uniqueName);
   const displayName = WF.escapeQuotes(raw.name);
-  let   rarityField = WF.escapeQuotes(raw.rarity) || "null";
-  let   typeField   = raw.type ? `${WF.escapeQuotes(raw.type.split(" ")[0])}` : "null";
+  let   rarityField = WF.escapeQuotes(raw.rarity) || NULL;
+  let   typeField   = raw.type ? `${WF.escapeQuotes(raw.type.split(" ")[0])}` : NULL;
   if (typeField == "Bow" || typeField == "Shotgun") typeField = WF.SUBTYPES.arcane[1];
   let   level       = raw.levelStats ? raw.levelStats.length - 1 : 0;
   if (raw.uniqueName.includes("CosmeticEnhancers/Antiques/")) {
@@ -192,7 +196,7 @@ function mapFish(raw) {
 }
 
 function mapFocusSchool(raw) {
-  const schoolField = raw.polarity ? `${WF.escapeQuotes(raw.polarity)}` : "null";
+  const schoolField = raw.polarity ? `${WF.escapeQuotes(raw.polarity)}` : NULL;
   const schoolAbility = entry(raw, WF.ITEM_TYPES.focusschool.name, schoolField);
   const isWayBoundAbility = FOCUS_WAYBOUND.some(element => raw.uniqueName.endsWith(element));
 
@@ -207,7 +211,7 @@ function mapFocusSchool(raw) {
 
 function mapFragment(raw, subType = null) {
   let category = WF.SUBTYPES.fragment_category[1];
-  if (subType === null) subType = raw.type ? `${WF.escapeQuotes(raw.type)}` : "null";
+  if (subType === null) subType = raw.type ? `${WF.escapeQuotes(raw.type)}` : NULL;
   
   switch (subType) {
     case WF.SUBTYPES.fragment[6]:
@@ -232,25 +236,25 @@ function mapFramefighter(raw) {
 }
 
 function mapHelminth(raw, subType) {
-  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : "null";
+  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : NULL;
   //if(subType == WF.SSUBTYPES.helminth[1])
   return [entry(raw, WF.ITEM_TYPES.helminth.name, typeField)];
 }
 
 function mapHonoria(raw) {
-  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : "null";
+  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : NULL;
   return [entry(raw, WF.ITEM_TYPES.honoria.name, typeField)];
 }
 
 function mapIntrinsic(raw) {
-  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : "null";
+  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : NULL;
   const category = raw.uniqueName.split('/').pop().replace(/\d+$/, '').toLowerCase();
   return [entryWithFields(raw, WF.ITEM_TYPES.intrinsic.name, typeField, { intrinsic_category: category, mastery_xp: 1500 })];
 }
 
 function mapGear(raw) {
   const checker = GEAR_INCLUDE.some(element => raw.uniqueName.includes(element));
-  let typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : "null";
+  let typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : NULL;
   
   if (raw.uniqueName.includes("/Restoratives/Upgraded/")) typeField = WF.SUBTYPES.gear[3]; // key
   else if (checker) typeField = WF.SUBTYPES.gear[2]; // fish bait
@@ -283,9 +287,9 @@ function mapMisc(raw) {
 
 function mapMod(raw) { // I know it's a fuc**ng mess
   let typeField = [WF.SUBTYPES.mod[0]];
-  let category = raw.type ? [`${WF.escapeQuotes(raw.type.split(" ")[0])}`] : ["null"];
+  let category = raw.type ? [`${WF.escapeQuotes(raw.type.split(" ")[0])}`] : [NULL];
   let returnValue = [];
-  const rarityField = (WF.escapeQuotes(raw.rarity) || "null").toLowerCase();
+  const rarityField = (WF.escapeQuotes(raw.rarity) || NULL).toLowerCase();
   
   if (MOD_EXCLUDE_INC.some(element => raw.uniqueName.includes(element)) || 
      (MOD_EXCLUDE_END.some(element => raw.uniqueName.endsWith(element)) && !MOD_DO_NOT_EXCLUDE.some(element => raw.uniqueName.includes(element)))) return [];
@@ -360,25 +364,27 @@ function mapMod(raw) { // I know it's a fuc**ng mess
 }
 
 function mapNode(raw) { // 238 normal and SP, but I have 237 and 237 I can't find why
+  const match = Object.entries(NODE_LOCATIONS).find(([prefix]) => raw.uniqueName.includes(prefix));
+	let system = match ? match[1] : NULL;
   const spRaw = { ...raw, uniqueName: `${raw.uniqueName}SP`, name: `${raw.name} (SP)` };
   let planetField = raw.systemName ? raw.systemName.toLowerCase() : null;
   let returnValue = [];
   let xpReward = NODE_MAPPING[raw.uniqueName] || 0;
   
-  if (planetField && planetField.includes(WF.SUBTYPES.node_planet[21])) {
-    planetField = WF.SUBTYPES.node_planet[21];
+  if (planetField && planetField.includes(WF.SUBTYPES.node_solar[21])) {
+    planetField = WF.SUBTYPES.node_solar[21];
   }
   
   if (raw.uniqueName.includes("Junction")) xpReward = 1000;
 
-  returnValue.push(entryWithFields(raw, WF.ITEM_TYPES.node.name, WF.SUBTYPES.node[0], { node_planet: planetField, ...(xpReward && { mastery_xp: xpReward }) }) );
-  returnValue.push(entryWithFields(spRaw, WF.ITEM_TYPES.node.name, WF.SUBTYPES.node[1], { node_planet: planetField, ...(xpReward && { mastery_xp: xpReward }) }));
+  returnValue.push(entryWithFields(raw  , WF.ITEM_TYPES.node.name, system, { node_solar: planetField, node_difficulty: WF.SUBTYPES.node_difficulty[0], ...(xpReward && { mastery_xp: xpReward }) }));
+  returnValue.push(entryWithFields(spRaw, WF.ITEM_TYPES.node.name, system, { node_solar: planetField, node_difficulty: WF.SUBTYPES.node_difficulty[1], ...(xpReward && { mastery_xp: xpReward }) }));
 
   return returnValue;
 }
 
 function mapPeelyPix(raw) { 
-	let type = raw.type ? [`${WF.escapeQuotes(raw.type.split(" ")[0])}`] : ["null"];
+	let type = raw.type ? [`${WF.escapeQuotes(raw.type.split(" ")[0])}`] : [NULL];
 	return [entry(raw, WF.ITEM_TYPES.peelypix.name, type)];
 }
 
@@ -396,7 +402,7 @@ function mapPet(raw) {
   }
   else
   {
-    const companionName = ((raw.name.split(" ")[1]) || "null").toLowerCase();
+    const companionName = ((raw.name.split(" ")[1]) || NULL).toLowerCase();
     switch (companionName) {
       case WF.SUBTYPES.companion_category[1] : subtype = WF.SUBTYPES.companion[0]; category = WF.SUBTYPES.companion_category[1]; break; // robotics moa
       case WF.SUBTYPES.companion_category[2] : subtype = WF.SUBTYPES.companion[0]; category = WF.SUBTYPES.companion_category[2]; break; // robotics hound
@@ -413,19 +419,25 @@ function mapPet(raw) {
 function mapPrimary(raw) { return mapWeapon(raw, WF.SUBTYPES.weapon[0], null); }
 
 function mapQuest(raw) {
-  let category = "main_quest";
+  let category = WF.SUBTYPES.quest[0];
   
-  if (QUEST_WARFRAME.some(element => raw.uniqueName.includes(element))) category = "warframe_quest";
-  if (QUEST_SIDE.some(element => raw.uniqueName.includes(element))) category = "side_quest";
+  if (QUEST_SIDE.some(element => raw.uniqueName.includes(element))) category = WF.SUBTYPES.quest[1];
+  if (QUEST_WARFRAME.some(element => raw.uniqueName.includes(element))) category = WF.SUBTYPES.quest[2];
   
   return [entry(raw, WF.ITEM_TYPES.quest.name, category)];
 }
 
-function mapRailjack(raw) {
+function mapArmament(raw) {
   const foundIndex = RAILJACK_TIERS.findIndex(tier => raw.uniqueName.endsWith(tier));
   const indexTier = foundIndex === -1 ? 0 : foundIndex + 1;
-  const typeField = WF.SUBTYPES.railjack[indexTier];
-  return [entry(raw, WF.ITEM_TYPES.railjack.name, typeField)];
+	if(indexTier > 0 && RAILJACK_EXCLUDE.findIndex(tier => raw.uniqueName.endsWith(tier)) >= 0) return [];
+  const typeField = WF.SUBTYPES.armament[indexTier];
+  if(indexTier > 0) { // fix mk tier, Mk Iii => Mk III
+		let words = raw.name.split(" ");
+		words[words.length - 1] = words[words.length - 1].toUpperCase();
+		raw.name = words.join(" ");
+  }
+  return [entry(raw, WF.ITEM_TYPES.armament.name, typeField)];
 }
 
 function mapRelic(raw) {
@@ -440,12 +452,12 @@ function mapRelic(raw) {
      subType = WF.SUBTYPES.relic[3];
   }
   
-  let rank = fullName[2] || "null";
+  let rank = fullName[2] || NULL;
   const checker = GEAR_INCLUDE.some(element => raw.uniqueName.includes(element));
   
   let displayName = `${fullName[0]} ${fullName[1]}`;
 
-  if (rank !== "null" && rank !== "Relic") { displayName += ` (${rank})`; }
+  if (rank !== NULL && rank !== "Relic") { displayName += ` (${rank})`; }
   else { rank = WF.SUBTYPES.relic_rank[2]; }
   
   rank = rank.toLowerCase();
@@ -486,7 +498,7 @@ function mapSimulacrum(raw) {
 
 // Skin Mapping
 function mapSkin(raw) {
-  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : "null";
+  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : NULL;
   
   if (raw.uniqueName.includes("/ShipDecos/TarotCard"))      return mapFragment(raw, WF.SUBTYPES.fragment[6]); // fragment prex
   if (raw.uniqueName.includes("/ShipDecos/CorpusGreed"))    return mapFragment(raw, WF.SUBTYPES.fragment[7]); // fragment tenex
@@ -496,12 +508,12 @@ function mapSkin(raw) {
 }
 
 function mapSomachord(raw) {
-  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : "null";
+  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : NULL;
   return [entry(raw, WF.ITEM_TYPES.somachord.name, typeField)];
 }
 
 function mapSumdali(raw) {
-  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : "null";
+  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : NULL;
   return [entry(raw, WF.ITEM_TYPES.sumdali.name, null)];
 }
 
@@ -530,38 +542,38 @@ function mapWeapon(raw, subtype, category) {
       return mapSentinel(raw, WF.SUBTYPES.companion_category[8], XP30); // robotic hound
     }  else if (raw.uniqueName.includes("/Melee/Modular")) { 
       subtype = WF.SUBTYPES.weapon[2]; 
-      category = WF.SUBTYPES.weapon_category[3]; // melee     zaw
+      category = WF.SUBTYPES.weapon_category[3];                        // melee     zaw
     } else if (raw.uniqueName.includes("/InfKitGun/Barrels/") || raw.uniqueName.includes("/SUModularSecondarySet1/Barrel/")) { 
       subtype = WF.SUBTYPES.weapon[1]; 
-      category = WF.SUBTYPES.weapon_category[2]; // secondary kitgun
+      category = WF.SUBTYPES.weapon_category[2];                        // secondary kitgun
     } else if (raw.uniqueName.includes("DrifterPistolPlayerWeapon")) { 
       subtype = WF.SUBTYPES.weapon[0]; 
-      category = WF.SUBTYPES.weapon_category[1]; // primary   amp
+      category = WF.SUBTYPES.weapon_category[1];                        // primary   amp
     } else  { 
-      category = WF.SUBTYPES.weapon_category[0]; // primary   normal
+      category = WF.SUBTYPES.weapon_category[0];                        // primary   normal
     }
   }
   
   if (raw.tags)
   {
     // if (raw.tags.includes("Kuva Lich"))  // only 20 out of 21 kuva weapon has this tags so I cant use it, so close to be perfect
-    if (raw.uniqueName.startsWith("/Lotus/Weapons/Grineer/") && raw.name.includes("Kuva"))
+    if (raw.uniqueName.startsWith("/Lotus/Weapons/Grineer/") && raw.name.toLowerCase().includes(WF.SUBTYPES.adversary[0]))
     {
       xpReward = XP40;
       returnValue.push(mapAdversary(raw, WF.SUBTYPES.adversary[0]));
     }
-    
-    // if (raw.tags.includes("Technocyte")) // only  6 out of 14 coda weapon has this tags so I cant use it
-    if (raw.uniqueName.startsWith("/Lotus/Weapons/Infested/") && raw.name.includes("Coda"))
-    {
-      xpReward = XP40;
-      returnValue.push(mapAdversary(raw, WF.SUBTYPES.adversary[2]));
-    }
-    
-    if (raw.tags.includes("Tenet")) // bingo 16 out 16 mapped
+
+		if (raw.tags.some(tag => tag.toLowerCase().includes(WF.SUBTYPES.adversary[1])))// bingo 16 out 16 mapped
     {
       xpReward = XP40;
       returnValue.push(mapAdversary(raw, WF.SUBTYPES.adversary[1]));
+    }
+
+    // if (raw.tags.includes("Technocyte")) // only  6 out of 14 coda weapon has this tags so I cant use it
+    if (raw.uniqueName.startsWith("/Lotus/Weapons/Infested/") && raw.name.toLowerCase().includes(WF.SUBTYPES.adversary[2]))
+    {
+      xpReward = XP40;
+      returnValue.push(mapAdversary(raw, WF.SUBTYPES.adversary[2]));
     }
   }
   
@@ -619,7 +631,7 @@ function generatedCustomEntries() {
 }
 
 function formatFieldValue(value) {
-  if (value === null || value === undefined) return "null";
+  if (value === null || value === undefined) return NULL;
   if (Array.isArray(value)) return `[${value.map((v) => `"${WF.escapeQuotes(v)}"`).join(", ")}]`;
   return `"${WF.escapeQuotes(value)}"`;
 }
@@ -644,7 +656,7 @@ function quote(value) {
 function buildFileContent(entries, totalRawCount, duration) {
   const dateET = new Date().toLocaleString("sv-SE", { timeZone: "America/New_York" });
 
-  return [
+  return [ // same date format as Digital Extremes' communication
     `// Generated with "generate.html" on ${dateET} ET in ${duration}ms - ${totalRawCount} items source, ${entries.length} lines created.`,
     `// Dont change this by hand, use my "generated.html" and download "all.json" from WFCD, or for custom data, use "js/generade/custom_data.js".`,
     `// If you don't know what you're doing, PLEASE do nothing.`,

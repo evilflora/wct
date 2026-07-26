@@ -51,11 +51,15 @@ If you plan to modify the source code for personal use or to submit a Pull Reque
 
 ## Roadmap / Known Issues
 
-### Planned Features & Enhancements
+### Planned Features, Enhancements, Fixes & Refactoring
 - Additional challenges tracking
-- PvP Mods coverage
 - Use "https://wiki.warframe.com/w/Public_Export" ?
 - More filters
+- Clarify Railjack MK4 60%
+- Clean up unused resource files and definitions
+- Remove `generatedCustomEntries` and use custom_data.js
+- Calculted percentage in filter are sometimes broken
+- 237 star chart node instead of 238 ? (with filters: normal / normal / all)
 
 ### What I can't do for now
 - A symbol "hidden from codex" at the end of an item, data from WFCD does have a field named "excludeFromCodex," but it's not for that.
@@ -65,10 +69,3 @@ If you plan to modify the source code for personal use or to submit a Pull Reque
 - Nor build components / price
 - Nor items stats
 - Nor drop location
-
-### Fixes & Refactoring
-- Clarify Railjack MK4 60%
-- Clean up unused resource files and definitions
-- Remove `generatedCustomEntries` and use custom_data.js
-- Calculted percentage in filter are sometimes broken
-- 237 star chart node instead of 238 ? (with filters: normal / normal / all)

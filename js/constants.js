@@ -11,6 +11,7 @@ WF.ITEM_TYPES = {
   airsupport:       { name: "airsupport",   label: "Air Support"      , description: "Equipement / Orbiter /Landing Craft Customize screen" },
   arcane:           { name: "arcane",       label: "Arcanes"          , description: "Condex / Universe" },
   archweapon:       { name: "archweapon",   label: "Arch Weapons"     , description: "Profile / Equipement" },
+  armament:         { name: "armament",     label: "Armaments (WIP)"  , description: "???" },
   artgallery:       { name: "artgallery",   label: "Art Gallery"      , description: "Codex / Universe" },
   challenge:        { name: "challenge",    label: "Challenges"       , description: "Profile / Challenges" },
   companion:        { name: "companion",    label: "Companions"       , description: "Profile / Equipement" },
@@ -30,10 +31,9 @@ WF.ITEM_TYPES = {
   node:             { name: "node",         label: "Star Chart"       , description: "Profile / Stats" },
   peelypix:         { name: "peelypix",     label: "Peely Pix"        , description: "Höllvania Central Mall / Kaya Velasco" },
   quest:            { name: "quest",        label: "Quests"           , description: "Codex / Quets" },
-  railjack:         { name: "railjack",     label: "Railjacks"        , description: "???" },
   relic:            { name: "relic",        label: "Relics"           , description: "Condex / Universe" },
   resource:         { name: "resource",     label: "Resources (WIP)"  , description: "???" },
-  scene:            { name: "scene",        label: "Scenes (WIP)"     , description: "Arsenal / Warframe Appearance / Camera button" },
+  scene:            { name: "scene",        label: "Scenes"           , description: "Arsenal / Warframe Appearance / Camera button" },
   sigil:            { name: "sigil",        label: "Sigils (WIP)"     , description: "Arsenal / Warframe Appearance" },
   simulacrum:       { name: "simulacrum",   label: "Simulacrum"       , description: "Relay / Cephalon Simaris Room" },
   skin:             { name: "skin",         label: "Skins (WIP)"      , description: "???" },
@@ -63,11 +63,13 @@ WF.SUBTYPES = {
   honoria:            ["Suffix", "Prefix"],
   mod:                ["pve", "pvp"],
   mod_category:       ["Warframe", "Aura", "Augment", "Primary", "Pistol", "Melee", "Stance", "Exilus", "Vehicles", "ArchGun", "ArchMelee", "Robotic", "Beast", "Railjack", "Antique", "Parazon", "Tome", "Atagraph"],
-  node:               ["normal", "steel_path"],
-  node_planet:        ["mercury", "venus", "earth", "mars", "phobos", "ceres", "jupiter", "europa", "saturn", "uranus", "neptune", "pluto", "sedna", "eris", "void", "lua", "deimos", "höllvania", "duviri", "zariman", "kuva fortress", "dark refractory"],
-	peelypix:           ["normal", "chromatic"],
-  quest:              ["main_quest", "side_quest", "warframe_quest"],
-  railjack:           ["base", "mk i", "mk ii", "mk iii", "mk iv"],
+  node:               ["solar system", "empyrean", "tau"],
+  node_difficulty:    ["normal", "steel path"],
+  node_solar:         ["mercury", "venus", "earth", "mars", "phobos", "ceres", "jupiter", "europa", "saturn", "uranus", "neptune", "pluto", "sedna", "eris", "void", "lua", "deimos", "höllvania", "duviri", "zariman", "kuva fortress", "dark refractory"],
+  node_empyrean:      ["earth", "venus", "saturn", "uranus", "neptune", "pluto", "veil proxima"],
+  peelypix:           ["normal", "chromatic"],
+  quest:              ["main quest", "side quest", "warframe quest"],
+  armament:           ["base", "mk iv"],
   relic:              ["lith", "meso", "neo", "axi", "requiem"],
   relic_rank:         ["intact", "radiant", "other"],
   relic_vanguard:     ["vanguard"],
@@ -122,7 +124,15 @@ WF.EXTRA_FILTERS = {
     { field: "skin_category", options: WF.SUBTYPES.skin_category},
   ],
   node: [
-    { field: "node_planet",   options: WF.SUBTYPES.node_planet },
+    { field: "node_difficulty",   options: WF.SUBTYPES.node_difficulty },
+    {
+      field: "node_solar",
+      optionsBySubtype: {
+        "solar system": WF.SUBTYPES.node_solar,
+        "empyrean": WF.SUBTYPES.node_empyrean,
+        // "all": [...WF.SUBTYPES.node_solar, ...WF.SUBTYPES.node_empyrean], // hummmmmmm nope, too messy
+      },
+    },
   ],
   relic: [
     { field: "relic_rank",       options: WF.SUBTYPES.relic_rank },
@@ -162,7 +172,7 @@ WF.NAV_GROUPS = [
   },
   {
     label: "Collectible",
-    types: ["airsupport", "scene", "fish", "framefighter", "gear", "helminth", "incarnon", "adversary", "peelypix", "railjack", "resource", "simulacrum", "somachord", "sumdali"],
+    types: ["airsupport", "armament", "scene", "fish", "framefighter", "gear", "helminth", "incarnon", "adversary", "peelypix", "resource", "simulacrum", "somachord", "sumdali"],
   },
   {
     label: "Cosmetic (WIP)",
@@ -176,8 +186,9 @@ WF.MASTERY = {
   LEGENDARY_XP_PER_RANK: 147500,
 };
 
-WF.PROJECT_URL = "https://github.com/REPLACE_ME";
+WF.PROJECT_URL = "https://evilflora.github.io/wct/";
  
 WF.CHANGELOG = [
-  { date: "2026/07/13 00:00:00", version: "43.0.8", text: "The start of making this public and widely usable." },
+	{ date: "2026/07/25 00:00:00", version: "43.0.8", text: `Added "The Maker" Quest. </br> Added themes color in "Options" </br> Added small icons "V" for "Vaulted" and "XP" for how much mastery this will give. </br> Added "Mastery Breakdown" in "Stats" like ingame in your profile.` },
+  { date: "2026/07/13 00:00:00", version: "43.0.8", text: `The start of making this public and widely usable.` },
 ];
