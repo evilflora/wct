@@ -429,14 +429,18 @@ function mapQuest(raw) {
 
 function mapArmament(raw) {
   const foundIndex = RAILJACK_TIERS.findIndex(tier => raw.uniqueName.endsWith(tier));
-  const indexTier = foundIndex === -1 ? 0 : foundIndex + 1;
+  const indexTier = foundIndex === -1 ? 0 : 1; // old method => 0 : foundIndex + 1;
+	
 	if(indexTier > 0 && RAILJACK_EXCLUDE.findIndex(tier => raw.uniqueName.endsWith(tier)) >= 0) return [];
+	
   const typeField = WF.SUBTYPES.armament[indexTier];
+	
   if(indexTier > 0) { // fix mk tier, Mk Iii => Mk III
 		let words = raw.name.split(" ");
 		words[words.length - 1] = words[words.length - 1].toUpperCase();
 		raw.name = words.join(" ");
   }
+	
   return [entry(raw, WF.ITEM_TYPES.armament.name, typeField)];
 }
 
