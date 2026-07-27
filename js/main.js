@@ -121,7 +121,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (openHelp && !openHelp.contains(event.target)) closeTypeHelp();
   });
 
-  document.getElementById("info-project-link").href = WF.PROJECT_URL;
+  document.getElementById("info-project-link-live").href = WF.PROJECT_URL;
+  document.getElementById("info-project-link-src").href = WF.PROJECT_SRC;
 
   const changelogList = document.getElementById("info-changelog-list");
   let expandedChangelogIndex = 0;

@@ -11,8 +11,8 @@ const MASTERY_BREAKDOWN_GROUPS = [
     { label: "Kitguns",                 match: (item) => item.type === "weapon" && item.subtype === "secondary" && item.weapon_category === "kitgun" },
   ],
   [
-    { label: "Missions",                match: (item) => item.type === "node" && item.subtype === "normal" },
-    { label: "The Steel Path Missions", match: (item) => item.type === "node" && item.subtype === "steel_path" },
+    { label: "Missions",                match: (item) => item.type === "node" && item.node_difficulty === "normal" },
+    { label: "The Steel Path Missions", match: (item) => item.type === "node" && item.node_difficulty === "steel path" },
     { label: "Railjack Intrinsics",     match: (item) => item.type === "intrinsic" && item.subtype === "railjack" },
     { label: "Drifter Intrinsics",      match: (item) => item.type === "intrinsic" && item.subtype === "drifter" },
   ],

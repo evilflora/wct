@@ -75,9 +75,9 @@ const CATEGORY_MAPPERS = {
   "Skins": mapSkin,                // KO (holy shit)
   "Somachord": mapSomachord,       // 150/150 
   "Sumdali": mapSumdali,           // 16/16
+  "Vehicle": mapVehicle,           // 1/1 Plexus
   "Warframes": mapWarframe         // 116/116 (66 non prime + 50 prime)
                                    // 2/2 necramech
-                                   // 1/1 Plexus
                                    // 5/5 K-drive
 };
 
@@ -96,7 +96,7 @@ WF.generators.push({
     
     rawItems = rawItems.concat(CUSTOM_ENTRIES);
     
-    const entries = rawItems.flatMap(mapItem).concat(generatedCustomEntries());
+    const entries = rawItems.flatMap(mapItem);
     
     const endTime = performance.now();
     const duration = (endTime - startTime).toFixed(2);
@@ -116,7 +116,7 @@ function mapItem(raw) {
 //
 
 function mapTodo(raw) {
-  return [entryWithFields(raw, WF.ITEM_TYPES.TODO.name, null, { source_category: raw.category || "unknown" })];
+  return [entry(raw, WF.ITEM_TYPES.TODO.name, null, { source_category: raw.category || "unknown" })];
 }
 
 function mapAdversary(raw, subType) {
@@ -154,7 +154,7 @@ function mapEnemy(raw) { return [entry(raw, WF.ITEM_TYPES.enemy.name, null)]; }
 function mapArchweapon(raw, subType) {
   let xpReward = raw.name.includes("Kuva") ? XP40 : XP30;
   const isVaulted = getIsVaulted(raw);
-  let returnValue = [entryWithFields(raw, WF.ITEM_TYPES.archweapon.name, subType, { mastery_xp: xpReward, ...(isVaulted && { vaulted: isVaulted }) })];
+  let returnValue = [entry(raw, WF.ITEM_TYPES.archweapon.name, subType, { mastery_xp: xpReward, ...(isVaulted && { vaulted: isVaulted }) })];
   
   if (raw.tags) {
     // if (raw.tags.includes("Kuva Lich"))  // only 20 out of 21 kuva weapon has this tags so I cant use it, so close to be perfect
@@ -226,7 +226,7 @@ function mapFragment(raw, subType = null) {
       break;
   }
     
-  return [entryWithFields(raw, WF.ITEM_TYPES.fragment.name, subType, { fragment_category: category })];
+  return [entry(raw, WF.ITEM_TYPES.fragment.name, subType, { fragment_category: category })];
 }
 
 function mapFramefighter(raw) {
@@ -249,7 +249,7 @@ function mapHonoria(raw) {
 function mapIntrinsic(raw) {
   const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : NULL;
   const category = raw.uniqueName.split('/').pop().replace(/\d+$/, '').toLowerCase();
-  return [entryWithFields(raw, WF.ITEM_TYPES.intrinsic.name, typeField, { intrinsic_category: category, mastery_xp: 1500 })];
+  return [entry(raw, WF.ITEM_TYPES.intrinsic.name, typeField, { intrinsic_category: category, mastery_xp: 1500 })];
 }
 
 function mapGear(raw) {
@@ -355,10 +355,10 @@ function mapMod(raw) { // I know it's a fuc**ng mess
   if(MOD_IS_ATAGRAPH.some(element => raw.uniqueName.endsWith(element)))
   {
     const atagraph = { ...raw, uniqueName: `${raw.uniqueName}Atagraph`, name: `${raw.name}` };
-    returnValue.push(entryWithFields(atagraph, WF.ITEM_TYPES.mod.name, typeField, { mod_category: WF.SUBTYPES.mod_category[17], rarity: rarityField }))
+    returnValue.push(entry(atagraph, WF.ITEM_TYPES.mod.name, typeField, { mod_category: WF.SUBTYPES.mod_category[17], rarity: rarityField }))
   }
   
-  returnValue.push(entryWithFields(raw, WF.ITEM_TYPES.mod.name, typeField, { mod_category: category, rarity: rarityField }))
+  returnValue.push(entry(raw, WF.ITEM_TYPES.mod.name, typeField, { mod_category: category, rarity: rarityField }))
   
   return returnValue;
 }
@@ -377,8 +377,8 @@ function mapNode(raw) { // 238 normal and SP, but I have 237 and 237 I can't fin
   
   if (raw.uniqueName.includes("Junction")) xpReward = 1000;
 
-  returnValue.push(entryWithFields(raw  , WF.ITEM_TYPES.node.name, system, { node_solar: planetField, node_difficulty: WF.SUBTYPES.node_difficulty[0], ...(xpReward && { mastery_xp: xpReward }) }));
-  returnValue.push(entryWithFields(spRaw, WF.ITEM_TYPES.node.name, system, { node_solar: planetField, node_difficulty: WF.SUBTYPES.node_difficulty[1], ...(xpReward && { mastery_xp: xpReward }) }));
+  returnValue.push(entry(raw  , WF.ITEM_TYPES.node.name, system, { node_solar: planetField, node_difficulty: WF.SUBTYPES.node_difficulty[0], ...(xpReward && { mastery_xp: xpReward }) }));
+  returnValue.push(entry(spRaw, WF.ITEM_TYPES.node.name, system, { node_solar: planetField, node_difficulty: WF.SUBTYPES.node_difficulty[1], ...(xpReward && { mastery_xp: xpReward }) }));
 
   return returnValue;
 }
@@ -413,7 +413,7 @@ function mapPet(raw) {
       default: return [];
     }
   }
-  return [entryWithFields(raw, WF.ITEM_TYPES.companion.name, subtype, { companion_category: category, mastery_xp: XP60 })];
+  return [entry(raw, WF.ITEM_TYPES.companion.name, subtype, { companion_category: category, mastery_xp: XP60 })];
 }
 
 function mapPrimary(raw) { return mapWeapon(raw, WF.SUBTYPES.weapon[0], null); }
@@ -488,7 +488,7 @@ function mapSentinel(raw, category, xpReward) {
   const isVaulted = getIsVaulted(raw);
   if(!category) category = WF.SUBTYPES.companion_category[0];
   if(!xpReward) xpReward = XP60;
-  return [entryWithFields(raw, WF.ITEM_TYPES.companion.name, WF.SUBTYPES.companion[0], { companion_category: category, companion_rank: rank, mastery_xp: xpReward, ...(isVaulted && { vaulted: isVaulted }) })];
+  return [entry(raw, WF.ITEM_TYPES.companion.name, WF.SUBTYPES.companion[0], { companion_category: category, companion_rank: rank, mastery_xp: xpReward, ...(isVaulted && { vaulted: isVaulted }) })];
 }
 
 function mapSigil(raw) {
@@ -522,7 +522,8 @@ function mapSumdali(raw) {
 }
 
 function mapVehicle(raw, subtype, masteryxp) {
-  return [entryWithFields(raw, WF.ITEM_TYPES.vehicle.name, subtype, { mastery_xp: masteryxp })];
+  if(raw.uniqueName.includes("RailjackPlexusSegment")) { subtype = WF.SUBTYPES.vehicle[2]; masteryxp = XP60;}
+  return [entry(raw, WF.ITEM_TYPES.vehicle.name, subtype, { mastery_xp: masteryxp })];
 }
 
 function mapWeapon(raw, subtype, category) {
@@ -581,7 +582,7 @@ function mapWeapon(raw, subtype, category) {
     }
   }
   
-  returnValue.push(entryWithFields(raw, WF.ITEM_TYPES.weapon.name, subtype, { weapon_category: category, weapon_rank: rank, mastery_xp: xpReward, ...(isFounder && { founder: isFounder }), ...(isVaulted && { vaulted: isVaulted }) }));
+  returnValue.push(entry(raw, WF.ITEM_TYPES.weapon.name, subtype, { weapon_category: category, weapon_rank: rank, mastery_xp: xpReward, ...(isFounder && { founder: isFounder }), ...(isVaulted && { vaulted: isVaulted }) }));
   
   const hasIncarnonAttack = raw.attacks?.some(({ name }) => WEAPON_INCARNON_FILTER.some(prefix => name.startsWith(prefix)));
   const isIncarnonWeapon = WEAPON_INCARNON.some(element => raw.uniqueName.endsWith(element));
@@ -592,7 +593,7 @@ function mapWeapon(raw, subtype, category) {
       raw.name += isFiveEvolution ? " (5/5)" : " (4/4)";
       subtype = isFiveEvolution ? WF.SUBTYPES.incarnon[1] : WF.SUBTYPES.incarnon[0];
       
-      returnValue.push(entryWithFields(raw, WF.ITEM_TYPES.incarnon.name, subtype, { ...(isFounder && { founder: isFounder }) }));
+      returnValue.push(entry(raw, WF.ITEM_TYPES.incarnon.name, subtype, { ...(isFounder && { founder: isFounder }) }));
   }
 
   return returnValue;
@@ -611,7 +612,7 @@ function mapWarframe(raw) {
   const isFounder = getIsFounder(raw.uniqueName);
   const isVaulted = getIsVaulted(raw);
   
-  returnValue.push(entryWithFields(raw, WF.ITEM_TYPES.warframe.name, productCategory, { warframe_category: rank, mastery_xp: XP60, ...(isFounder && { founder: isFounder }), ...(isVaulted && { vaulted: isVaulted }) }));
+  returnValue.push(entry(raw, WF.ITEM_TYPES.warframe.name, productCategory, { warframe_category: rank, mastery_xp: XP60, ...(isFounder && { founder: isFounder }), ...(isVaulted && { vaulted: isVaulted }) }));
   
   return returnValue;
 }
@@ -630,31 +631,20 @@ function getIsVaulted(raw) {
   return (raw.vaulted ? (raw.vaultDate ? raw.vaultDate : "No Data") : false );
 }
 
-function generatedCustomEntries() {
-  return mapVehicle({uniqueName: "RailjackPlexusSegment", name : "Plexus"}, WF.SUBTYPES.vehicle[2], XP60); // arbitrary uniqueName
-}
-
 function formatFieldValue(value) {
   if (value === null || value === undefined) return NULL;
-  if (Array.isArray(value)) return `[${value.map((v) => `"${WF.escapeQuotes(v)}"`).join(", ")}]`;
+  if (Array.isArray(value)) return `[${value.map(v => `"${WF.escapeQuotes(v)}"`).join(", ")}]`;
+  if (typeof value === "object") {
+    const entries = Object.entries(value).map(([k, v]) => `${k}: "${WF.escapeQuotes(v)}"`).join(", ");
+    return `{ ${entries} }`;
+  }
   return `"${WF.escapeQuotes(value)}"`;
 }
 
-function entry(raw, type, subtype) {
-  return `\t{ item_name: "${quoteRaw(raw.uniqueName)}", display_name: { en: "${quoteRaw(raw.name)}" }, type: "${type}", subtype: ${formatFieldValue(subtype)} },`;
-}
-
-function entryWithFields(raw, type, subtype, extraFields) {
-  const extra = Object.entries(extraFields).map(([key, value]) => `${key}: ${formatFieldValue(value)}`).join(", ");
-  return `\t{ item_name: "${quoteRaw(raw.uniqueName)}", display_name: { en: "${quoteRaw(raw.name)}" }, type: "${type}", subtype: ${formatFieldValue(subtype)}, ${extra} },`;
-}
-
-function quoteRaw(value) {
-  return WF.escapeQuotes(value == null ? "" : value);
-}
-
-function quote(value) {
-  return `"${WF.escapeQuotes(value)}"`;
+function entry(raw, type, subtype, extraFields = {}) {
+  const fields = { item_name: raw.uniqueName, display_name: { en: raw.name }, type: type, subtype: subtype, ...extraFields };
+  const formatted = Object.entries(fields).filter(([_, value]) => value !== undefined).map(([key, value]) => `${key}: ${formatFieldValue(value)}`).join(", ");
+  return `\t{ ${formatted} },`;
 }
 
 function buildFileContent(entries, totalRawCount, duration) {

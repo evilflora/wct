@@ -49,17 +49,6 @@
             </div>
           </div>
         </div>
-        <div class="toolbar">
-          <button id="btn-export" class="toolbar-btn-main">
-            <span class="btn-icon">&#8595;</span> Export
-          </button>
-
-          <button id="btn-import" class="toolbar-btn-main">
-            <span class="btn-icon">&#8593;</span> Import
-          </button>
-
-          <input type="file" id="import-file-input" accept="application/json" hidden />
-        </div>
       </header>
 
       <main id="app" class="main-content"></main>
@@ -75,18 +64,20 @@
       <div class="info-modal-body">
         <section>
           <h3>Changelog</h3>
+				  <p id="update-available-notice" class="update-available-notice hidden">A new version is available!</p>
           <ul id="info-changelog-list"></ul>
         </section>
         <section>
           <h3>Project</h3>
           <p>Please remember, data may be incorrect; I can't check all data at every update.</p>
-          <p><a id="info-project-link" href="#" target="_blank" rel="noopener noreferrer">Download updates or info me on GitHub</a></p>
+          <p><a id="info-project-link-live" href="#" target="_blank" rel="noopener noreferrer">Live version on GitHub</a></p>
+          <p><a id="info-project-link-src" href="#" target="_blank" rel="noopener noreferrer">Source code on GitHub</a></p>
         </section>
         <section>
           <h3>Credits &amp; Privacy</h3>
           <p>Made by @evilflora</p>
           <p>Item data provided by <a href="https://github.com/WFCD/warframe-items" target="_blank" rel="noopener noreferrer">WFCD (Warframe Community Developers)</a> and <a href="https://wiki.warframe.com" target="_blank" rel="noopener noreferrer">Wiki Warframe</a>.</p>
-          <p>All progress data stays in your browser's local storage. Don't forget to save your data using the "Export" button.</p>
+          <p>All data stays in your browser's local storage. Don't forget to save your data using the "Export" button.</p>
           <p>Neither I nor this site is affiliated with "Digital Extremes" or "Warframe".<p>
         </section>
       </div>
@@ -122,6 +113,7 @@
       </div>
       <div class="info-modal-body">
         <section>
+          <h3>Settings</h3>
           <label class="option-row">
             <input type="checkbox" id="opt-include-options-in-export" />
             <span>Save options when exporting (re-applied automatically on the next import of that file)</span>
@@ -132,6 +124,20 @@
             <input type="checkbox" id="opt-include-founder-pack-exclusive" />
             <span>Add Founder Exclusive items: "Excalibur Prime" (Warframe), "Lato Prime" (Secondary), "Skana Prime" (Melee), this also add 2 more incarnon forms.</span>
           </label>
+        </section>
+        <section>
+          <h3>Data Management</h3>
+          <div class="toolbar">
+            <button id="btn-export" class="toolbar-btn-main">
+              <span class="btn-icon">&#8595;</span> Export
+            </button>
+
+            <button id="btn-import" class="toolbar-btn-main">
+              <span class="btn-icon">&#8593;</span> Import
+            </button>
+
+            <input type="file" id="import-file-input" accept="application/json" hidden />
+          </div>
         </section>
         <section>
           <h3>Theme</h3>
@@ -173,7 +179,7 @@
         </section>
         <section>
           <h3>Danger Zone</h3>
-          <p>Permanently erase all saved progress from this browser after multiple confirmations. Auto-cancel after a few seconds. Export a backup first if unsure.</p>
+          <p>Permanently erase all saved progress from this browser (after multiple confirmations). Auto-cancel after a few seconds. Export a backup first if unsure.</p>
           <button id="btn-delete-data" class="delete-data-btn" data-default-label="DELETE DATA">DELETE DATA</button>
         </section>
       </div>
@@ -183,6 +189,8 @@
   <button id="btn-scroll-top" class="scroll-top-btn" aria-label="Scroll to top">&#8593;</button>
 
   <script src="js/constants.js"></script>
+  <script src="js/version.js"></script>
+  <script src="js/update-check.js"></script>
   <script src="js/data/data_generated.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/options.js"></script>

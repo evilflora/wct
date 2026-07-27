@@ -1009,4 +1009,6 @@ CUSTOM_ENTRIES = [
   { uniqueName: "/Lotus/Upgrades/CosmeticEnhancers/Antiques/HeatStatusProcOnUltimateKill", name: "Zid-An Uskos",   category: "Arcanes", type: "tektolyst_artifact" },
 	// missing quest
 	{ uniqueName: "/Lotus/Types/Keys/NewWarIntroQuest/TheMakerKeyChain", name: "The Maker",   category: "Quests", type: null },
+	// plexus
+	{ uniqueName: "RailjackPlexusSegment", name : "Plexus", category: "Vehicle", type: "plexus"}
 ];
