@@ -13,32 +13,43 @@ WF.storage = (function () {
   }
 
   function save(progressMap) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(progressMap));
-    window.dispatchEvent(new CustomEvent("wf:progress-changed"));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(progressMap));
+      window.dispatchEvent(new CustomEvent("wf:progress-changed"));
+    } catch (err) {
+      console.error("Failed to save progress to localStorage.", err);
+    }
   }
 
   function setOwned(itemName, owned) {
     const progress = load();
+    if (!!progress[itemName] === !!owned) return;
     progress[itemName] = owned;
     save(progress);
   }
 
   function setOwnedBulk(itemNames, owned) {
     const progress = load();
-    itemNames.forEach((itemName) => { progress[itemName] = owned; });
-    save(progress);
-  }
+    let hasChanged = false;
 
-  function mergeProgress(incomingMap, mode) {
-    const current = mode === "merge" ? load() : {};
-    Object.assign(current, incomingMap);
-    save(current);
+    itemNames.forEach((itemName) => {
+      if (!!progress[itemName] !== !!owned) {
+        progress[itemName] = owned;
+        hasChanged = true;
+      }
+    });
+
+    if (hasChanged) save(progress);
   }
 
   function clearAll() {
-    localStorage.removeItem(STORAGE_KEY);
-    window.dispatchEvent(new CustomEvent("wf:progress-changed"));
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      window.dispatchEvent(new CustomEvent("wf:progress-changed"));
+    } catch (err) {
+      console.error("Failed to clear progress from localStorage.", err);
+    }
   }
 
-  return { load, save, setOwned, setOwnedBulk, mergeProgress, clearAll, STORAGE_KEY };
+  return { load, save, setOwned, setOwnedBulk, clearAll, STORAGE_KEY };
 })();

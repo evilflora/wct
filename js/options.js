@@ -2,6 +2,7 @@ WF.options = (function () {
   const STORAGE_KEY = "wf_checklist_options";
   const DEFAULTS = {
     includeOptionsInExport: false,
+    includeFounderItems: false,
   };
 
   function load() {
@@ -16,7 +17,11 @@ WF.options = (function () {
   }
 
   function save(optionsMap) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(optionsMap));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(optionsMap));
+    } catch (err) {
+      console.error("Failed to save options to localStorage.", err);
+    }
   }
 
   return { load, save, STORAGE_KEY };

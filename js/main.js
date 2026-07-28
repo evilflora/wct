@@ -1,32 +1,51 @@
 document.addEventListener("DOMContentLoaded", function () {
   WF.theme.init();
+  
+  const SCROLL_SHOW_THRESHOLD = 400;
+  
+  const CONFIRM_STEPS = ["CLICK 4 MORE TIME", "CLICK 3 MORE TIME", "CLICK 2 MORE TIME", "CLICK 1 MORE TIME", "PROCEED TO DELETE"];
+  const DELETE_CONFIRM_TIMEOUT_MS = 2000;
 
-  document.getElementById("btn-export").addEventListener("click", () => {
+  const getEl = (id) => document.getElementById(id);
+
+  const sidebar                = getEl("sidebar");
+  const sidebarOverlay         = getEl("sidebar-overlay");
+  const infoOverlay            = getEl("info-overlay");
+  const statsOverlay           = getEl("stats-overlay");
+  const optionsOverlay         = getEl("options-overlay");
+  const scrollTopBtn           = getEl("btn-scroll-top");
+  const deleteBtn              = getEl("btn-delete-data");
+  const changelogList          = getEl("info-changelog-list");
+  const includeOptionsCheckbox = getEl("opt-include-options-in-export");
+  const includeFounderCheckbox = getEl("opt-include-founder-pack-exclusive");
+	const importFileInput        = getEl("import-file-input");
+  const themeSwatches          = document.querySelectorAll(".theme-swatch");
+
+  const toggleOverlay = (overlay, show) => overlay.classList.toggle("visible", show);
+
+  getEl("btn-export").addEventListener("click", () => {
     WF.exportImport.exportToFile();
   });
 
-  document.getElementById("btn-import").addEventListener("click", () => {
+  getEl("btn-import").addEventListener("click", () => {
     if (!confirm("This will replace your entire current progress with the imported file. Continue?")) return;
-    document.getElementById("import-file-input").click();
+    importFileInput.click();
   });
 
-  document.getElementById("import-file-input").addEventListener("change", function (event) {
+  importFileInput.addEventListener("change", function (event) {
     const file = event.target.files[0];
     if (!file) return;
 
     WF.exportImport.importFromFile(file, function (success) {
       if (success) {
         WF.render.renderAll();
-        WF.theme.init(); // le fichier importé peut contenir des couleurs de thème (si "Save options" était coché à l'export)
+        WF.theme.init();
       } else {
         alert("Invalid file, import canceled.");
       }
       event.target.value = "";
     });
   });
-
-  const scrollTopBtn = document.getElementById("btn-scroll-top");
-  const SCROLL_SHOW_THRESHOLD = 400;
 
   window.addEventListener("scroll", () => {
     scrollTopBtn.classList.toggle("visible", window.scrollY > SCROLL_SHOW_THRESHOLD);
@@ -36,37 +55,29 @@ document.addEventListener("DOMContentLoaded", function () {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
-  const sidebar = document.getElementById("sidebar");
-  const sidebarOverlay = document.getElementById("sidebar-overlay");
-
   function openSidebar() {
     sidebar.classList.add("open");
-    sidebarOverlay.classList.add("visible");
+    toggleOverlay(sidebarOverlay, true);
   }
 
   function closeSidebar() {
     sidebar.classList.remove("open");
-    sidebarOverlay.classList.remove("visible");
+    toggleOverlay(sidebarOverlay, false);
   }
 
-  document.getElementById("btn-sidebar-toggle").addEventListener("click", openSidebar);
-  document.getElementById("btn-sidebar-close").addEventListener("click", closeSidebar);
+  getEl("btn-sidebar-toggle").addEventListener("click", openSidebar);
+  getEl("btn-sidebar-close").addEventListener("click", closeSidebar);
   sidebarOverlay.addEventListener("click", closeSidebar);
 
-  const infoOverlay = document.getElementById("info-overlay");
-
   function openInfo() {
-    infoOverlay.classList.add("visible");
+    toggleOverlay(infoOverlay, true);
   }
 
   function closeInfo() {
-    infoOverlay.classList.remove("visible");
+    toggleOverlay(infoOverlay, false);
     resetDeleteButton();
   }
 
-  const CONFIRM_STEPS = ["CLICK 4 MORE TIME", "CLICK 3 MORE TIME", "CLICK 2 MORE TIME", "CLICK 1 MORE TIME", "PROCEED TO DELETE"];
-  const DELETE_CONFIRM_TIMEOUT_MS = 2000;
-  const deleteBtn = document.getElementById("btn-delete-data");
   let deleteClickCount = 0;
   let deleteResetTimer = null;
 
@@ -77,8 +88,8 @@ document.addEventListener("DOMContentLoaded", function () {
     clearTimeout(deleteResetTimer);
   }
 
-  document.getElementById("btn-info-toggle").addEventListener("click", openInfo);
-  document.getElementById("btn-info-close").addEventListener("click", closeInfo);
+  getEl("btn-info-toggle").addEventListener("click", openInfo);
+  getEl("btn-info-close").addEventListener("click", closeInfo);
 
   deleteBtn.addEventListener("click", () => {
     deleteClickCount++;
@@ -92,7 +103,6 @@ document.addEventListener("DOMContentLoaded", function () {
       location.reload();
       return;
     }
-      
 
     deleteBtn.textContent = CONFIRM_STEPS[deleteClickCount - 1];
     deleteResetTimer = setTimeout(resetDeleteButton, DELETE_CONFIRM_TIMEOUT_MS);
@@ -101,6 +111,11 @@ document.addEventListener("DOMContentLoaded", function () {
   infoOverlay.addEventListener("click", (event) => {
     if (event.target === infoOverlay) closeInfo();
   });
+
+  function closeTypeHelp() {
+    const openHelp = document.querySelector(".type-help.open");
+    if (openHelp) openHelp.classList.remove("open");
+  }
 
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
@@ -111,93 +126,103 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  function closeTypeHelp() {
-    const openHelp = document.querySelector(".type-help.open");
-    if (openHelp) openHelp.classList.remove("open");
-  }
-
   document.addEventListener("click", (event) => {
     const openHelp = document.querySelector(".type-help.open");
     if (openHelp && !openHelp.contains(event.target)) closeTypeHelp();
   });
 
-  document.getElementById("info-project-link-live").href = WF.PROJECT_URL;
-  document.getElementById("info-project-link-src").href = WF.PROJECT_SRC;
-
-  const changelogList = document.getElementById("info-changelog-list");
-  let expandedChangelogIndex = 0;
+  getEl("info-project-link-live").href = WF.PROJECT_URL;
+  getEl("info-project-link-src").href = WF.PROJECT_SRC;
 
   function renderChangelog() {
-    changelogList.innerHTML = "";
+    changelogList.textContent = "";
 
-    if (WF.CHANGELOG.length === 0) {
+    if (!WF.CHANGELOG || WF.CHANGELOG.length === 0) {
       changelogList.innerHTML = '<li class="info-empty">No changelog entries yet.</li>';
       return;
     }
 
+    const fragment = document.createDocumentFragment();
+
     WF.CHANGELOG.forEach((entry, index) => {
       const li = document.createElement("li");
-      li.className = "changelog-entry" + (index === expandedChangelogIndex ? " expanded" : "");
+      li.className = "changelog-entry" + (index === 0 ? " expanded" : "");
 
       const header = document.createElement("button");
       header.type = "button";
       header.className = "changelog-entry-header";
 
       const dateEl = document.createElement("strong");
-      dateEl.textContent = entry.date + ' - Game version: ' + entry.version ;
+      dateEl.textContent = `${entry.date} - Game version: ${entry.version}`;
 
       header.append(dateEl);
-      header.addEventListener("click", () => {
-        expandedChangelogIndex = index;
-        renderChangelog();
-      });
 
       const body = document.createElement("p");
       body.className = "changelog-entry-text";
       body.innerHTML = entry.text;
 
       li.append(header, body);
-      changelogList.appendChild(li);
+      fragment.appendChild(li);
     });
+
+    changelogList.appendChild(fragment);
   }
 
-  renderChangelog();
+  changelogList.addEventListener("click", (event) => {
+    const header = event.target.closest(".changelog-entry-header");
+    if (!header) return;
+    const entry = header.closest(".changelog-entry");
+    const wasExpanded = entry.classList.contains("expanded");
 
-  const statsOverlay = document.getElementById("stats-overlay");
+    changelogList.querySelectorAll(".changelog-entry").forEach((el) => el.classList.remove("expanded"));
+    if (!wasExpanded) entry.classList.add("expanded");
+  });
+
+  renderChangelog();
 
   function openStats() {
     renderStatsTable();
     renderMasteryBreakdown();
-    statsOverlay.classList.add("visible");
+    toggleOverlay(statsOverlay, true);
   }
 
   function closeStats() {
-    statsOverlay.classList.remove("visible");
+    toggleOverlay(statsOverlay, false);
   }
 
-  document.getElementById("btn-stats-toggle").addEventListener("click", openStats);
-  document.getElementById("btn-stats-close").addEventListener("click", closeStats);
+  getEl("btn-stats-toggle").addEventListener("click", openStats);
+  getEl("btn-stats-close").addEventListener("click", closeStats);
 
   statsOverlay.addEventListener("click", (event) => {
     if (event.target === statsOverlay) closeStats();
   });
 
-  document.querySelectorAll(".stats-tab").forEach((tab) => {
-    tab.addEventListener("click", () => {
-      document.querySelectorAll(".stats-tab").forEach((t) => { t.classList.remove("active"); t.setAttribute("aria-selected", "false"); });
-      tab.classList.add("active");
-      tab.setAttribute("aria-selected", "true");
+  const statsTabsContainer = document.querySelector(".stats-tabs") || statsOverlay;
+  statsTabsContainer.addEventListener("click", (event) => {
+    const tab = event.target.closest(".stats-tab");
+    if (!tab) return;
 
-      document.querySelectorAll(".stats-panel").forEach((panel) => panel.classList.remove("active"));
-      document.getElementById(`stats-panel-${tab.dataset.tab}`).classList.add("active");
+    document.querySelectorAll(".stats-tab").forEach((t) => {
+      t.classList.remove("active");
+      t.setAttribute("aria-selected", "false");
     });
+    tab.classList.add("active");
+    tab.setAttribute("aria-selected", "true");
+
+    document.querySelectorAll(".stats-panel").forEach((panel) => panel.classList.remove("active"));
+    const targetPanel = getEl(`stats-panel-${tab.dataset.tab}`);
+    if (targetPanel) targetPanel.classList.add("active");
   });
 
   function renderStatsTable() {
-    const table = document.getElementById("stats-table");
-    table.innerHTML = "<thead><tr><th>Category</th><th>Progress</th><th>%</th></tr></thead>";
+    const table = getEl("stats-table");
+    table.textContent = "";
+
+    const thead = document.createElement("thead");
+    thead.innerHTML = "<tr><th>Category</th><th>Progress</th><th>%</th></tr>";
 
     const tbody = document.createElement("tbody");
+    const fragment = document.createDocumentFragment();
 
     WF.NAV_GROUPS.forEach((group) => {
       const allTypes = [...group.types, ...(group.subgroups || []).flatMap((sg) => sg.types)];
@@ -209,65 +234,57 @@ document.addEventListener("DOMContentLoaded", function () {
         const label = (WF.ITEM_TYPES[type] && WF.ITEM_TYPES[type].label) || type;
 
         const tr = document.createElement("tr");
-        const labelCell = document.createElement("td");
-        labelCell.textContent = label;
-        const progressCell = document.createElement("td");
-        progressCell.textContent = `${stats.owned}/${stats.total}`;
-        const percentCell = document.createElement("td");
-        percentCell.textContent = `${stats.percent}%`;
-
-        tr.append(labelCell, progressCell, percentCell);
-        tbody.appendChild(tr);
+        tr.innerHTML = `<td>${label}</td><td>${stats.owned}/${stats.total}</td><td>${stats.percent}%</td>`;
+        fragment.appendChild(tr);
       });
     });
 
-    table.appendChild(tbody);
+    tbody.appendChild(fragment);
+    table.append(thead, tbody);
   }
+
   function renderMasteryBreakdown() {
-    const container = document.getElementById("mastery-breakdown");
-    container.innerHTML = "";
+    const container = getEl("mastery-breakdown");
+    container.textContent = "";
 
     const groups = WF.mastery.getBreakdown(WF.storage.load());
+    const fragment = document.createDocumentFragment();
 
     groups.forEach((group, groupIndex) => {
       group.forEach((row) => {
         const item = document.createElement("div");
         item.className = "breakdown-item";
         item.innerHTML = `<span class="breakdown-value">${row.xp.toLocaleString()}</span><span class="breakdown-label">${row.label}</span>`;
-        container.appendChild(item);
+        fragment.appendChild(item);
       });
 
-      // Un séparateur entre chaque groupe, jamais après le dernier.
       if (groupIndex < groups.length - 1) {
         const separator = document.createElement("div");
         separator.className = "breakdown-separator";
-        container.appendChild(separator);
+        fragment.appendChild(separator);
       }
     });
+
+    container.appendChild(fragment);
   }
-
-  const optionsOverlay = document.getElementById("options-overlay");
-  const includeOptionsCheckbox = document.getElementById("opt-include-options-in-export");
-  const includeFounderCheckbox = document.getElementById("opt-include-founder-pack-exclusive");
-
-  const themeSwatches = document.querySelectorAll(".theme-swatch");
 
   function openOptions() {
     const options = WF.options.load();
     includeOptionsCheckbox.checked = options.includeOptionsInExport;
     includeFounderCheckbox.checked = options.includeFounderItems;
     themeSwatches.forEach((swatch) => {
-      swatch.querySelector("input[type=color]").value = WF.theme.getColor(swatch.dataset.var);
+      const input = swatch.querySelector("input[type=color]");
+      if (input) input.value = WF.theme.getColor(swatch.dataset.var);
     });
-    optionsOverlay.classList.add("visible");
+    toggleOverlay(optionsOverlay, true);
   }
 
   function closeOptions() {
-    optionsOverlay.classList.remove("visible");
+    toggleOverlay(optionsOverlay, false);
   }
 
-  document.getElementById("btn-options-toggle").addEventListener("click", openOptions);
-  document.getElementById("btn-options-close").addEventListener("click", closeOptions);
+  getEl("btn-options-toggle").addEventListener("click", openOptions);
+  getEl("btn-options-close").addEventListener("click", closeOptions);
 
   optionsOverlay.addEventListener("click", (event) => {
     if (event.target === optionsOverlay) closeOptions();
@@ -284,15 +301,25 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   themeSwatches.forEach((swatch) => {
-    swatch.querySelector("input[type=color]").addEventListener("input", (event) => {
-      WF.theme.setColor(swatch.dataset.var, event.target.value);
-    });
+    const colorInput = swatch.querySelector("input[type=color]");
+    if (colorInput) {
+      const varName = swatch.dataset.var;
+
+      colorInput.addEventListener("input", (event) => {
+        document.documentElement.style.setProperty(varName, event.target.value);
+      });
+
+      colorInput.addEventListener("change", (event) => {
+        WF.theme.setColor(varName, event.target.value);
+      });
+    }
   });
 
-  document.getElementById("btn-theme-reset").addEventListener("click", () => {
+  getEl("btn-theme-reset").addEventListener("click", () => {
     WF.theme.reset();
     themeSwatches.forEach((swatch) => {
-      swatch.querySelector("input[type=color]").value = WF.theme.getColor(swatch.dataset.var);
+      const input = swatch.querySelector("input[type=color]");
+      if (input) input.value = WF.theme.getColor(swatch.dataset.var);
     });
   });
 

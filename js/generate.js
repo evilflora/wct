@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fileStatus.textContent = `Loaded: ${sourceLabel} (${Array.isArray(data) ? data.length : "?"} entries)`;
     fileStatus.classList.remove("error");
 
-    if (WF.generators.length > 0) runGenerator(WF.generators[0]);
+    if (WF.generators && WF.generators.length > 0) runGenerator(WF.generators[0]);
   }
 
   function setLoadError(message) {
@@ -54,12 +54,23 @@ document.addEventListener("DOMContentLoaded", function () {
     output.value = "";
   });
 
-  document.getElementById("btn-copy-output").addEventListener("click", () => {
-    if (!output.value) return; output.select();
+  document.getElementById("btn-copy-output").addEventListener("click", async () => {
+    if (!output.value) return;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      try {
+        await navigator.clipboard.writeText(output.value);
+        return;
+      } catch (err) {
+        // I don't care
+      }
+    }
+
+    output.select();
     try {
       document.execCommand("copy");
     } catch (err) {
-      alert("Copy failed — please select and copy manually.");
+      alert("Copy failed, please select and copy manually.");
     }
     output.setSelectionRange(0, 0);
   });

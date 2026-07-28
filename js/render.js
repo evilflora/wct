@@ -10,9 +10,10 @@ WF.render = (function () {
     return (WF.ITEM_TYPES[type] && WF.ITEM_TYPES[type].label) || type;
   }
 
-  function availableTypes() {
-    const includeFounder = WF.options.load().includeFounderItems;
-    return Object.keys(WF.ITEM_TYPES).filter((type) => WF.data.some((item) => item.type === type && (includeFounder || !item.founder)));
+  function availableTypes(includeFounder) {
+    return Object.keys(WF.ITEM_TYPES).filter((type) =>
+      WF.data.some((item) => item.type === type && (includeFounder || !item.founder))
+    );
   }
 
   function matchesFilterValue(itemValue, targetValue) {
@@ -21,19 +22,23 @@ WF.render = (function () {
   }
 
   function computePercent(items, progress) {
-    if (items.length === 0) return 0;
-    const owned = items.filter((item) => progress[item.item_name]).length;
-    if (owned === items.length) return 100;
-    return Math.floor((owned / items.length) * 100);
+    const total = items.length;
+    if (total === 0) return 0;
+    let owned = 0;
+    for (let i = 0; i < total; i++) {
+      if (progress[items[i].item_name]) owned++;
+    }
+    if (owned === total) return 100;
+    return Math.floor((owned / total) * 100);
   }
 
-  function buildSidebarItem(container, type, progress) {
-    const includeFounder = WF.options.load().includeFounderItems;
+  function buildSidebarItem(container, type, progress, includeFounder) {
     const typeItems = WF.data.filter((item) => item.type === type && (includeFounder || !item.founder));
     const percent = computePercent(typeItems, progress);
 
     const btn = document.createElement("button");
     btn.className = "nav-item" + (type === activeType ? " active" : "");
+    btn.dataset.type = type;
     btn.textContent = `${typeLabel(type)} (${percent}%)`;
     btn.addEventListener("click", () => {
       activeType = type;
@@ -56,13 +61,14 @@ WF.render = (function () {
     }
   }
 
-  function buildSidebar(types, progress) {
+  function buildSidebar(types, progress, includeFounder) {
     const container = document.getElementById("sidebar-groups");
     if (!container) return;
-    container.innerHTML = "";
+    container.textContent = "";
 
     const availableSet = new Set(types);
     const categorizedTypes = new Set();
+    const fragment = document.createDocumentFragment();
 
     WF.NAV_GROUPS.forEach((group) => {
       const groupTypes = group.types.filter((t) => availableSet.has(t));
@@ -79,7 +85,7 @@ WF.render = (function () {
 
       groupTypes.forEach((type) => {
         categorizedTypes.add(type);
-        buildSidebarItem(groupEl, type, progress);
+        buildSidebarItem(groupEl, type, progress, includeFounder);
       });
 
       (group.subgroups || []).forEach((subgroup) => {
@@ -96,13 +102,13 @@ WF.render = (function () {
 
         subTypes.forEach((type) => {
           categorizedTypes.add(type);
-          buildSidebarItem(subEl, type, progress);
+          buildSidebarItem(subEl, type, progress, includeFounder);
         });
 
         groupEl.appendChild(subEl);
       });
 
-      container.appendChild(groupEl);
+      fragment.appendChild(groupEl);
     });
 
     const uncategorized = types.filter((t) => !categorizedTypes.has(t));
@@ -115,9 +121,11 @@ WF.render = (function () {
       label.textContent = "Other";
       groupEl.appendChild(label);
 
-      uncategorized.forEach((type) => buildSidebarItem(groupEl, type, progress));
-      container.appendChild(groupEl);
+      uncategorized.forEach((type) => buildSidebarItem(groupEl, type, progress, includeFounder));
+      fragment.appendChild(groupEl);
     }
+
+    container.appendChild(fragment);
   }
 
   function buildFilterRow(container, options, currentValue, onSelect, poolItems, progress, fieldName) {
@@ -133,6 +141,8 @@ WF.render = (function () {
 
       const pill = document.createElement("button");
       pill.className = "filter-pill" + (value === currentValue ? " active" : "");
+      pill.dataset.field = fieldName;
+      pill.dataset.value = value;
       pill.textContent = `${value === "all" ? "All" : value} (${percent}%)`;
       pill.addEventListener("click", () => {
         onSelect(value);
@@ -146,7 +156,10 @@ WF.render = (function () {
 
   function buildProgressBar(container, items, progress) {
     const total = items.length;
-    const owned = items.filter((item) => progress[item.item_name]).length;
+    let owned = 0;
+    for (let i = 0; i < total; i++) {
+      if (progress[items[i].item_name]) owned++;
+    }
     const percent = computePercent(items, progress);
 
     const wrap = document.createElement("div");
@@ -156,6 +169,56 @@ WF.render = (function () {
       <div class="progress-track"><div class="progress-fill" style="width:${percent}%"></div></div>
     `;
     container.appendChild(wrap);
+  }
+
+  function updateUIFast(currentPoolItems) {
+    const progress = WF.storage.load();
+    const includeFounder = WF.options.load().includeFounderItems;
+
+    const total = currentPoolItems.length;
+    let owned = 0;
+    for (let i = 0; i < total; i++) {
+      if (progress[currentPoolItems[i].item_name]) owned++;
+    }
+    const percent = computePercent(currentPoolItems, progress);
+
+    const label = document.querySelector(".progress-label");
+    const fill = document.querySelector(".progress-fill");
+    if (label) label.textContent = `${owned} / ${total} (${percent}%)`;
+    if (fill) fill.style.width = `${percent}%`;
+
+    const activeNav = document.querySelector(`.nav-item[data-type="${activeType}"]`);
+    if (activeNav) {
+      const typeItems = WF.data.filter((item) => item.type === activeType && (includeFounder || !item.founder));
+      const typePercent = computePercent(typeItems, progress);
+      activeNav.textContent = `${typeLabel(activeType)} (${typePercent}%)`;
+    }
+
+    const typeBase = WF.data.filter((item) => item.type === activeType && (includeFounder || !item.founder));
+    const extraFilters = WF.EXTRA_FILTERS[activeType] || [];
+
+    function getPoolForField(excludeField) {
+      let pool = typeBase;
+      if (excludeField !== "subtype" && activeSubtype !== "all") {
+        pool = pool.filter((item) => matchesFilterValue(item.subtype, activeSubtype));
+      }
+      extraFilters.forEach((extra) => {
+        if (extra.field === excludeField) return;
+        const value = activeExtra[extra.field];
+        if (value && value !== "all") pool = pool.filter((item) => matchesFilterValue(item[extra.field], value));
+      });
+      return pool;
+    }
+
+    const pills = document.querySelectorAll(".filter-pill[data-field][data-value]");
+    pills.forEach((pill) => {
+      const fieldName = pill.dataset.field;
+      const value = pill.dataset.value;
+      const poolItems = getPoolForField(fieldName);
+      const subset = value === "all" ? poolItems : poolItems.filter((item) => matchesFilterValue(item[fieldName], value));
+      const p = computePercent(subset, progress);
+      pill.textContent = `${value === "all" ? "All" : value} (${p}%)`;
+    });
   }
 
   function buildBulkActions(container, visibleItems, progress) {
@@ -228,7 +291,7 @@ WF.render = (function () {
 
     const input = document.createElement("input");
     input.type = "text";
-    input.id = "seach-input";
+    input.id = "search-input";
     input.className = "search-input";
     input.placeholder = "Search visible items...";
     input.value = searchQuery;
@@ -237,7 +300,7 @@ WF.render = (function () {
       searchQuery = event.target.value;
       renderAll();
 
-      const newInput = document.querySelector(".search-input");
+      const newInput = document.getElementById(input.id);
       if (newInput) {
         newInput.focus();
         newInput.setSelectionRange(cursorPos, cursorPos);
@@ -261,17 +324,18 @@ WF.render = (function () {
     container.appendChild(wrap);
   }
 
-  function buildItemList(container, items, progress) {
+  function buildItemList(container, items, progress, currentPoolItems) {
     const list = document.createElement("div");
     list.className = "item-list";
 
     const sortedItems = [...items].sort((a, b) => naturalCompare(a.display_name.en, b.display_name.en));
+    const fragment = document.createDocumentFragment();
 
     sortedItems.forEach((item) => {
       const owned = !!progress[item.item_name];
       const row = document.createElement("label");
       const masteryXp = item.mastery_xp || null;
-      const vaulted   = item.vaulted    || null;
+      const vaulted = item.vaulted || null;
       row.className = "item-row" + (owned ? " owned" : "");
 
       const checkbox = document.createElement("input");
@@ -279,16 +343,24 @@ WF.render = (function () {
       checkbox.className = "item-checkbox-hidden";
       checkbox.checked = owned;
       checkbox.addEventListener("change", () => {
-        WF.storage.setOwned(item.item_name, checkbox.checked);
-        renderAll();
+        const isChecked = checkbox.checked;
+        WF.storage.setOwned(item.item_name, isChecked);
+
+        if (hideChecked && isChecked) {
+          row.remove();
+        } else {
+          row.classList.toggle("owned", isChecked);
+        }
+
+        updateUIFast(currentPoolItems);
       });
 
       const name = document.createElement("span");
       name.className = "item-name";
       name.textContent = item.display_name.en;
-      
+
       row.append(checkbox, name);
-      
+
       if (masteryXp || vaulted) {
         const divInfos = document.createElement("div");
         divInfos.className = "item-infos";
@@ -297,7 +369,7 @@ WF.render = (function () {
           const div = document.createElement("div");
           div.className = "item-info";
           div.setAttribute("data-tooltip", `Vaulted since ${vaulted.toLocaleString()}`);
-          
+
           const text = document.createElement("span");
           text.className = "item-info-text";
           text.textContent = "V";
@@ -319,22 +391,25 @@ WF.render = (function () {
           divInfos.append(div);
         }
 
-        row.append(checkbox, divInfos);
+        row.appendChild(divInfos);
       }
-      
-      list.appendChild(row);
+
+      fragment.appendChild(row);
     });
 
+    list.appendChild(fragment);
     container.appendChild(list);
   }
 
   function renderAll() {
     const root = document.getElementById("app");
-    root.innerHTML = "";
+    root.textContent = "";
 
-    const types = availableTypes();
+    const includeFounder = WF.options.load().includeFounderItems;
+    const types = availableTypes(includeFounder);
+
     if (types.length === 0) {
-      root.innerHTML = '<p class="empty-state">Aucune donnée chargée. Ajoutez un fichier dans js/data/.</p>';
+      root.innerHTML = '<p class="empty-state">No data loaded.</p>';
       return;
     }
 
@@ -343,7 +418,6 @@ WF.render = (function () {
     if (activeType === null || !types.includes(activeType)) activeType = WF.DEFAUT_ACTIVE_TAB;
 
     const extraFilters = WF.EXTRA_FILTERS[activeType] || [];
-    const includeFounder = WF.options.load().includeFounderItems;
     const typeBase = WF.data.filter((item) => item.type === activeType && (includeFounder || !item.founder));
 
     function getFilteredPool(excludeField) {
@@ -362,12 +436,9 @@ WF.render = (function () {
       return pool;
     }
 
-    buildSidebar(types, progress);
+    buildSidebar(types, progress, includeFounder);
 
-    buildFilterRow(root, WF.SUBTYPES[activeType], activeSubtype, (value) => {
-      activeSubtype = value;
-      activeExtra = {};
-    }, getFilteredPool("subtype"), progress, "subtype");
+    buildFilterRow(root, WF.SUBTYPES[activeType], activeSubtype, (value) => { activeSubtype = value; activeExtra = {}; }, getFilteredPool("subtype"), progress, "subtype");
 
     extraFilters.forEach((extra) => {
       const options = extra.optionsBySubtype ? extra.optionsBySubtype[activeSubtype] || null : extra.options;
@@ -376,7 +447,10 @@ WF.render = (function () {
       if (extra.showIf) {
         const dependValue = activeExtra[extra.showIf.field] || "all";
         const matches = dependValue === extra.showIf.value || dependValue === "all";
-        if (!matches) { activeExtra[extra.field] = "all"; return; }
+        if (!matches) {
+          activeExtra[extra.field] = "all";
+          return;
+        }
       }
 
       const currentValue = activeExtra[extra.field] || "all";
@@ -398,7 +472,7 @@ WF.render = (function () {
     buildSearchCluster(actionsRow);
     root.appendChild(actionsRow);
 
-    buildItemList(root, searchedItems, progress);
+    buildItemList(root, searchedItems, progress, items);
     
     WF.uiState.save({ activeType, activeSubtype, activeExtra });
   }
@@ -407,7 +481,10 @@ WF.render = (function () {
     const progress = WF.storage.load();
     const includeFounder = WF.options.load().includeFounderItems;
     const items = WF.data.filter((item) => item.type === type && (includeFounder || !item.founder));
-    const owned = items.filter((item) => progress[item.item_name]).length;
+    let owned = 0;
+    for (let i = 0; i < items.length; i++) {
+      if (progress[items[i].item_name]) owned++;
+    }
     return { owned, total: items.length, percent: computePercent(items, progress) };
   }
 

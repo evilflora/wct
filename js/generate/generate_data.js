@@ -1,3 +1,7 @@
+WF.generators = WF.generators || [];
+
+//
+
 const XP30 = 3000;
 const XP40 = 4000;
 const XP60 = 6000;
@@ -131,10 +135,10 @@ function mapAirSupport(raw) {
 }
 
 function mapArcane(raw) {
-  const itemName    = WF.escapeQuotes(raw.uniqueName);
-  const displayName = WF.escapeQuotes(raw.name);
-  let   rarityField = WF.escapeQuotes(raw.rarity) || NULL;
-  let   typeField   = raw.type ? `${WF.escapeQuotes(raw.type.split(" ")[0])}` : NULL;
+  const itemName    = escapeQuotes(raw.uniqueName);
+  const displayName = escapeQuotes(raw.name);
+  let   rarityField = escapeQuotes(raw.rarity) || NULL;
+  let   typeField   = raw.type ? `${escapeQuotes(raw.type.split(" ")[0])}` : NULL;
   if (typeField == "Bow" || typeField == "Shotgun") typeField = WF.SUBTYPES.arcane[1];
   let   level       = raw.levelStats ? raw.levelStats.length - 1 : 0;
   if (raw.uniqueName.includes("CosmeticEnhancers/Antiques/")) {
@@ -174,8 +178,8 @@ function mapArchweapon(raw, subType) {
 }
 
 function mapFish(raw) {
-  const itemName    = WF.escapeQuotes(raw.uniqueName);
-  const displayName = WF.escapeQuotes(raw.name);
+  const itemName    = escapeQuotes(raw.uniqueName);
+  const displayName = escapeQuotes(raw.name);
   
   let size = WF.SUBTYPES.fish_size[1]; // Small
   let subType = WF.SUBTYPES.fish[0];   // Plain Of Eidolon
@@ -196,7 +200,7 @@ function mapFish(raw) {
 }
 
 function mapFocusSchool(raw) {
-  const schoolField = raw.polarity ? `${WF.escapeQuotes(raw.polarity)}` : NULL;
+  const schoolField = raw.polarity ? `${escapeQuotes(raw.polarity)}` : NULL;
   const schoolAbility = entry(raw, WF.ITEM_TYPES.focusschool.name, schoolField);
   const isWayBoundAbility = FOCUS_WAYBOUND.some(element => raw.uniqueName.endsWith(element));
 
@@ -211,7 +215,7 @@ function mapFocusSchool(raw) {
 
 function mapFragment(raw, subType = null) {
   let category = WF.SUBTYPES.fragment_category[1];
-  if (subType === null) subType = raw.type ? `${WF.escapeQuotes(raw.type)}` : NULL;
+  if (subType === null) subType = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
   
   switch (subType) {
     case WF.SUBTYPES.fragment[6]:
@@ -236,25 +240,25 @@ function mapFramefighter(raw) {
 }
 
 function mapHelminth(raw, subType) {
-  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : NULL;
+  const typeField = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
   //if(subType == WF.SSUBTYPES.helminth[1])
   return [entry(raw, WF.ITEM_TYPES.helminth.name, typeField)];
 }
 
 function mapHonoria(raw) {
-  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : NULL;
+  const typeField = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
   return [entry(raw, WF.ITEM_TYPES.honoria.name, typeField)];
 }
 
 function mapIntrinsic(raw) {
-  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : NULL;
+  const typeField = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
   const category = raw.uniqueName.split('/').pop().replace(/\d+$/, '').toLowerCase();
   return [entry(raw, WF.ITEM_TYPES.intrinsic.name, typeField, { intrinsic_category: category, mastery_xp: 1500 })];
 }
 
 function mapGear(raw) {
   const checker = GEAR_INCLUDE.some(element => raw.uniqueName.includes(element));
-  let typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : NULL;
+  let typeField = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
   
   if (raw.uniqueName.includes("/Restoratives/Upgraded/")) typeField = WF.SUBTYPES.gear[3]; // key
   else if (checker) typeField = WF.SUBTYPES.gear[2]; // fish bait
@@ -287,9 +291,9 @@ function mapMisc(raw) {
 
 function mapMod(raw) { // I know it's a fuc**ng mess
   let typeField = [WF.SUBTYPES.mod[0]];
-  let category = raw.type ? [`${WF.escapeQuotes(raw.type.split(" ")[0])}`] : [NULL];
+  let category = raw.type ? [`${escapeQuotes(raw.type.split(" ")[0])}`] : [NULL];
   let returnValue = [];
-  const rarityField = (WF.escapeQuotes(raw.rarity) || NULL).toLowerCase();
+  const rarityField = (escapeQuotes(raw.rarity) || NULL).toLowerCase();
   
   if (MOD_EXCLUDE_INC.some(element => raw.uniqueName.includes(element)) || 
      (MOD_EXCLUDE_END.some(element => raw.uniqueName.endsWith(element)) && !MOD_DO_NOT_EXCLUDE.some(element => raw.uniqueName.includes(element)))) return [];
@@ -384,7 +388,7 @@ function mapNode(raw) { // 238 normal and SP, but I have 237 and 237 I can't fin
 }
 
 function mapPeelyPix(raw) { 
-	let type = raw.type ? [`${WF.escapeQuotes(raw.type.split(" ")[0])}`] : [NULL];
+	let type = raw.type ? [`${escapeQuotes(raw.type.split(" ")[0])}`] : [NULL];
 	return [entry(raw, WF.ITEM_TYPES.peelypix.name, type)];
 }
 
@@ -445,8 +449,8 @@ function mapArmament(raw) {
 }
 
 function mapRelic(raw) {
-  const itemName = WF.escapeQuotes(raw.uniqueName);
-  const fullName = WF.escapeQuotes(raw.name).split(" ");
+  const itemName = escapeQuotes(raw.uniqueName);
+  const fullName = escapeQuotes(raw.name).split(" ");
   let subType = fullName[0].toLowerCase();
   
    // i can't put this in the GLOBAL_EXCLUDE
@@ -502,7 +506,7 @@ function mapSimulacrum(raw) {
 
 // Skin Mapping
 function mapSkin(raw) {
-  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : NULL;
+  const typeField = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
   
   if (raw.uniqueName.includes("/ShipDecos/TarotCard"))      return mapFragment(raw, WF.SUBTYPES.fragment[6]); // fragment prex
   if (raw.uniqueName.includes("/ShipDecos/CorpusGreed"))    return mapFragment(raw, WF.SUBTYPES.fragment[7]); // fragment tenex
@@ -512,12 +516,12 @@ function mapSkin(raw) {
 }
 
 function mapSomachord(raw) {
-  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : NULL;
+  const typeField = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
   return [entry(raw, WF.ITEM_TYPES.somachord.name, typeField)];
 }
 
 function mapSumdali(raw) {
-  const typeField = raw.type ? `${WF.escapeQuotes(raw.type)}` : NULL;
+  const typeField = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
   return [entry(raw, WF.ITEM_TYPES.sumdali.name, null)];
 }
 
@@ -602,7 +606,7 @@ function mapWeapon(raw, subtype, category) {
 function mapWarframe(raw) {
   if(raw.uniqueName.includes("PowersuitAbilities/Helminth")) return [];
     
-  const productCategory = WF.escapeQuotes(raw.productCategory).toLowerCase();
+  const productCategory = escapeQuotes(raw.productCategory).toLowerCase();
   if (productCategory === "mechsuits") return mapVehicle(raw, WF.SUBTYPES.vehicle[1], XP80); // necramech
   
   let returnValue = [];
@@ -633,13 +637,18 @@ function getIsVaulted(raw) {
 
 function formatFieldValue(value) {
   if (value === null || value === undefined) return NULL;
-  if (Array.isArray(value)) return `[${value.map(v => `"${WF.escapeQuotes(v)}"`).join(", ")}]`;
+  if (Array.isArray(value)) return `[${value.map(v => `"${escapeQuotes(v)}"`).join(", ")}]`;
   if (typeof value === "object") {
-    const entries = Object.entries(value).map(([k, v]) => `${k}: "${WF.escapeQuotes(v)}"`).join(", ");
+    const entries = Object.entries(value).map(([k, v]) => `${k}: "${escapeQuotes(v)}"`).join(", ");
     return `{ ${entries} }`;
   }
-  return `"${WF.escapeQuotes(value)}"`;
+  return `"${escapeQuotes(value)}"`;
 }
+
+function escapeQuotes(value) {
+  return String(value).replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g,'');
+}
+
 
 function entry(raw, type, subtype, extraFields = {}) {
   const fields = { item_name: raw.uniqueName, display_name: { en: raw.name }, type: type, subtype: subtype, ...extraFields };

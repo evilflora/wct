@@ -1,5 +1,5 @@
 function itemMasteryXp(item) {
-  return parseInt(item.mastery_xp) || 0;
+  return +item.mastery_xp || 0;
 }
 
 const MASTERY_BREAKDOWN_GROUPS = [
@@ -18,7 +18,7 @@ const MASTERY_BREAKDOWN_GROUPS = [
   ],
   [
     { label: "Sentinels",               match: (item) => item.type === "companion" && item.subtype === "robotics" && item.companion_category === "sentinel" },
-    { label: "Sentinel Weapons",        match: (item) => item.type === "companion" && item.subtype === "robotics" && item.companion_category.includes("weapon") }, // 120 000 / 150 000
+    { label: "Sentinel Weapons",        match: (item) => item.type === "companion" && item.subtype === "robotics" && item.companion_category.includes("weapon") },
     { label: "Companions",              match: (item) => (item.type === "companion" && item.subtype !== "robotics") || (
                                                           item.type === "companion" && 
                                                           ((item.subtype === "robotics" && item.companion_category === "moa") || 
@@ -44,10 +44,13 @@ WF.mastery = (function () {
   function computeTotalXp(progress) {
     const includeFounder = WF.options.load().includeFounderItems;
     let total = 0;
-    WF.data.forEach((item) => {
-      if (item.founder && !includeFounder) return;
+
+    for (let i = 0; i < WF.data.length; i++) {
+      const item = WF.data[i];
+      if (item.founder && !includeFounder) continue;
       if (progress[item.item_name]) total += itemMasteryXp(item);
-    });
+    }
+
     return total;
   }
 
@@ -74,29 +77,42 @@ WF.mastery = (function () {
   }
 
   function render() {
-    const materyXpBar = document.getElementById("mastery-progress-fill");
-    if (!materyXpBar) return; // pas de zone mastery dans le DOM (ex. generate.html) : rien à faire
+    const masteryXpBar = document.getElementById("mastery-progress-fill");
+    if (!masteryXpBar) return;
 
     const info = getInfo(WF.storage.load());
 
-    materyXpBar.style.width = `${info.percent}%`;
-    document.getElementById("mastery-rank-label").textContent = info.label;
-    document.getElementById("mastery-progress-text").textContent = `Next rank in ${(info.xpToNextRank - info.xpInCurrentRank).toLocaleString()} (${info.xpInCurrentRank.toLocaleString()} / ${info.xpToNextRank.toLocaleString()})`;
-    document.getElementById("mastery-total-text").textContent = `Total : ${info.totalXp.toLocaleString()}`;
+    masteryXpBar.style.width = `${info.percent}%`;
+
+    const labelEl = document.getElementById("mastery-rank-label");
+    const progressTextEl = document.getElementById("mastery-progress-text");
+    const totalTextEl = document.getElementById("mastery-total-text");
+
+    if (labelEl) labelEl.textContent = info.label;
+    if (progressTextEl) {
+      progressTextEl.textContent = `Next rank in ${(info.xpToNextRank - info.xpInCurrentRank).toLocaleString()} (${info.xpInCurrentRank.toLocaleString()} / ${info.xpToNextRank.toLocaleString()})`;
+    }
+    if (totalTextEl) totalTextEl.textContent = `Total : ${info.totalXp.toLocaleString()}`;
   }
 
   function getBreakdown(progress) {
     const includeFounder = WF.options.load().includeFounderItems;
 
-    return MASTERY_BREAKDOWN_GROUPS.map((group) => group.map((row) => {
-      let xp = 0;
-      WF.data.forEach((item) => {
-        if (item.founder && !includeFounder) return;
-        if (!row.match(item)) return;
-        if (progress[item.item_name]) xp += itemMasteryXp(item);
-      });
-      return { label: row.label, xp };
-    }));
+    const ownedItems = WF.data.filter((item) => {
+      if (item.founder && !includeFounder) return false;
+      return !!progress[item.item_name];
+    });
+
+    return MASTERY_BREAKDOWN_GROUPS.map((group) =>
+      group.map((row) => {
+        let xp = 0;
+        for (let i = 0; i < ownedItems.length; i++) {
+          const item = ownedItems[i];
+          if (row.match(item)) xp += itemMasteryXp(item);
+        }
+        return { label: row.label, xp };
+      })
+    );
   }
 
   return { xpRequiredForRank, computeTotalXp, rankForXp, rankLabel, getInfo, render, itemMasteryXp, getBreakdown };

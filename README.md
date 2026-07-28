@@ -57,7 +57,6 @@ If you plan to modify the source code for personal use or to submit a Pull Reque
 - More filters
 - Clarify Railjack MK4 60%
 - Clean up unused resource files and definitions
-- Remove `generatedCustomEntries` and use custom_data.js
 - Calculted percentage in filter are sometimes broken
 - 237 star chart node instead of 238 ? (with filters: normal / normal / all)
 

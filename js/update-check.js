@@ -1,15 +1,15 @@
 WF.updateCheck = (function () {
   const TOAST_DURATION_MS = 3000;
   const LAST_SEEN_KEY = "wf_checklist_last_seen_version";
-  const FILE_NAME = "version.js"
+  const FILE_NAME = "version.js";
 
   function isLocalCopy() {
     return window.location.protocol === "file:";
   }
 
-  function updateMessage(remoteVersion) {
+  function updateMessage() {
     return isLocalCopy()
-      ? `A new version is available, download it from <a id="info-project-link" href="#" target="_blank" rel="noopener noreferrer">GitHub</a>.`
+      ? `A new version is available, download it from <a id="info-project-link" href="${WF.PROJECT_URL}" target="_blank" rel="noopener noreferrer">GitHub</a>.`
       : `A new version is available, refresh this page (Ctrl+F5) to get it.`;
   }
 
@@ -18,10 +18,10 @@ WF.updateCheck = (function () {
     return `${rawBase}js/${FILE_NAME}`;
   }
 
-  function showToast(remoteVersion) {
+  function showToast() {
     const toast = document.createElement("div");
     toast.className = "update-toast";
-    toast.innerHTML = updateMessage(remoteVersion);
+    toast.innerHTML = updateMessage();
     document.body.appendChild(toast);
 
     requestAnimationFrame(() => toast.classList.add("visible"));
@@ -32,41 +32,41 @@ WF.updateCheck = (function () {
     }, TOAST_DURATION_MS);
   }
 
-  function showChangelogNotice(remoteVersion) {
+  function showChangelogNotice() {
     const notice = document.getElementById("update-available-notice");
     if (!notice) return;
-    notice.innerHTML = updateMessage(remoteVersion);
+    notice.innerHTML = updateMessage();
     notice.classList.remove("hidden");
   }
 
   async function check() {
+    const localVersion = Number(WF.WCT_VERSION);
+    if (!localVersion || Number.isNaN(localVersion)) return;
+
     let remoteVersion;
-    let localeVersion = WF.WCT_VERSION;
-    
+
     try {
       const response = await fetch(versionFileUrl());
       if (!response.ok) return;
 
       const text = await response.text();
-      const match = text.match(/WF\.WCT_VERSION\s*=\s*([\d.]+)/);
+      const match = text.match(/WF\.WCT_VERSION\s*=\s*(\d+)/);
       if (!match) return;
 
-      remoteVersion = parseFloat(match[1]);
-
+      remoteVersion = Number(match[1]);
       if (Number.isNaN(remoteVersion)) return;
     } catch (err) {
       return;
     }
-    
-    if (Number.isNaN(localeVersion)) return;
-    if (remoteVersion <= localeVersion) return;
 
-    showChangelogNotice(remoteVersion);
+    if (remoteVersion <= localVersion) return;
 
-    const lastSeenVersion = parseFloat(localStorage.getItem(LAST_SEEN_KEY));
+    showChangelogNotice();
+
+    const lastSeenVersion = Number(localStorage.getItem(LAST_SEEN_KEY));
     if (!Number.isNaN(lastSeenVersion) && lastSeenVersion >= remoteVersion) return;
 
-    showToast(remoteVersion);
+    showToast();
     localStorage.setItem(LAST_SEEN_KEY, String(remoteVersion));
   }
 

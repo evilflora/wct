@@ -190,6 +190,7 @@ WF.PROJECT_SRC = "https://github.com/evilflora/wct";
 WF.PROJECT_URL = "https://evilflora.github.io/wct/";
  
 WF.CHANGELOG = [
+  { date: "2026/07/28 00:00:00", version: "43.0.8", text: `Some refactoring, changes and optimizations. </br>It should work better on mobile, the UI should be better, too. ` },
   { date: "2026/07/27 00:00:00", version: "43.0.8", text: `Moved "import" / "export" to "options". </br>Updated project links to redirect to source code and live versions on GitHub. </br>Added a one-time toast notification if an update is found (if it works). </br>Added a label in "options" if an update is available. </br>The menu is now fixed at the top of the screen. </br>Fixed some scaling issues on mobile (I hope). </br>Fixed some typos from "Condex" to "Codex". </br>Updated project links. </br>Fixed once more "missions" and "the steel path mission" mastery_xp calculation.` },
   { date: "2026/07/26 00:00:00", version: "43.0.8", text: `<!> Selected "honoria", "helminth" and "air support" have been reset due to their uniqueName being changed</br> Fixed broken "armament" filter/generation` },
   { date: "2026/07/25 00:00:00", version: "43.0.8", text: `Added "The Maker" Quest. </br> Added themes color in "Options" </br> Added small icons "V" for "Vaulted" and "XP" for how much mastery this will give. </br> Added "Mastery Breakdown" in "Stats" like ingame in your profile.` },
