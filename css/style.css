@@ -16,6 +16,7 @@
 body {
   margin: 0;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background: var(--bg);
   color: var(--text);
@@ -87,8 +88,7 @@ a { color: var(--accent-color); }
   font-weight: 600;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  padding: 5px 12px;
-  border-radius: 999px;
+  padding: 5px;
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
 }
@@ -215,24 +215,21 @@ a { color: var(--accent-color); }
 .item-info { display: inline-block; position: relative; margin-left: 4px; }
 .item-info-text { font-size: 11px; }
 
-.item-info::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 100%;
-  right: 0;
-  margin-bottom: 6px;
+.global-tooltip {
+  position: fixed;
   padding: 4px 8px;
   background: var(--panel);
   border: 1px solid var(--border, #333);
   font-size: 12px;
   white-space: nowrap;
+  pointer-events: none;
+  z-index: 1000;
   opacity: 0;
   visibility: hidden;
-  pointer-events: none;
-  z-index: 10;
+  transition: opacity 0.1s;
 }
 
-.item-info:hover::after { opacity: 1; visibility: visible; }
+.global-tooltip.visible { opacity: 1; visibility: visible; }
 
 .scroll-top-btn {
   position: fixed;
@@ -285,19 +282,17 @@ a { color: var(--accent-color); }
   min-height: 0; 
   overflow-y: auto;
   align-content: start;
-  padding-bottom: 22px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .item-row {
   display: flex;
   align-items: center;
-  gap: 10px;
   background: var(--panel);
   padding: 10px 12px 10px 9px;
   border-left: 3px solid transparent;
   cursor: pointer;
   content-visibility: auto;
-  contain-intrinsic-size: 0 42px;
 }
 
 .item-row:hover {
@@ -322,7 +317,7 @@ a { color: var(--accent-color); }
   margin: -1px;
   padding: 0;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: rect(0 0 0 0);
   white-space: nowrap;
   border: 0;
 }
@@ -420,12 +415,13 @@ a { color: var(--accent-color); }
 
 .mastery-total-text { margin-left: auto; }
 
-.layout { display: flex; align-items: stretch; height: 100vh; }
+.layout { display: flex; align-items: stretch; height: 100vh; height: 100dvh; }
 
 .content-column {
   flex: 1;
   min-width: 0; 
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -441,17 +437,13 @@ a { color: var(--accent-color); }
   position: sticky;
   top: 0;
   max-height: 100vh;
+  max-height: 100dvh;
   overflow-y: auto;
   padding-bottom: 24px;
 }
 
-html, #sidebar-groups {
-  scrollbar-color: var(--accent-color) var(--panel);
-}
-
 ::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: var(--panel); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: var(--accent-color); }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
 
 .sidebar-header { display: none; }
@@ -511,7 +503,7 @@ html, #sidebar-groups {
   flex: 1;
   min-height: 0;
   min-width: 0; 
-  padding: 22px 32px 0;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -654,6 +646,7 @@ html, #sidebar-groups {
   width: 100%;
   max-width: 560px;
   max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -867,7 +860,8 @@ html, #sidebar-groups {
     left: 0;
     bottom: 0;
     max-height: 100vh;
-    overflow-y: auto; 
+    max-height: 100dvh;
+    overflow-y: auto;
     z-index: 60;
     transform: translateX(-100%);
     transition: transform 0.2s ease;

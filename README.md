@@ -53,15 +53,14 @@ If you plan to modify the source code for personal use or to submit a Pull Reque
 
 ### Planned Features, Enhancements, Fixes & Refactoring
 - Additional challenges tracking
-- Use "https://wiki.warframe.com/w/Public_Export" ?
 - More filters
 - Clarify Railjack MK4 60%
 - Clean up unused resource files and definitions
-- Calculted percentage in filter are sometimes broken
 - 237 star chart node instead of 238 ? (with filters: normal / normal / all)
 
 ### What I can't do for now
 - A symbol "hidden from codex" at the end of an item, data from WFCD does have a field named "excludeFromCodex," but it's not for that.
+- "https://wiki.warframe.com/w/Public_Export" generate CORS error if implemented
 
 ### Things I don't want to do (for now)
 - Add Unlock Mastery Rank for items. If you want to know how to unlock something, please visit the awesome wiki

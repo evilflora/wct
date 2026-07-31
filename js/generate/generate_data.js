@@ -14,7 +14,7 @@ const FOCUS_WAYBOUND         = ["/MoreAmmoFocusUpgrade", "/RegenAmmoFocusUpgrade
 const FOUNDER_EXCLUSIVE      = ["/Powersuits/Excalibur/ExcaliburPrime", "LatoPrime", "SkanaPrime"];
 const GEAR_INCLUDE           = ["LureGearItem", "/FishBait/", "RarityBoost"];
 const GLOBAL_EXCLUDE         = ["/Lotus/Upgrades/Mods/Randomized/Lotus", "/Lotus/Upgrades/Mods/Randomized/Player", "/Lotus/StoreItems/Upgrades/Mods/Randomized",  "/TransmuteCores/", "/Engineering/Base", "CloakPullFocusUpgrade", "DashElectricityFocusUpgrade", "CloakStaticFocusUpgrade", "BlastBurstFocusUpgrade", "DashFireFocusUpgrade", "BlastFireballFocusUpgrade", "DashDamageFocusUpgrade", "ElementalDamageFocusUpgrade", "BlastChargeFocusUpgrade", "CloakBlindFocusUpgrade", "BlastRadiusFocusUpgrade", "ArmourIncreaseFocusUpgrade", "DashReduceDamageFocusUpgrade", "MagneticFieldFocusUpgrade", "DashReduceArmourFocusUpgrade", "BlastDamagePickupFocusUpgrade", "CloakReduceDamageFocusUpgrade", "CloakAllyCloakFocusUpgrade", "ReflectDamageFocusUpgrade", "BlastSelfShieldFocusUpgrade", "BlastDisarmFocusUpgrade", "BlastConfuseFocusUpgrade", "DashFinisherFocusUpgrade", "DashSpeedFocusUpgrade", "CloakRevealFocusUpgrade", "SonarPvPAugmentCard", "CloakMeleeCritFocusUpgrade", "CloakShieldFocusUpgrade", "CloakHealOthersFocusUpgrade", "DashShockwaveFocusUpgrade", "DashWaveFocusUpgrade", "AirborneMeleeAutoTargetBonus", "GroundingMeleeMod", "/Lotus/Upgrades/CosmeticEnhancers/Defensive/PoisonProcResist", "/Lotus/Upgrades/CosmeticEnhancers/Defensive/GasProcResist", "/Lotus/Upgrades/CosmeticEnhancers/Defensive/CorrosiveProcResist", "/Lotus/Upgrades/CosmeticEnhancers/Utility/SlowerBleedOutOnPredeath", "/Lotus/Upgrades/CosmeticEnhancers/Utility/DamageReductionDuringRevive", "/Lotus/Upgrades/CosmeticEnhancers/Utility/NoCostCastChanceAbility", "SiriusOrion/OrionSuit", "/Lotus/Types/Keys/DojoKey", "SolNode254", "SolNode255", "SolNode256", "AvatarResistanceOnDamageMod", "AvatarDamageResistanceLaserExpert", "AvatarDamageResistanceFireExpert", "HealthPickupGivesArmourMax", "AvatarDamageResistanceIceExpert", "AvatarAbilityStrengthModExpert", "AvatarDamageResistanceElectricityExpert", "AvatarShieldRechargeRateModExpert", "AvatarAbilityEfficiencyModExpert", "AvatarDamageToEnergyModExpert", "AvatarParryReflectModExpert", "AvatarDamageResistanceStun", "AvatarAbilityRangeModExpert", "/DangerRoomKey"];
-const NODE_LOCATIONS         = { "SolNode": WF.SUBTYPES.node[0], "ClanNode": WF.SUBTYPES.node[0], "Junction": WF.SUBTYPES.node[0], "SettlementNode": WF.SUBTYPES.node[0], "CrewBattleNode": WF.SUBTYPES.node[1] };
+const NODE_LOCATIONS         = { "SolNode": WF.SUB_TYPES.node.solar, "ClanNode": WF.SUB_TYPES.node.solar, "Junction": WF.SUB_TYPES.node.solar, "SettlementNode": WF.SUB_TYPES.node.solar, "CrewBattleNode": WF.SUB_TYPES.node.empyrean };
 const MOD_BEASTS             = ["beast", "kavat", "kubrow", "predasite", "vulpaphyla", "helminth charger"];
 const MOD_DO_NOT_EXCLUDE     = ["/Lotus/Upgrades/Mods/Melee/Expert/WeaponFireRateModExpert", "/Lotus/Upgrades/Mods/Melee/Expert/WeaponToxinDamageModExpert", "/Lotus/Upgrades/Mods/Melee/Expert/WeaponImpactDamageModExpert", "/Lotus/Upgrades/Mods/Pistol/Expert/WeaponFireDamageModExpert", "Shotgun/Expert/WeaponElectricityDamageModExpert", "Shotgun/Expert/WeaponFreezeDamageModExpert", "Rifle/Expert/WeaponFreezeDamageModExpert", "Mods/Shotgun/Expert/WeaponCritDamageModExpert"];
 const MOD_EXCLUDE_INC        = ["SampleAntiqueUpgrade", "/Railjack/Gunnery/Base", "/Railjack/Piloting/Base", "DamageRandomMod", "RateRandomMod"];
@@ -110,7 +110,7 @@ WF.generators.push({
 });
 
 function mapItem(raw) {
-  const isExcluded = GLOBAL_EXCLUDE.some(element => raw.uniqueName.includes(element)); // sorry, no founder nor weird items
+  const isExcluded = GLOBAL_EXCLUDE.some(element => raw.uniqueName.includes(element)); // sorry, no weird items
   if (isExcluded) return [];
   
   const mapper = CATEGORY_MAPPERS[raw.category] || mapTodo;
@@ -120,7 +120,7 @@ function mapItem(raw) {
 //
 
 function mapTodo(raw) {
-  return [entry(raw, WF.ITEM_TYPES.TODO.name, null, { source_category: raw.category || "unknown" })];
+  return [entry(raw, WF.ITEM_TYPES.TODO.name, NULL, { source_category: raw.category || "unknown" })];
 }
 
 function mapAdversary(raw, subType) {
@@ -131,7 +131,7 @@ function mapAdversary(raw, subType) {
 }
 
 function mapAirSupport(raw) {
-  return [entry(raw, WF.ITEM_TYPES.airsupport.name, null)];
+  return [entry(raw, WF.ITEM_TYPES.airsupport.name, NULL)];
 }
 
 function mapArcane(raw) {
@@ -139,21 +139,17 @@ function mapArcane(raw) {
   const displayName = escapeQuotes(raw.name);
   let   rarityField = escapeQuotes(raw.rarity) || NULL;
   let   typeField   = raw.type ? `${escapeQuotes(raw.type.split(" ")[0])}` : NULL;
-  if (typeField == "Bow" || typeField == "Shotgun") typeField = WF.SUBTYPES.arcane[1];
+  if (typeField == "Bow" || typeField == "Shotgun") typeField = WF.SUB_TYPES.arcane.primary;
   let   level       = raw.levelStats ? raw.levelStats.length - 1 : 0;
-  if (raw.uniqueName.includes("CosmeticEnhancers/Antiques/")) {
-    level = 5;                           // temp fix for custom_data
-    rarityField = WF.SUBTYPES.rarity[3]; // temp fix for custom_data
-  }
   return `\t{ item_name: "${itemName}", display_name: { en: "${displayName} [${level}/${level}]" }, type: "arcane", subtype: "${typeField.toLowerCase()}", rarity: "${rarityField.toLowerCase()}" },`;
 }
 
-function mapArchGun(raw) { return mapArchweapon(raw, WF.SUBTYPES.archweapon[0]); }
-function mapArchMelee(raw) { return mapArchweapon(raw, WF.SUBTYPES.archweapon[1]); }
-function mapArchwing(raw) { return mapVehicle(raw, WF.SUBTYPES.vehicle[0], XP60); }
-function mapArtGallery(raw) { return [entry(raw, WF.ITEM_TYPES.artgallery.name, null)]; }
-function mapChallenge(raw) { return [entry(raw, WF.ITEM_TYPES.challenge.name, null)]; }
-function mapEnemy(raw) { return [entry(raw, WF.ITEM_TYPES.enemy.name, null)]; }
+function mapArchGun(raw) { return mapArchweapon(raw, WF.SUB_TYPES.archweapon.archgun); }
+function mapArchMelee(raw) { return mapArchweapon(raw, WF.SUB_TYPES.archweapon.archmelee); }
+function mapArchwing(raw) { return mapVehicle(raw, WF.SUB_TYPES.vehicle.archwing, XP60); }
+function mapArtGallery(raw) { return [entry(raw, WF.ITEM_TYPES.artgallery.name, NULL)]; }
+function mapChallenge(raw) { return [entry(raw, WF.ITEM_TYPES.challenge.name, NULL)]; }
+function mapEnemy(raw) { return [entry(raw, WF.ITEM_TYPES.enemy.name, NULL)]; }
 
 function mapArchweapon(raw, subType) {
   let xpReward = raw.name.includes("Kuva") ? XP40 : XP30;
@@ -163,14 +159,14 @@ function mapArchweapon(raw, subType) {
   if (raw.tags) {
     // if (raw.tags.includes("Kuva Lich"))  // only 20 out of 21 kuva weapon has this tags so I cant use it, so close to be perfect
     if (raw.uniqueName.startsWith("/Lotus/Weapons/Grineer/") && raw.name.includes("Kuva")) {
-        returnValue.push(mapAdversary(raw, WF.SUBTYPES.adversary[0]));
+        returnValue.push(mapAdversary(raw, WF.SUB_TYPES.adversary.kuva));
     }
     // if (raw.tags.includes("Technocyte")) // only  6 out of 14 coda weapon has this tags so I cant use it
     if (raw.uniqueName.startsWith("/Lotus/Weapons/Infested/") && raw.name.includes("Coda")) {
-        returnValue.push(mapAdversary(raw, WF.SUBTYPES.adversary[2]));
+        returnValue.push(mapAdversary(raw, WF.SUB_TYPES.adversary.coda));
     }
     if (raw.tags.includes("Tenet")) {
-        returnValue.push(mapAdversary(raw, WF.SUBTYPES.adversary[1])); // bingo 16/16 mapped
+        returnValue.push(mapAdversary(raw, WF.SUB_TYPES.adversary.tenet)); // bingo 16/16 mapped
     }
   }
 
@@ -181,20 +177,20 @@ function mapFish(raw) {
   const itemName    = escapeQuotes(raw.uniqueName);
   const displayName = escapeQuotes(raw.name);
   
-  let size = WF.SUBTYPES.fish_size[1]; // Small
-  let subType = WF.SUBTYPES.fish[0];   // Plain Of Eidolon
+  let size = WF.SUB_TYPES.fish_size.small;
+  let subType = WF.SUB_TYPES.fish.poe;
   
-  if (raw.uniqueName.includes("ItemMedium") || raw.uniqueName.includes("MediumItem")) { size = WF.SUBTYPES.fish_size[2]; } // come on DE, :'(
-  else if (raw.uniqueName.includes("ItemLarge") || raw.uniqueName.includes("LargeItem")) { size = WF.SUBTYPES.fish_size[3]; } // come on DE, :'(
+  if (raw.uniqueName.includes("ItemMedium") || raw.uniqueName.includes("MediumItem")) { size = WF.SUB_TYPES.fish_size.medium; } // come on DE, :'(
+  else if (raw.uniqueName.includes("ItemLarge") || raw.uniqueName.includes("LargeItem")) { size = WF.SUB_TYPES.fish_size.large; } // come on DE, :'(
    
-  if (raw.uniqueName.includes("/Fish/Solaris/")) { subType = WF.SUBTYPES.fish[1]; }
-  else if (raw.uniqueName.includes("/Fish/Deimos/")) { subType = WF.SUBTYPES.fish[2]; }
+  if (raw.uniqueName.includes("/Fish/Solaris/")) { subType = WF.SUB_TYPES.fish.ov; }
+  else if (raw.uniqueName.includes("/Fish/Deimos/")) { subType = WF.SUB_TYPES.fish.cd; }
 
   let subName = size;
 
-  if (raw.uniqueName.includes("GrineerBootItem")) { subType = WF.SUBTYPES.fish[0]; subName = "Grineer"; size = WF.SUBTYPES.fish_size[4]; }
-  else if (raw.uniqueName.includes("CorpusBootItem")) { subType = WF.SUBTYPES.fish[1]; subName = "Corpus"; size = WF.SUBTYPES.fish_size[4]; }
-  else if (raw.uniqueName.includes("OrokinBootItem")) { subType = WF.SUBTYPES.fish[2]; subName = "Orokin"; size = WF.SUBTYPES.fish_size[4]; }
+  if (raw.uniqueName.includes("GrineerBootItem")) { subType = WF.SUB_TYPES.fish.poe; subName = "Grineer"; size = WF.SUB_TYPES.fish_size.other; }
+  else if (raw.uniqueName.includes("CorpusBootItem")) { subType = WF.SUB_TYPES.fish.ov; subName = "Corpus"; size = WF.SUB_TYPES.fish_size.other; }
+  else if (raw.uniqueName.includes("OrokinBootItem")) { subType = WF.SUB_TYPES.fish.cd; subName = "Orokin"; size = WF.SUB_TYPES.fish_size.other; }
     
   return `\t{ item_name: "${itemName}", display_name: { en: "${displayName} (${subName})" }, type: "${WF.ITEM_TYPES.fish.name}", subtype: "${subType}", fish_size: "${size}" },`;
 }
@@ -214,18 +210,18 @@ function mapFocusSchool(raw) {
 }
 
 function mapFragment(raw, subType = null) {
-  let category = WF.SUBTYPES.fragment_category[1];
+  let category = WF.SUB_TYPES.fragment_category.warframe;
   if (subType === null) subType = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
   
   switch (subType) {
-    case WF.SUBTYPES.fragment[6]:
-      if (raw.uniqueName.includes("/Emotions/")) category = WF.SUBTYPES.fragment_category[2];
-      else if (raw.uniqueName.includes("Tenno") && !raw.uniqueName.includes("TennoCon")) category = WF.SUBTYPES.fragment_category[0];
-      else if (raw.uniqueName.includes("TennoCon")) category = WF.SUBTYPES.fragment_category[4];
-      else if (raw.uniqueName.endsWith("Heirloom")) category = WF.SUBTYPES.fragment_category[3];
+    case WF.SUB_TYPES.fragment.prex:
+      if (raw.uniqueName.includes("/Emotions/")) category = WF.SUB_TYPES.fragment_category.palladino;
+      else if (raw.uniqueName.includes("Tenno") && !raw.uniqueName.includes("TennoCon")) category = WF.SUB_TYPES.fragment_category.other;
+      else if (raw.uniqueName.includes("TennoCon")) category = WF.SUB_TYPES.fragment_category.deimos;
+      else if (raw.uniqueName.endsWith("Heirloom")) category = WF.SUB_TYPES.fragment_category.heirloom;
       break;
-    case WF.SUBTYPES.fragment[0]:
-    case WF.SUBTYPES.fragment[7]:
+    case WF.SUB_TYPES.fragment.cephalon:
+    case WF.SUB_TYPES.fragment.tenet:
       category = null;
       break;
   }
@@ -241,7 +237,6 @@ function mapFramefighter(raw) {
 
 function mapHelminth(raw, subType) {
   const typeField = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
-  //if(subType == WF.SSUBTYPES.helminth[1])
   return [entry(raw, WF.ITEM_TYPES.helminth.name, typeField)];
 }
 
@@ -260,37 +255,37 @@ function mapGear(raw) {
   const checker = GEAR_INCLUDE.some(element => raw.uniqueName.includes(element));
   let typeField = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
   
-  if (raw.uniqueName.includes("/Restoratives/Upgraded/")) typeField = WF.SUBTYPES.gear[3]; // key
-  else if (checker) typeField = WF.SUBTYPES.gear[2]; // fish bait
+  if (raw.uniqueName.includes("/Restoratives/Upgraded/")) typeField = WF.SUB_TYPES.gear.key;
+  else if (checker) typeField = WF.SUB_TYPES.gear.bait;
   
   return [entry(raw, WF.ITEM_TYPES.gear.name, typeField)];
 }
 
 function mapGlyph(raw) {
-  return [entry(raw, WF.ITEM_TYPES.glyph.name, null)]; // There aren't enough fields in the dataset to add subtypes.
+  return [entry(raw, WF.ITEM_TYPES.glyph.name, null)]; // There aren't enough fields in the dataset to add SUB_TYPES.
 }
 
 function mapMelee(raw) {
-  return mapWeapon(raw, WF.SUBTYPES.weapon[2], null); 
+  return mapWeapon(raw, WF.SUB_TYPES.weapon.melee, null); 
 }
 
 function mapMisc(raw) {
   if (raw.uniqueName.includes("/SUModularSecondarySet1/Barrel/") || raw.uniqueName.includes("/InfKitGun/Barrels/")) {
-    return mapWeapon(raw, WF.SUBTYPES.weapon[1], WF.SUBTYPES.weapon_category[2]); // secondary kitgun
+    return mapWeapon(raw, WF.SUB_TYPES.weapon.secondary, WF.SUB_TYPES.weapon_category.kitgun);
   } else if (raw.uniqueName.includes("/Barrel/SentAmpSet") || raw.uniqueName.includes("/Barrel/CorpAmpSet") || raw.uniqueName.includes("SentAmpTrainingBarrel")) {
-    return mapWeapon(raw, WF.SUBTYPES.weapon[0], WF.SUBTYPES.weapon_category[1]); // primary amp
+    return mapWeapon(raw, WF.SUB_TYPES.weapon.primary, WF.SUB_TYPES.weapon_category.amp);
   } else if (raw.uniqueName.includes("ADeck") || raw.uniqueName.includes("BDeck") || raw.uniqueName.includes("CDeck")) {
-    return mapVehicle(raw, WF.SUBTYPES.vehicle[3], XP60); // k-drive
+    return mapVehicle(raw, WF.SUB_TYPES.vehicle.kdrive, XP60);
   } else if (raw.type && raw.type.startsWith("Captura")) {
     return mapScene(raw);
   } else if (raw.type && raw.type.startsWith("Simulacrum")) {
-		return mapSimulacrum(raw);
-	}
+    return mapSimulacrum(raw);
+  }
   return [];
 }
 
 function mapMod(raw) { // I know it's a fuc**ng mess
-  let typeField = [WF.SUBTYPES.mod[0]];
+  let typeField = [WF.SUB_TYPES.mod.pve];
   let category = raw.type ? [`${escapeQuotes(raw.type.split(" ")[0])}`] : [NULL];
   let returnValue = [];
   const rarityField = (escapeQuotes(raw.rarity) || NULL).toLowerCase();
@@ -299,67 +294,67 @@ function mapMod(raw) { // I know it's a fuc**ng mess
      (MOD_EXCLUDE_END.some(element => raw.uniqueName.endsWith(element)) && !MOD_DO_NOT_EXCLUDE.some(element => raw.uniqueName.includes(element)))) return [];
   if (raw.uniqueName.startsWith("/Lotus/Upgrades/Focus")) return mapFocusSchool(raw);
   
-  if (MOD_PVEVP.some(element => raw.uniqueName.endsWith(element))) typeField.push(WF.SUBTYPES.mod[1]);
-  else if (raw.uniqueName.includes("PvP")) typeField = WF.SUBTYPES.mod[1];
+  if (MOD_PVEVP.some(element => raw.uniqueName.endsWith(element))) typeField.push(WF.SUB_TYPES.mod.pvp);
+  else if (raw.uniqueName.includes("PvP")) typeField = WF.SUB_TYPES.mod.pvp;
   
-  if(MOD_IS_AUGMENT_END.some(element => raw.uniqueName.endsWith(element))) category.push(WF.SUBTYPES.mod_category[2]);
+  if(MOD_IS_AUGMENT_END.some(element => raw.uniqueName.endsWith(element))) category.push(WF.SUB_TYPES.mod_category.augment);
   
   if (raw.compatName)
   {
     const compatLower = raw.compatName.toLowerCase();
 
-    if(raw.uniqueName.includes("/BeastWeapon/") || MOD_IS_MELLE.some(element => raw.uniqueName.endsWith(element))) category = [WF.SUBTYPES.mod_category[5]];
-    else if (raw.uniqueName.startsWith("/Lotus/Upgrades/CosmeticEnhancers/Peculiars")) category.push(WF.SUBTYPES.mod_category[0]);
-    else if(category.includes("Secondary") || MOD_IS_SECONDARY.some(element => compatLower.includes(element))) category = [WF.SUBTYPES.mod_category[4]];
-    else if (category.includes("Shotgun")) category = [WF.SUBTYPES.mod_category[3]];
+    if(raw.uniqueName.includes("/BeastWeapon/") || MOD_IS_MELLE.some(element => raw.uniqueName.endsWith(element))) category = [WF.SUB_TYPES.mod_category.melee];
+    else if (raw.uniqueName.startsWith("/Lotus/Upgrades/CosmeticEnhancers/Peculiars")) category.push(WF.SUB_TYPES.mod_category.warframe);
+    else if(category.includes("Secondary") || MOD_IS_SECONDARY.some(element => compatLower.includes(element))) category = [WF.SUB_TYPES.mod_category.secondary];
+    else if (category.includes("Shotgun")) category = [WF.SUB_TYPES.mod_category.primary];
     else if(category.includes("Warframe") && compatLower.startsWith("melee")) {
       category.shift();
-      category.push(WF.SUBTYPES.mod_category[5]);
+      category.push(WF.SUB_TYPES.mod_category.melee);
     }
-    else if(category.includes("Posture") || category.includes("Stance"))      category = [WF.SUBTYPES.mod_category[6]];
+    else if(category.includes("Posture") || category.includes("Stance"))      category = [WF.SUB_TYPES.mod_category.stance];
     else
     {
       if (MOD_BEASTS.some(element => compatLower.includes(element))) {
         if(raw.uniqueName.endsWith("KubrowMechaOverdriveMod") || raw.uniqueName.endsWith("CatbrowSwipePrecept")) // I need to find a more elegant way :/
-          category = [WF.SUBTYPES.mod_category[5]];
+          category = [WF.SUB_TYPES.mod_category.melee];
         else
-          category = [WF.SUBTYPES.mod_category[12]];
+          category = [WF.SUB_TYPES.mod_category.beast];
       }
-           if (MOD_ROBOTS.some(element => compatLower.includes(element)))   category = [WF.SUBTYPES.mod_category[11]];
-      else if (MOD_VEHICLES.some(element => compatLower.includes(element))) category = [WF.SUBTYPES.mod_category[8]];
-      else if (raw.compatName.startsWith("Parazon"))   category = [WF.SUBTYPES.mod_category[15]];
-      else if (raw.compatName.startsWith("COMPANION")) category = [WF.SUBTYPES.mod_category[12], WF.SUBTYPES.mod_category[11]];
-      else if (raw.compatName.startsWith("Archmelee")) category = [WF.SUBTYPES.mod_category[10]];
-      else if (raw.compatName.startsWith("Archgun"))   category = [WF.SUBTYPES.mod_category[9]];
-      else if (raw.compatName.startsWith("AURA"))      category.push(WF.SUBTYPES.mod_category[1]);
+           if (MOD_ROBOTS.some(element => compatLower.includes(element)))   category = [WF.SUB_TYPES.mod_category.robotic];
+      else if (MOD_VEHICLES.some(element => compatLower.includes(element))) category = [WF.SUB_TYPES.mod_category.vehicle];
+      else if (raw.compatName.startsWith("Parazon"))   category = [WF.SUB_TYPES.mod_category.parazon];
+      else if (raw.compatName.startsWith("COMPANION")) category = [WF.SUB_TYPES.mod_category.beast, WF.SUB_TYPES.mod_category.robotic];
+      else if (raw.compatName.startsWith("Archmelee")) category = [WF.SUB_TYPES.mod_category.archmelee];
+      else if (raw.compatName.startsWith("Archgun"))   category = [WF.SUB_TYPES.mod_category.archgun];
+      else if (raw.compatName.startsWith("AURA"))      category.push(WF.SUB_TYPES.mod_category.aura);
       else if (raw.uniqueName.includes("/Randomized/"))
       {
-             if (raw.compatName.includes("Companion"))         category = [WF.SUBTYPES.mod_category[12], WF.SUBTYPES.mod_category[11]]; // I'm note sure, also "robotic" and "beast" codex tab does not contain any riven but are shown in "all"
-        else if (category.includes("Zaw"))                     category = [WF.SUBTYPES.mod_category[5]];
-        else if (category.includes("Kitgun"))                  category = [WF.SUBTYPES.mod_category[4]];
-        else if (raw.compatName.includes("Rifle"))             category = [WF.SUBTYPES.mod_category[3]];
-        else if (raw.compatName.includes("Shotgun"))           category = [WF.SUBTYPES.mod_category[3]];
+             if (raw.compatName.includes("Companion"))         category = [WF.SUB_TYPES.mod_category.beast, WF.SUB_TYPES.mod_category.robotic]; // I'm note sure, also "robotic" and "beast" codex tab does not contain any riven but are shown in "all"
+        else if (category.includes("Zaw"))                     category = [WF.SUB_TYPES.mod_category.melee];
+        else if (category.includes("Kitgun"))                  category = [WF.SUB_TYPES.mod_category.secondary];
+        else if (raw.compatName.includes("Rifle"))             category = [WF.SUB_TYPES.mod_category.primary];
+        else if (raw.compatName.includes("Shotgun"))           category = [WF.SUB_TYPES.mod_category.primary];
       }
     }
   }
   
-  if (raw.isUtility) category.push(WF.SUBTYPES.mod_category[7]);
+  if (raw.isUtility) category.push(WF.SUB_TYPES.mod_category.exilus);
   
-  if (category[0] === "Tektolyst") category = WF.SUBTYPES.mod_category[14];
+  if (category[0] === "Tektolyst") category = WF.SUB_TYPES.mod_category.antique;
   if (category[0] === "Plexus") {
-    category = [WF.SUBTYPES.mod_category[13]];
-    if(raw.uniqueName.endsWith("Matrix") || raw.uniqueName.endsWith("MatrixAura")) category.push(WF.SUBTYPES.mod_category[1]);
+    category = [WF.SUB_TYPES.mod_category.railjack];
+    if(raw.uniqueName.endsWith("Matrix") || raw.uniqueName.endsWith("MatrixAura")) category.push(WF.SUB_TYPES.mod_category.aura);
   }
   
   if (raw.uniqueName.startsWith("/Lotus/Upgrades/Grimoire/")) {
-      if (raw.uniqueName.endsWith("AuraMod"))        category = [WF.SUBTYPES.mod_category[7], WF.SUBTYPES.mod_category[16]];
-      else if (raw.uniqueName.endsWith("StrikeMod")) category = [WF.SUBTYPES.mod_category[16]];
+      if (raw.uniqueName.endsWith("AuraMod"))        category = [WF.SUB_TYPES.mod_category.exilus, WF.SUB_TYPES.mod_category.tome];
+      else if (raw.uniqueName.endsWith("StrikeMod")) category = [WF.SUB_TYPES.mod_category.tome];
   }
   
   if(MOD_IS_ATAGRAPH.some(element => raw.uniqueName.endsWith(element)))
   {
     const atagraph = { ...raw, uniqueName: `${raw.uniqueName}Atagraph`, name: `${raw.name}` };
-    returnValue.push(entry(atagraph, WF.ITEM_TYPES.mod.name, typeField, { mod_category: WF.SUBTYPES.mod_category[17], rarity: rarityField }))
+    returnValue.push(entry(atagraph, WF.ITEM_TYPES.mod.name, typeField, { mod_category: WF.SUB_TYPES.mod_category.atagraph, rarity: rarityField }))
   }
   
   returnValue.push(entry(raw, WF.ITEM_TYPES.mod.name, typeField, { mod_category: category, rarity: rarityField }))
@@ -369,27 +364,27 @@ function mapMod(raw) { // I know it's a fuc**ng mess
 
 function mapNode(raw) { // 238 normal and SP, but I have 237 and 237 I can't find why
   const match = Object.entries(NODE_LOCATIONS).find(([prefix]) => raw.uniqueName.includes(prefix));
-	let system = match ? match[1] : NULL;
+  let system = match ? match[1] : NULL;
   const spRaw = { ...raw, uniqueName: `${raw.uniqueName}SP`, name: `${raw.name} (SP)` };
   let planetField = raw.systemName ? raw.systemName.toLowerCase() : null;
   let returnValue = [];
   let xpReward = NODE_MAPPING[raw.uniqueName] || 0;
   
-  if (planetField && planetField.includes(WF.SUBTYPES.node_solar[21])) {
-    planetField = WF.SUBTYPES.node_solar[21];
+  if (planetField && planetField.includes(WF.SUB_TYPES.node_solar.dark)) {
+    planetField = WF.SUB_TYPES.node_solar.dark;
   }
   
   if (raw.uniqueName.includes("Junction")) xpReward = 1000;
 
-  returnValue.push(entry(raw  , WF.ITEM_TYPES.node.name, system, { node_solar: planetField, node_difficulty: WF.SUBTYPES.node_difficulty[0], ...(xpReward && { mastery_xp: xpReward }) }));
-  returnValue.push(entry(spRaw, WF.ITEM_TYPES.node.name, system, { node_solar: planetField, node_difficulty: WF.SUBTYPES.node_difficulty[1], ...(xpReward && { mastery_xp: xpReward }) }));
+  returnValue.push(entry(raw  , WF.ITEM_TYPES.node.name, system, { node_solar: planetField, node_difficulty: WF.SUB_TYPES.node_difficulty.normal, ...(xpReward && { mastery_xp: xpReward }) }));
+  returnValue.push(entry(spRaw, WF.ITEM_TYPES.node.name, system, { node_solar: planetField, node_difficulty: WF.SUB_TYPES.node_difficulty.steel, ...(xpReward && { mastery_xp: xpReward }) }));
 
   return returnValue;
 }
 
 function mapPeelyPix(raw) { 
-	let type = raw.type ? [`${escapeQuotes(raw.type.split(" ")[0])}`] : [NULL];
-	return [entry(raw, WF.ITEM_TYPES.peelypix.name, type)];
+  let type = raw.type ? [`${escapeQuotes(raw.type.split(" ")[0])}`] : [NULL];
+  return [entry(raw, WF.ITEM_TYPES.peelypix.name, type)];
 }
 
 function mapPet(raw) {
@@ -397,36 +392,36 @@ function mapPet(raw) {
   let subtype  = null;
   
   if (raw.uniqueName.endsWith("ChargerKubrowPetPowerSuit")) {
-    subtype = WF.SUBTYPES.companion[1]; 
-    category = WF.SUBTYPES.companion_category[3]; // deimos kubrow
+    subtype = WF.SUB_TYPES.companion.beast; 
+    category = WF.SUB_TYPES.companion_category.kubrow;
   } 
   else if(raw.uniqueName.endsWith("KhoraKavatPowerSuit") || raw.uniqueName.endsWith("KhoraPrimeKavatPowerSuit")) {
-    subtype = WF.SUBTYPES.companion[1];
-    category = WF.SUBTYPES.companion_category[4]; // beast    kavat
+    subtype = WF.SUB_TYPES.companion.beast;
+    category = WF.SUB_TYPES.companion_category.kavat;
   }
   else
   {
-    const companionName = ((raw.name.split(" ")[1]) || NULL).toLowerCase();
-    switch (companionName) {
-      case WF.SUBTYPES.companion_category[1] : subtype = WF.SUBTYPES.companion[0]; category = WF.SUBTYPES.companion_category[1]; break; // robotics moa
-      case WF.SUBTYPES.companion_category[2] : subtype = WF.SUBTYPES.companion[0]; category = WF.SUBTYPES.companion_category[2]; break; // robotics hound
-      case WF.SUBTYPES.companion_category[3] : subtype = WF.SUBTYPES.companion[1]; category = WF.SUBTYPES.companion_category[3]; break; // beast    kubrow
-      case WF.SUBTYPES.companion_category[4] : subtype = WF.SUBTYPES.companion[1]; category = WF.SUBTYPES.companion_category[4]; break; // beast    kavat
-      case WF.SUBTYPES.companion_category[5] : subtype = WF.SUBTYPES.companion[2]; category = WF.SUBTYPES.companion_category[5]; break; // deimos   predasite
-      case WF.SUBTYPES.companion_category[6] : subtype = WF.SUBTYPES.companion[2]; category = WF.SUBTYPES.companion_category[6]; break; // deimos   vulpaphyla
+    category = ((raw.name.split(" ")[1]) || NULL).toLowerCase();
+    switch (category) {
+      case WF.SUB_TYPES.companion_category.moa        : subtype = WF.SUB_TYPES.companion.robotic; break;
+      case WF.SUB_TYPES.companion_category.hound      : subtype = WF.SUB_TYPES.companion.robotic; break;
+      case WF.SUB_TYPES.companion_category.kubrow     : subtype = WF.SUB_TYPES.companion.beast;   break;
+      case WF.SUB_TYPES.companion_category.kavat      : subtype = WF.SUB_TYPES.companion.beast;   break;
+      case WF.SUB_TYPES.companion_category.predasite  : subtype = WF.SUB_TYPES.companion.deimos;  break;
+      case WF.SUB_TYPES.companion_category.vulpaphyla : subtype = WF.SUB_TYPES.companion.deimos;  break;
       default: return [];
     }
   }
   return [entry(raw, WF.ITEM_TYPES.companion.name, subtype, { companion_category: category, mastery_xp: XP60 })];
 }
 
-function mapPrimary(raw) { return mapWeapon(raw, WF.SUBTYPES.weapon[0], null); }
+function mapPrimary(raw) { return mapWeapon(raw, WF.SUB_TYPES.weapon.primary, null); }
 
 function mapQuest(raw) {
-  let category = WF.SUBTYPES.quest[0];
+  let category = WF.SUB_TYPES.quest.main;
   
-  if (QUEST_SIDE.some(element => raw.uniqueName.includes(element))) category = WF.SUBTYPES.quest[1];
-  if (QUEST_WARFRAME.some(element => raw.uniqueName.includes(element))) category = WF.SUBTYPES.quest[2];
+  if (QUEST_SIDE.some(element => raw.uniqueName.includes(element))) category = WF.SUB_TYPES.quest.side;
+  if (QUEST_WARFRAME.some(element => raw.uniqueName.includes(element))) category = WF.SUB_TYPES.quest.warframe;
   
   return [entry(raw, WF.ITEM_TYPES.quest.name, category)];
 }
@@ -434,17 +429,17 @@ function mapQuest(raw) {
 function mapArmament(raw) {
   const foundIndex = RAILJACK_TIERS.findIndex(tier => raw.uniqueName.endsWith(tier));
   const indexTier = foundIndex === -1 ? 0 : 1; // old method => 0 : foundIndex + 1;
-	
-	if(indexTier > 0 && RAILJACK_EXCLUDE.findIndex(tier => raw.uniqueName.endsWith(tier)) >= 0) return [];
-	
-  const typeField = WF.SUBTYPES.armament[indexTier];
-	
+  
+  if(indexTier > 0 && RAILJACK_EXCLUDE.findIndex(tier => raw.uniqueName.endsWith(tier)) >= 0) return [];
+  
+  const typeField = Object.values(WF.SUB_TYPES.armament)[indexTier];
+  
   if(indexTier > 0) { // fix mk tier, Mk Iii => Mk III
-		let words = raw.name.split(" ");
-		words[words.length - 1] = words[words.length - 1].toUpperCase();
-		raw.name = words.join(" ");
+    let words = raw.name.split(" ");
+    words[words.length - 1] = words[words.length - 1].toUpperCase();
+    raw.name = words.join(" ");
   }
-	
+  
   return [entry(raw, WF.ITEM_TYPES.armament.name, typeField)];
 }
 
@@ -456,8 +451,8 @@ function mapRelic(raw) {
    // i can't put this in the GLOBAL_EXCLUDE
   if(RECLIC_EXCLUDE_END.some(element => itemName.endsWith(element))) return [];
   
-  if (subType === WF.SUBTYPES.relic_vanguard[0]) {
-     subType = WF.SUBTYPES.relic[3];
+  if (subType === WF.SUB_TYPES.relic_vanguard.vanguard) {
+     subType = WF.SUB_TYPES.relic.axi;
   }
   
   let rank = fullName[2] || NULL;
@@ -466,12 +461,14 @@ function mapRelic(raw) {
   let displayName = `${fullName[0]} ${fullName[1]}`;
 
   if (rank !== NULL && rank !== "Relic") { displayName += ` (${rank})`; }
-  else { rank = WF.SUBTYPES.relic_rank[2]; }
+  else { rank = WF.SUB_TYPES.relic_rank.other; }
   
   rank = rank.toLowerCase();
-  if (!WF.SUBTYPES.relic_rank.some(element => rank.includes(element))) return [];
+  if (!Object.values(WF.SUB_TYPES.relic_rank).some((element) => rank.includes(element))) return [];
 
-  return `\t{ item_name: "${itemName}", display_name: { en: "${displayName}" }, type: "${WF.ITEM_TYPES.relic.name}", subtype: "${subType}", relic_rank: "${rank}" },`;
+  raw.name = displayName;
+
+  return [entry(raw, WF.ITEM_TYPES.relic.name, subType, { relic_rank: rank })];
 }
 
 function mapResource(raw) { 
@@ -479,20 +476,20 @@ function mapResource(raw) {
 }
 
 function mapScene(raw) {
-	if(raw.uniqueName.endsWith("/Lotus/Types/Items/MiscItems/PhotoboothTile")) return [];
+  if(raw.uniqueName.endsWith("/Lotus/Types/Items/MiscItems/PhotoboothTile")) return [];
   return [entry(raw, WF.ITEM_TYPES.scene.name, null)]
 }
 
 function mapSecondary(raw) {
-  return mapWeapon(raw, WF.SUBTYPES.weapon[1], null);
+  return mapWeapon(raw, WF.SUB_TYPES.weapon.secondary, null);
 }
 
 function mapSentinel(raw, category, xpReward) {
   const rank      = getIsPrime(raw);
   const isVaulted = getIsVaulted(raw);
-  if(!category) category = WF.SUBTYPES.companion_category[0];
+  if(!category) category = WF.SUB_TYPES.companion_category.sentinel;
   if(!xpReward) xpReward = XP60;
-  return [entry(raw, WF.ITEM_TYPES.companion.name, WF.SUBTYPES.companion[0], { companion_category: category, companion_rank: rank, mastery_xp: xpReward, ...(isVaulted && { vaulted: isVaulted }) })];
+  return [entry(raw, WF.ITEM_TYPES.companion.name, WF.SUB_TYPES.companion.robotic, { companion_category: category, rank: rank, mastery_xp: xpReward, ...(isVaulted && { vaulted: isVaulted }) })];
 }
 
 function mapSigil(raw) {
@@ -500,18 +497,26 @@ function mapSigil(raw) {
 }
 
 function mapSimulacrum(raw) {
-	if(raw.uniqueName.endsWith("DangerRoomTile")) return []; // we can't put this in the GLOBAL_EXCLUDE, it'll remove all of them
-	return [entry(raw, WF.ITEM_TYPES.simulacrum.name, null)];
+  if(raw.uniqueName.endsWith("DangerRoomTile")) return []; // we can't put this in the GLOBAL_EXCLUDE, it'll remove all of them
+  return [entry(raw, WF.ITEM_TYPES.simulacrum.name, null)];
 }
 
 // Skin Mapping
 function mapSkin(raw) {
-  const typeField = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
+  let typeField = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
   
-  if (raw.uniqueName.includes("/ShipDecos/TarotCard"))      return mapFragment(raw, WF.SUBTYPES.fragment[6]); // fragment prex
-  if (raw.uniqueName.includes("/ShipDecos/CorpusGreed"))    return mapFragment(raw, WF.SUBTYPES.fragment[7]); // fragment tenex
-  if (raw.uniqueName.includes("/Lotus/Types/Items/Titles")) return [];                                        // ignore data incomplet, don't put this in GLOBAL_EXCLUDE
-  if (raw.uniqueName.includes("HoodOrnament"))              return mapSumdali(raw);                           // fragment prex
+       if (raw.uniqueName.includes("/ShipDecos/TarotCard"))      return mapFragment(raw, WF.SUB_TYPES.fragment.prex);
+  else if (raw.uniqueName.includes("/ShipDecos/CorpusGreed"))    return mapFragment(raw, WF.SUB_TYPES.fragment.tenet);
+  else if (raw.uniqueName.includes("/Lotus/Types/Items/Titles")) return [];              // ignore data incomplet, don't put this in GLOBAL_EXCLUDE
+  else if (raw.uniqueName.includes("HoodOrnament"))              return mapSumdali(raw); // fragment prex
+  else if (raw.uniqueName.endsWith("Syandana") || raw.uniqueName.includes("/Scarves/")) typeField = WF.SUB_TYPES.skin.syandana;
+  else if (raw.uniqueName.startsWith("/Lotus/Upgrades/Skins/Clan")) typeField = WF.SUB_TYPES.skin.emblem;
+  else if (raw.name.includes("Poster"))                             typeField = WF.SUB_TYPES.skin.poster;
+  else if (raw.name.includes("Floof"))                              typeField = WF.SUB_TYPES.skin.floof;
+  else if (raw.name.includes("Ephemera"))                           typeField = WF.SUB_TYPES.skin.ephemera;
+  else if (raw.name.includes("Drone"))                              typeField = WF.SUB_TYPES.skin.drone;
+  else if (raw.name.includes("Signa"))                              typeField = WF.SUB_TYPES.skin.signa;
+  
   return [entry(raw, WF.ITEM_TYPES.skin.name, typeField)];
 }
 
@@ -526,7 +531,7 @@ function mapSumdali(raw) {
 }
 
 function mapVehicle(raw, subtype, masteryxp) {
-  if(raw.uniqueName.includes("RailjackPlexusSegment")) { subtype = WF.SUBTYPES.vehicle[2]; masteryxp = XP60;}
+  if(raw.uniqueName.includes("RailjackPlexusSegment")) { subtype = WF.SUB_TYPES.vehicle.plexus; masteryxp = XP60;}
   return [entry(raw, WF.ITEM_TYPES.vehicle.name, subtype, { mastery_xp: masteryxp })];
 }
 
@@ -544,49 +549,49 @@ function mapWeapon(raw, subtype, category) {
   
   if (category == null) {
     if (raw.uniqueName.includes("/SentinelWeapons/")) {
-      return mapSentinel(raw, WF.SUBTYPES.companion_category[7], XP30); // robotic  normal
+      return mapSentinel(raw, WF.SUB_TYPES.companion_category.sentinel_weapon, XP30);
     } else if (raw.uniqueName.includes("Pets/ZanukaPets")) {
-      return mapSentinel(raw, WF.SUBTYPES.companion_category[9], XP30); // robotic moa
+      return mapSentinel(raw, WF.SUB_TYPES.companion_category.hound_weapon, XP30);
     }  else if (raw.uniqueName.includes("/MoaPets/MoaPetComponents/")) {
-      return mapSentinel(raw, WF.SUBTYPES.companion_category[8], XP30); // robotic hound
+      return mapSentinel(raw, WF.SUB_TYPES.companion_category.moa_weapon, XP30);
     }  else if (raw.uniqueName.includes("/Melee/Modular")) { 
-      subtype = WF.SUBTYPES.weapon[2]; 
-      category = WF.SUBTYPES.weapon_category[3];                        // melee     zaw
+      subtype = WF.SUB_TYPES.weapon.melee; 
+      category = WF.SUB_TYPES.weapon_category.zaw;
     } else if (raw.uniqueName.includes("/InfKitGun/Barrels/") || raw.uniqueName.includes("/SUModularSecondarySet1/Barrel/")) { 
-      subtype = WF.SUBTYPES.weapon[1]; 
-      category = WF.SUBTYPES.weapon_category[2];                        // secondary kitgun
+      subtype = WF.SUB_TYPES.weapon.secondary; 
+      category = WF.SUB_TYPES.weapon_category.kitgun;
     } else if (raw.uniqueName.includes("DrifterPistolPlayerWeapon")) { 
-      subtype = WF.SUBTYPES.weapon[0]; 
-      category = WF.SUBTYPES.weapon_category[1];                        // primary   amp
+      subtype = WF.SUB_TYPES.weapon.primary; 
+      category = WF.SUB_TYPES.weapon_category.amp;
     } else  { 
-      category = WF.SUBTYPES.weapon_category[0];                        // primary   normal
+      category = WF.SUB_TYPES.weapon_category.normal;
     }
   }
   
   if (raw.tags)
   {
     // if (raw.tags.includes("Kuva Lich"))  // only 20 out of 21 kuva weapon has this tags so I cant use it, so close to be perfect
-    if (raw.uniqueName.startsWith("/Lotus/Weapons/Grineer/") && raw.name.toLowerCase().includes(WF.SUBTYPES.adversary[0]))
+    if (raw.uniqueName.startsWith("/Lotus/Weapons/Grineer/") && raw.name.toLowerCase().includes(WF.SUB_TYPES.adversary.kuva))
     {
       xpReward = XP40;
-      returnValue.push(mapAdversary(raw, WF.SUBTYPES.adversary[0]));
+      returnValue.push(mapAdversary(raw, WF.SUB_TYPES.adversary.kuva));
     }
 
-		if (raw.tags.some(tag => tag.toLowerCase().includes(WF.SUBTYPES.adversary[1])))// bingo 16 out 16 mapped
+    if (raw.tags.some(tag => tag.toLowerCase().includes(WF.SUB_TYPES.adversary.tenet)))// bingo 16 out 16 mapped
     {
       xpReward = XP40;
-      returnValue.push(mapAdversary(raw, WF.SUBTYPES.adversary[1]));
+      returnValue.push(mapAdversary(raw, WF.SUB_TYPES.adversary.tenet));
     }
 
     // if (raw.tags.includes("Technocyte")) // only  6 out of 14 coda weapon has this tags so I cant use it
-    if (raw.uniqueName.startsWith("/Lotus/Weapons/Infested/") && raw.name.toLowerCase().includes(WF.SUBTYPES.adversary[2]))
+    if (raw.uniqueName.startsWith("/Lotus/Weapons/Infested/") && raw.name.toLowerCase().includes(WF.SUB_TYPES.adversary.coda))
     {
       xpReward = XP40;
-      returnValue.push(mapAdversary(raw, WF.SUBTYPES.adversary[2]));
+      returnValue.push(mapAdversary(raw, WF.SUB_TYPES.adversary.coda));
     }
   }
   
-  returnValue.push(entry(raw, WF.ITEM_TYPES.weapon.name, subtype, { weapon_category: category, weapon_rank: rank, mastery_xp: xpReward, ...(isFounder && { founder: isFounder }), ...(isVaulted && { vaulted: isVaulted }) }));
+  returnValue.push(entry(raw, WF.ITEM_TYPES.weapon.name, subtype, { weapon_category: category, rank: rank, mastery_xp: xpReward, ...(isFounder && { founder: isFounder }), ...(isVaulted && { vaulted: isVaulted }) }));
   
   const hasIncarnonAttack = raw.attacks?.some(({ name }) => WEAPON_INCARNON_FILTER.some(prefix => name.startsWith(prefix)));
   const isIncarnonWeapon = WEAPON_INCARNON.some(element => raw.uniqueName.endsWith(element));
@@ -595,7 +600,7 @@ function mapWeapon(raw, subtype, category) {
       const isFiveEvolution = WEAPON_FIVE_EVOLUTION.some(element => raw.uniqueName.endsWith(element));
       raw.uniqueName += "Incarnon";
       raw.name += isFiveEvolution ? " (5/5)" : " (4/4)";
-      subtype = isFiveEvolution ? WF.SUBTYPES.incarnon[1] : WF.SUBTYPES.incarnon[0];
+      subtype = isFiveEvolution ? WF.SUB_TYPES.incarnon.five : WF.SUB_TYPES.incarnon.four;
       
       returnValue.push(entry(raw, WF.ITEM_TYPES.incarnon.name, subtype, { ...(isFounder && { founder: isFounder }) }));
   }
@@ -607,7 +612,7 @@ function mapWarframe(raw) {
   if(raw.uniqueName.includes("PowersuitAbilities/Helminth")) return [];
     
   const productCategory = escapeQuotes(raw.productCategory).toLowerCase();
-  if (productCategory === "mechsuits") return mapVehicle(raw, WF.SUBTYPES.vehicle[1], XP80); // necramech
+  if (productCategory === "mechsuits") return mapVehicle(raw, WF.SUB_TYPES.vehicle.necramech, XP80);
   
   let returnValue = [];
   if (FRAMEFIGHTER.includes(raw.name)) returnValue.push(mapFramefighter(raw));
@@ -616,7 +621,7 @@ function mapWarframe(raw) {
   const isFounder = getIsFounder(raw.uniqueName);
   const isVaulted = getIsVaulted(raw);
   
-  returnValue.push(entry(raw, WF.ITEM_TYPES.warframe.name, productCategory, { warframe_category: rank, mastery_xp: XP60, ...(isFounder && { founder: isFounder }), ...(isVaulted && { vaulted: isVaulted }) }));
+  returnValue.push(entry(raw, WF.ITEM_TYPES.warframe.name, productCategory, { rank: rank, mastery_xp: XP60, ...(isFounder && { founder: isFounder }), ...(isVaulted && { vaulted: isVaulted }) }));
   
   return returnValue;
 }
@@ -628,7 +633,7 @@ function getIsFounder(raw) {
 }
 
 function getIsPrime(raw) {
-  return WF.SUBTYPES.rank[+raw.isPrime] || WF.SUBTYPES.rank[0];
+  return raw.isPrime ? WF.SUB_TYPES.rank.prime : WF.SUB_TYPES.rank.normal;
 }
 
 function getIsVaulted(raw) {

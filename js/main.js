@@ -22,6 +22,32 @@ document.addEventListener("DOMContentLoaded", function () {
   const themeSwatches          = document.querySelectorAll(".theme-swatch");
 
   const toggleOverlay = (overlay, show) => overlay.classList.toggle("visible", show);
+  
+  const tooltip = document.createElement("div");
+  tooltip.id = "global-tooltip";
+  tooltip.className = "global-tooltip";
+  document.body.appendChild(tooltip);
+
+  const appRoot = getEl("app");
+
+  appRoot.addEventListener("mouseover", (event) => { // yay js, because i can't figure a way in css wtih content-visibility
+    const el = event.target.closest(".item-info[data-tooltip]");
+    if (!el) return;
+
+    const rect = el.getBoundingClientRect();
+    tooltip.textContent = el.dataset.tooltip;
+    tooltip.style.left = rect.right + "px";
+    tooltip.style.top = (rect.top - 6) + "px";
+    tooltip.style.transform = "translate(-100%, -100%)";
+    tooltip.classList.add("visible");
+  });
+
+  appRoot.addEventListener("mouseout", (event) => {
+    const el = event.target.closest(".item-info[data-tooltip]");
+    if (!el) return;
+    if (el.contains(event.relatedTarget)) return; 
+    tooltip.classList.remove("visible");
+  });
 
   getEl("btn-export").addEventListener("click", () => {
     WF.exportImport.exportToFile();
@@ -223,15 +249,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const tbody = document.createElement("tbody");
     const fragment = document.createDocumentFragment();
-
+    
     WF.NAV_GROUPS.forEach((group) => {
-      const allTypes = [...group.types, ...(group.subgroups || []).flatMap((sg) => sg.types)];
+      const rawTypes = [...group.types, ...(group.subgroups || []).flatMap((sg) => sg.types)];
 
-      allTypes.forEach((type) => {
+      rawTypes.forEach((typeObj) => {
+        const type = typeObj.name || typeObj;
         if (!WF.data.some((item) => item.type === type)) return;
 
         const stats = WF.render.getTypeStats(type);
-        const label = (WF.ITEM_TYPES[type] && WF.ITEM_TYPES[type].label) || type;
+        const label = typeObj.label || type;
 
         const tr = document.createElement("tr");
         tr.innerHTML = `<td>${label}</td><td>${stats.owned}/${stats.total}</td><td>${stats.percent}%</td>`;

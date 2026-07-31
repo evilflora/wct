@@ -17,6 +17,10 @@ WF.render = (function () {
   }
 
   function matchesFilterValue(itemValue, targetValue) {
+    if (targetValue === "TODO") {
+      if (Array.isArray(itemValue)) return itemValue.length === 0;
+      return itemValue === null || itemValue === "null" || itemValue === undefined;
+    }
     if (Array.isArray(itemValue)) return itemValue.includes(targetValue);
     return itemValue === targetValue;
   }
@@ -69,10 +73,13 @@ WF.render = (function () {
     const availableSet = new Set(types);
     const categorizedTypes = new Set();
     const fragment = document.createDocumentFragment();
+    const getTypeKey = (t) => t.name || t;
 
     WF.NAV_GROUPS.forEach((group) => {
-      const groupTypes = group.types.filter((t) => availableSet.has(t));
-      const hasSubgroupTypes = (group.subgroups || []).some((sg) => sg.types.some((t) => availableSet.has(t)));
+      const groupTypes = group.types.map(getTypeKey).filter((t) => availableSet.has(t));
+      const hasSubgroupTypes = (group.subgroups || []).some((sg) =>
+        sg.types.map(getTypeKey).some((t) => availableSet.has(t))
+      );
       if (groupTypes.length === 0 && !hasSubgroupTypes) return;
 
       const groupEl = document.createElement("div");
@@ -89,7 +96,7 @@ WF.render = (function () {
       });
 
       (group.subgroups || []).forEach((subgroup) => {
-        const subTypes = subgroup.types.filter((t) => availableSet.has(t));
+        const subTypes = subgroup.types.map(getTypeKey).filter((t) => availableSet.has(t));
         if (subTypes.length === 0) return;
 
         const subEl = document.createElement("div");
@@ -128,15 +135,21 @@ WF.render = (function () {
     container.appendChild(fragment);
   }
 
-  function buildFilterRow(container, options, currentValue, onSelect, poolItems, progress, fieldName) {
-    if (!options || options.length === 0) return;
+function buildFilterRow(container, Options, currentValue, onSelect, progress, fieldName, existencePool) {
+    if (!Options) return;
+
+    const options = Object.values(Options);
+
+    if (options.length === 0) return;
 
     const row = document.createElement("div");
     row.className = "filter-row";
 
-    const values = ["all", ...options];
+    const values = ["all", ...options, "TODO"];
     values.forEach((value) => {
-      const subset = value === "all" ? poolItems : poolItems.filter((item) => matchesFilterValue(item[fieldName], value));
+      const subset = value === "all" ? existencePool : existencePool.filter((item) => matchesFilterValue(item[fieldName], value));
+      if (subset.length === 0) return; // le filtre n'existe pas dans ce type/subtype
+
       const percent = computePercent(subset, progress);
 
       const pill = document.createElement("button");
@@ -150,6 +163,8 @@ WF.render = (function () {
       });
       row.appendChild(pill);
     });
+
+    if (row.children.length === 0) return;
 
     container.appendChild(row);
   }
@@ -195,27 +210,19 @@ WF.render = (function () {
     }
 
     const typeBase = WF.data.filter((item) => item.type === activeType && (includeFounder || !item.founder));
-    const extraFilters = WF.EXTRA_FILTERS[activeType] || [];
 
-    function getPoolForField(excludeField) {
-      let pool = typeBase;
-      if (excludeField !== "subtype" && activeSubtype !== "all") {
-        pool = pool.filter((item) => matchesFilterValue(item.subtype, activeSubtype));
-      }
-      extraFilters.forEach((extra) => {
-        if (extra.field === excludeField) return;
-        const value = activeExtra[extra.field];
-        if (value && value !== "all") pool = pool.filter((item) => matchesFilterValue(item[extra.field], value));
-      });
-      return pool;
+    function getAncestorPoolFast(fieldName) {
+      if (fieldName === "subtype") return typeBase;
+      if (activeSubtype === "all") return typeBase;
+      return typeBase.filter((item) => matchesFilterValue(item.subtype, activeSubtype));
     }
 
     const pills = document.querySelectorAll(".filter-pill[data-field][data-value]");
     pills.forEach((pill) => {
       const fieldName = pill.dataset.field;
       const value = pill.dataset.value;
-      const poolItems = getPoolForField(fieldName);
-      const subset = value === "all" ? poolItems : poolItems.filter((item) => matchesFilterValue(item[fieldName], value));
+      const ancestorPool = getAncestorPoolFast(fieldName);
+      const subset = value === "all" ? ancestorPool : ancestorPool.filter((item) => matchesFilterValue(item[fieldName], value));
       const p = computePercent(subset, progress);
       pill.textContent = `${value === "all" ? "All" : value} (${p}%)`;
     });
@@ -435,10 +442,16 @@ WF.render = (function () {
 
       return pool;
     }
+    
+	function getAncestorPool(fieldName) {
+      if (fieldName === "subtype") return typeBase;
+      if (activeSubtype === "all") return typeBase;
+      return typeBase.filter((item) => matchesFilterValue(item.subtype, activeSubtype));
+    }
 
     buildSidebar(types, progress, includeFounder);
 
-    buildFilterRow(root, WF.SUBTYPES[activeType], activeSubtype, (value) => { activeSubtype = value; activeExtra = {}; }, getFilteredPool("subtype"), progress, "subtype");
+    buildFilterRow(root, Object.values(WF.SUB_TYPES[activeType] || {}), activeSubtype, (value) => { activeSubtype = value; activeExtra = {}; }, progress, "subtype", getAncestorPool("subtype"));
 
     extraFilters.forEach((extra) => {
       const options = extra.optionsBySubtype ? extra.optionsBySubtype[activeSubtype] || null : extra.options;
@@ -454,7 +467,7 @@ WF.render = (function () {
       }
 
       const currentValue = activeExtra[extra.field] || "all";
-      buildFilterRow(root, options, currentValue, (value) => { activeExtra[extra.field] = value; }, getFilteredPool(extra.field), progress, extra.field);
+      buildFilterRow(root, options, currentValue, (value) => { activeExtra[extra.field] = value; }, progress, extra.field, getAncestorPool(extra.field));
     });
 
     const items = getFilteredPool(null);
@@ -463,7 +476,7 @@ WF.render = (function () {
     const query = searchQuery.trim().toLowerCase();
     const searchedItems = query ? visibleItems.filter((item) => item.display_name.en.toLowerCase().includes(query)) : visibleItems;
 
-    buildProgressBar(root, items, progress);
+    buildProgressBar(root, searchedItems, progress);
 
     const actionsRow = document.createElement("div");
     actionsRow.className = "bulk-actions-row";
@@ -472,7 +485,7 @@ WF.render = (function () {
     buildSearchCluster(actionsRow);
     root.appendChild(actionsRow);
 
-    buildItemList(root, searchedItems, progress, items);
+    buildItemList(root, searchedItems, progress, searchedItems);
     
     WF.uiState.save({ activeType, activeSubtype, activeExtra });
   }
