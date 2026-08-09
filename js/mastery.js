@@ -4,34 +4,34 @@ function itemMasteryXp(item) {
 
 const MASTERY_BREAKDOWN_GROUPS = [
   [
-    { label: "Warframes",               match: (item) => item.type === "warframe" },
-    { label: "Primary Weapons",         match: (item) => item.type === "weapon" && item.subtype === "primary" && item.weapon_category === "normal" },
-    { label: "Secondary Weapons",       match: (item) => item.type === "weapon" && item.subtype === "secondary" && item.weapon_category === "normal" },
-    { label: "Melee Weapons",           match: (item) => item.type === "weapon" && item.subtype === "melee" && item.weapon_category === "normal" },
-    { label: "Kitguns",                 match: (item) => item.type === "weapon" && item.subtype === "secondary" && item.weapon_category === "kitgun" },
+    { label: "Warframes",               match: (item) => item.category === WF.CATEGORY.warframe.name },
+    { label: "Primary Weapons",         match: (item) => item.category === WF.CATEGORY.weapon.name && item.type === WF.TYPES.weapon.primary   && item.weapon_category === WF.TYPES.weapon_category.normal },
+    { label: "Secondary Weapons",       match: (item) => item.category === WF.CATEGORY.weapon.name && item.type === WF.TYPES.weapon.secondary && item.weapon_category === WF.TYPES.weapon_category.normal },
+    { label: "Melee Weapons",           match: (item) => item.category === WF.CATEGORY.weapon.name && item.type === WF.TYPES.weapon.melee },
+    { label: "Kitguns",                 match: (item) => item.category === WF.CATEGORY.weapon.name && item.type === WF.TYPES.weapon.secondary && item.weapon_category === WF.TYPES.weapon_category.kitgun },
   ],
   [
-    { label: "Missions",                match: (item) => item.type === "node" && item.node_difficulty === "normal" },
-    { label: "The Steel Path Missions", match: (item) => item.type === "node" && item.node_difficulty === "steel path" },
-    { label: "Railjack Intrinsics",     match: (item) => item.type === "intrinsic" && item.subtype === "railjack" },
-    { label: "Drifter Intrinsics",      match: (item) => item.type === "intrinsic" && item.subtype === "drifter" },
+    { label: "Missions",                match: (item) => item.category === WF.CATEGORY.node.name && item.node_difficulty === WF.TYPES.node_difficulty.normal },
+    { label: "The Steel Path Missions", match: (item) => item.category === WF.CATEGORY.node.name && item.node_difficulty === WF.TYPES.node_difficulty.steel },
+    { label: "Railjack Intrinsics",     match: (item) => item.category === WF.CATEGORY.intrinsic.name && item.type === WF.TYPES.intrinsic.railjack },
+    { label: "Drifter Intrinsics",      match: (item) => item.category === WF.CATEGORY.intrinsic.name && item.type === WF.TYPES.intrinsic.drifter },
   ],
   [
-    { label: "Sentinels",               match: (item) => item.type === "companion" && item.subtype === "robotics" && item.companion_category === "sentinel" },
-    { label: "Sentinel Weapons",        match: (item) => item.type === "companion" && item.subtype === "robotics" && item.companion_category.includes("weapon") },
-    { label: "Companions",              match: (item) => (item.type === "companion" && item.subtype !== "robotics") || (
-                                                          item.type === "companion" && 
-                                                          ((item.subtype === "robotics" && item.companion_category === "moa") || 
-                                                           (item.subtype === "robotics" && item.companion_category === "hound"))) ||
-                                                           (item.type === "vehicle" && item.subtype === "plexus") },
+    { label: "Sentinels",               match: (item) => item.category === WF.CATEGORY.companion.name && item.type === WF.TYPES.companion.robotic && item.companion_category === WF.TYPES.companion_category.sentinel },
+    { label: "Sentinel Weapons",        match: (item) => item.category === WF.CATEGORY.companion.name && item.type === WF.TYPES.companion.robotic && item.companion_category.includes(WF.CATEGORY.weapon.name) },
+    { label: "Companions",              match: (item) => (item.category === WF.CATEGORY.companion.name && item.type !== WF.TYPES.companion.robotic) || (
+                                                          item.category === WF.CATEGORY.companion.name && 
+                                                          ((item.type === WF.TYPES.companion.robotic && item.companion_category === WF.TYPES.companion_category.moa) || 
+                                                           (item.type === WF.TYPES.companion.robotic && item.companion_category === WF.TYPES.companion_category.hound))) ||
+                                                           (item.category === WF.CATEGORY.vehicle.name && item.type === WF.TYPES.vehicle.plexus) },
   ],
   [
-    { label: "Archwing",                match: (item) => item.type === "vehicle" && item.subtype === "archwing" },
-    { label: "Archgun",                 match: (item) => item.type === "archweapon" && item.subtype === "archgun" },
-    { label: "Archmelee",               match: (item) => item.type === "archweapon" && item.subtype === "archmelee" },
-    { label: "Amps",                    match: (item) => item.type === "weapon" && item.subtype === "primary" && item.weapon_category === "amp" },
-    { label: "K-Drives",                match: (item) => item.type === "vehicle" && item.subtype === "k-drive" },
-    { label: "Necramechs",              match: (item) => item.type === "vehicle" && item.subtype === "necramech" },
+    { label: "Archwing",                match: (item) => item.category === WF.CATEGORY.vehicle.name && item.type === WF.TYPES.vehicle.archwing },
+    { label: "Archgun",                 match: (item) => item.category === WF.CATEGORY.archweapon.name && item.type === WF.TYPES.archweapon.archgun },
+    { label: "Archmelee",               match: (item) => item.category === WF.CATEGORY.archweapon.name && item.type === WF.TYPES.archweapon.archmelee },
+    { label: "Amps",                    match: (item) => item.category === WF.CATEGORY.weapon.name && item.type === WF.TYPES.weapon.primary && item.weapon_category === WF.TYPES.weapon_category.amp },
+    { label: "K-Drives",                match: (item) => item.category === WF.CATEGORY.vehicle.name && item.type === WF.TYPES.vehicle.kdrive },
+    { label: "Necramechs",              match: (item) => item.category === WF.CATEGORY.vehicle.name && item.type === WF.TYPES.vehicle.necramech },
   ],
 ];
 

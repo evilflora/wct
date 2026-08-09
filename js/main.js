@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const changelogList          = getEl("info-changelog-list");
   const includeOptionsCheckbox = getEl("opt-include-options-in-export");
   const includeFounderCheckbox = getEl("opt-include-founder-pack-exclusive");
-	const importFileInput        = getEl("import-file-input");
+  const importFileInput        = getEl("import-file-input");
   const themeSwatches          = document.querySelectorAll(".theme-swatch");
 
   const toggleOverlay = (overlay, show) => overlay.classList.toggle("visible", show);
@@ -254,11 +254,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const rawTypes = [...group.types, ...(group.subgroups || []).flatMap((sg) => sg.types)];
 
       rawTypes.forEach((typeObj) => {
-        const type = typeObj.name || typeObj;
-        if (!WF.data.some((item) => item.type === type)) return;
+        const category = typeObj.name || typeObj;
+        const stats = WF.render.getCategoryStats(category);
+        if (stats.total === 0) return;
 
-        const stats = WF.render.getTypeStats(type);
-        const label = typeObj.label || type;
+        const label = typeObj.label || category;
 
         const tr = document.createElement("tr");
         tr.innerHTML = `<td>${label}</td><td>${stats.owned}/${stats.total}</td><td>${stats.percent}%</td>`;

@@ -175,9 +175,9 @@ a { color: var(--accent-color); }
 
 .search-clear-btn:hover { color: var(--accent-color); }
 
-.type-help { position: relative; height: 32px; }
+.category-help { position: relative; height: 32px; }
 
-.type-help-btn {
+.category-help-btn {
   height: 32px;
   border: 1px solid var(--border);
   font-weight: 700;
@@ -187,14 +187,14 @@ a { color: var(--accent-color); }
   transition: border-color 0.15s, color 0.15s;
 }
 
-.type-help-btn:hover,
-.type-help.open .type-help-btn {
+.category-help-btn:hover,
+.category-help.open .category-help-btn {
   border-color: var(--accent-color);
   color: var(--accent-color);
   cursor: help;
 }
 
-.type-help-tooltip {
+.category-help-tooltip {
   display: none;
   position: absolute;
   bottom: calc(100% + 8px);
@@ -208,8 +208,8 @@ a { color: var(--accent-color); }
   pointer-events: none;
 }
 
-.type-help:hover .type-help-tooltip,
-.type-help.open .type-help-tooltip { display: block; }
+.category-help:hover .category-help-tooltip,
+.category-help.open .category-help-tooltip { display: block; }
 
 .item-infos { margin-left: auto; cursor: help; }
 .item-info { display: inline-block; position: relative; margin-left: 4px; }
@@ -902,7 +902,7 @@ a { color: var(--accent-color); }
 
   .search-cluster { margin-left: 0; width: 100%; margin-bottom: 7px; }
   .search-wrap { flex: 1; min-width: 0; }
-  .type-help-tooltip { width: min(240px, 70vw); }
+  .category-help-tooltip { width: min(240px, 70vw); }
 
   .scroll-top-btn { bottom: 16px; right: 16px; width: 40px; height: 40px; }
 

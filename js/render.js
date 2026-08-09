@@ -1,28 +1,46 @@
 WF.render = (function () {
   const savedUiState = WF.uiState.load();
-  let activeType = savedUiState.activeType || null;
-  let activeSubtype = savedUiState.activeSubtype || "all";
-  let activeExtra = savedUiState.activeExtra || {};
+  const all  = "all";
+  const todo = "todo";
+  
+  const ITEM_BADGES = [
+    { key: "vaulted",   text: "V", tooltip: (item) => `Vaulted since ${item.vaulted.toLocaleString()}` },
+    { key: "masteryXp", text: "X", tooltip: (item) => `${item.masteryXp.toLocaleString()} Mastery XP` },
+    { key: "hidden",    text: "H", tooltip: ()     => `Hidden until owned or discovered` },
+  ];
+  
+  let activeCategory = savedUiState.activeCategory || null;
+  let activeType = savedUiState.activeType || all;
+  let activeFilter = savedUiState.activeFilter || {};
   let hideChecked = false;
   let searchQuery = "";
 
-  function typeLabel(type) {
-    return (WF.ITEM_TYPES[type] && WF.ITEM_TYPES[type].label) || type;
+  function matchesCategory(item, category) {
+    return item.category.toLowerCase() === category.toLowerCase();
   }
 
-  function availableTypes(includeFounder) {
-    return Object.keys(WF.ITEM_TYPES).filter((type) =>
-      WF.data.some((item) => item.type === type && (includeFounder || !item.founder))
+  function categoryLabel(category) {
+    return (WF.CATEGORY[category] && WF.CATEGORY[category].label) || category;
+  }
+
+  function availableCategories(includeFounder) {
+    return Object.keys(WF.CATEGORY).filter((category) =>
+      WF.data.some((item) => matchesCategory(item, category) && (includeFounder || !item.founder))
     );
   }
 
   function matchesFilterValue(itemValue, targetValue) {
-    if (targetValue === "TODO") {
+    targetValue = targetValue.toLowerCase();
+    
+    if (targetValue === todo) {
       if (Array.isArray(itemValue)) return itemValue.length === 0;
-      return itemValue === null || itemValue === "null" || itemValue === undefined;
+      return itemValue === null || itemValue === undefined || itemValue.toLowerCase() === "null";
     }
-    if (Array.isArray(itemValue)) return itemValue.includes(targetValue);
-    return itemValue === targetValue;
+  
+    if (Array.isArray(itemValue)) return itemValue.some((value) => value.toLowerCase() === targetValue);
+    if (itemValue === null || itemValue === undefined) return false;
+  
+    return itemValue.toLowerCase() === targetValue;
   }
 
   function computePercent(items, progress) {
@@ -36,18 +54,18 @@ WF.render = (function () {
     return Math.floor((owned / total) * 100);
   }
 
-  function buildSidebarItem(container, type, progress, includeFounder) {
-    const typeItems = WF.data.filter((item) => item.type === type && (includeFounder || !item.founder));
+  function buildSidebarItem(container, category, progress, includeFounder) {
+    const typeItems = WF.data.filter((item) => matchesCategory(item, category) && (includeFounder || !item.founder));
     const percent = computePercent(typeItems, progress);
 
     const btn = document.createElement("button");
-    btn.className = "nav-item" + (type === activeType ? " active" : "");
-    btn.dataset.type = type;
-    btn.textContent = `${typeLabel(type)} (${percent}%)`;
+    btn.className = "nav-item" + (category === activeCategory ? " active" : "");
+    btn.dataset.category = category;
+    btn.textContent = `${categoryLabel(category)} (${percent}%)`;
     btn.addEventListener("click", () => {
-      activeType = type;
-      activeSubtype = "all";
-      activeExtra = {};
+      activeCategory = category;
+      activeType = all;
+      activeFilter = {};
       searchQuery = "";
       renderAll();
       closeSidebarOnMobile();
@@ -90,9 +108,9 @@ WF.render = (function () {
       label.textContent = group.label;
       groupEl.appendChild(label);
 
-      groupTypes.forEach((type) => {
-        categorizedTypes.add(type);
-        buildSidebarItem(groupEl, type, progress, includeFounder);
+      groupTypes.forEach((category) => {
+        categorizedTypes.add(category);
+        buildSidebarItem(groupEl, category, progress, includeFounder);
       });
 
       (group.subgroups || []).forEach((subgroup) => {
@@ -107,9 +125,9 @@ WF.render = (function () {
         subLabel.textContent = subgroup.label;
         subEl.appendChild(subLabel);
 
-        subTypes.forEach((type) => {
-          categorizedTypes.add(type);
-          buildSidebarItem(subEl, type, progress, includeFounder);
+        subTypes.forEach((category) => {
+          categorizedTypes.add(category);
+          buildSidebarItem(subEl, category, progress, includeFounder);
         });
 
         groupEl.appendChild(subEl);
@@ -128,7 +146,7 @@ WF.render = (function () {
       label.textContent = "Other";
       groupEl.appendChild(label);
 
-      uncategorized.forEach((type) => buildSidebarItem(groupEl, type, progress, includeFounder));
+      uncategorized.forEach((category) => buildSidebarItem(groupEl, category, progress, includeFounder));
       fragment.appendChild(groupEl);
     }
 
@@ -145,18 +163,18 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
     const row = document.createElement("div");
     row.className = "filter-row";
 
-    const values = ["all", ...options, "TODO"];
+    const values = [all, ...options, todo];
     values.forEach((value) => {
-      const subset = value === "all" ? existencePool : existencePool.filter((item) => matchesFilterValue(item[fieldName], value));
-      if (subset.length === 0) return; // le filtre n'existe pas dans ce type/subtype
-
+      const subset = value === all ? existencePool : existencePool.filter((item) => matchesFilterValue(item[fieldName], value));
+      if (subset.length === 0) return;
+		
       const percent = computePercent(subset, progress);
 
       const pill = document.createElement("button");
       pill.className = "filter-pill" + (value === currentValue ? " active" : "");
       pill.dataset.field = fieldName;
       pill.dataset.value = value;
-      pill.textContent = `${value === "all" ? "All" : value} (${percent}%)`;
+      pill.textContent = `${value === all ? all : value} (${percent}%)`;
       pill.addEventListener("click", () => {
         onSelect(value);
         renderAll();
@@ -202,19 +220,19 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
     if (label) label.textContent = `${owned} / ${total} (${percent}%)`;
     if (fill) fill.style.width = `${percent}%`;
 
-    const activeNav = document.querySelector(`.nav-item[data-type="${activeType}"]`);
+    const activeNav = document.querySelector(`.nav-item[data-category="${activeCategory}"]`);
     if (activeNav) {
-      const typeItems = WF.data.filter((item) => item.type === activeType && (includeFounder || !item.founder));
+      const typeItems = WF.data.filter((item) => matchesCategory(item, activeCategory) && (includeFounder || !item.founder));
       const typePercent = computePercent(typeItems, progress);
-      activeNav.textContent = `${typeLabel(activeType)} (${typePercent}%)`;
+      activeNav.textContent = `${categoryLabel(activeCategory)} (${typePercent}%)`;
     }
 
-    const typeBase = WF.data.filter((item) => item.type === activeType && (includeFounder || !item.founder));
+    const typeBase = WF.data.filter((item) => matchesCategory(item, activeCategory) && (includeFounder || !item.founder));
 
     function getAncestorPoolFast(fieldName) {
-      if (fieldName === "subtype") return typeBase;
-      if (activeSubtype === "all") return typeBase;
-      return typeBase.filter((item) => matchesFilterValue(item.subtype, activeSubtype));
+      if (fieldName === "type") return typeBase;
+      if (activeType === all) return typeBase;
+      return typeBase.filter((item) => matchesFilterValue(item.type, activeType));
     }
 
     const pills = document.querySelectorAll(".filter-pill[data-field][data-value]");
@@ -222,9 +240,9 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
       const fieldName = pill.dataset.field;
       const value = pill.dataset.value;
       const ancestorPool = getAncestorPoolFast(fieldName);
-      const subset = value === "all" ? ancestorPool : ancestorPool.filter((item) => matchesFilterValue(item[fieldName], value));
+      const subset = value === all ? ancestorPool : ancestorPool.filter((item) => matchesFilterValue(item[fieldName], value));
       const p = computePercent(subset, progress);
-      pill.textContent = `${value === "all" ? "All" : value} (${p}%)`;
+      pill.textContent = `${value === all ? "All" : value} (${p}%)`;
     });
   }
 
@@ -254,25 +272,25 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
   }
 
   function buildHelpButton(container) {
-    const typeInfo = WF.ITEM_TYPES[activeType];
-    const description = typeInfo && typeInfo.description;
+    const categoryInfo = WF.CATEGORY[activeCategory];
+    const description = categoryInfo && categoryInfo.description;
     if (!description) return;
 
     const wrap = document.createElement("div");
-    wrap.className = "type-help";
+    wrap.className = "category-help";
 
     const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "type-help-btn";
+    btn.category = "button";
+    btn.className = "category-help-btn";
     btn.setAttribute("aria-label", "About this category");
-    btn.textContent = typeInfo.label + " ?";
+    btn.textContent = categoryInfo.label + " ?";
     btn.addEventListener("click", (event) => {
       event.stopPropagation();
       wrap.classList.toggle("open");
     });
 
     const tooltip = document.createElement("div");
-    tooltip.className = "type-help-tooltip";
+    tooltip.className = "category-help-tooltip";
     tooltip.setAttribute("role", "tooltip");
     tooltip.textContent = description;
 
@@ -331,6 +349,17 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
     container.appendChild(wrap);
   }
 
+  function createInfoBadge(text, tooltip) {
+    const div = document.createElement("div");
+    div.className = "item-info";
+    div.setAttribute("data-tooltip", tooltip);
+    const textEl = document.createElement("span");
+    textEl.className = "item-info-text";
+    textEl.textContent = text;
+    div.append(textEl);
+    return div;
+  }
+
   function buildItemList(container, items, progress, currentPoolItems) {
     const list = document.createElement("div");
     list.className = "item-list";
@@ -341,10 +370,8 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
     sortedItems.forEach((item) => {
       const owned = !!progress[item.item_name];
       const row = document.createElement("label");
-      const masteryXp = item.mastery_xp || null;
-      const vaulted = item.vaulted || null;
       row.className = "item-row" + (owned ? " owned" : "");
-
+     
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.className = "item-checkbox-hidden";
@@ -352,55 +379,33 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
       checkbox.addEventListener("change", () => {
         const isChecked = checkbox.checked;
         WF.storage.setOwned(item.item_name, isChecked);
-
         if (hideChecked && isChecked) {
           row.remove();
         } else {
           row.classList.toggle("owned", isChecked);
         }
-
         updateUIFast(currentPoolItems);
       });
-
+     
       const name = document.createElement("span");
       name.className = "item-name";
       name.textContent = item.display_name.en;
-
+     
       row.append(checkbox, name);
-
-      if (masteryXp || vaulted) {
+     
+      const normalizedItem = { ...item, masteryXp: item.mastery_xp || null };
+     
+      const activeBadges = ITEM_BADGES.filter(badge => normalizedItem[badge.key]);
+     
+      if (activeBadges.length > 0) {
         const divInfos = document.createElement("div");
         divInfos.className = "item-infos";
-
-        if (vaulted) {
-          const div = document.createElement("div");
-          div.className = "item-info";
-          div.setAttribute("data-tooltip", `Vaulted since ${vaulted.toLocaleString()}`);
-
-          const text = document.createElement("span");
-          text.className = "item-info-text";
-          text.textContent = "V";
-
-          div.append(text);
-          divInfos.append(div);
-        }
-
-        if (masteryXp) {
-          const div = document.createElement("div");
-          div.className = "item-info";
-          div.setAttribute("data-tooltip", `${masteryXp.toLocaleString()} Mastery XP`);
-
-          const text = document.createElement("span");
-          text.className = "item-info-text";
-          text.textContent = "XP";
-
-          div.append(text);
-          divInfos.append(div);
-        }
-
+        activeBadges.forEach(badge => {
+          divInfos.append(createInfoBadge(badge.text, badge.tooltip(normalizedItem)));
+        });
         row.appendChild(divInfos);
       }
-
+     
       fragment.appendChild(row);
     });
 
@@ -413,7 +418,7 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
     root.textContent = "";
 
     const includeFounder = WF.options.load().includeFounderItems;
-    const types = availableTypes(includeFounder);
+    const types = availableCategories(includeFounder);
 
     if (types.length === 0) {
       root.innerHTML = '<p class="empty-state">No data loaded.</p>';
@@ -422,52 +427,52 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
 
     const progress = WF.storage.load();
 
-    if (activeType === null || !types.includes(activeType)) activeType = WF.DEFAUT_ACTIVE_TAB;
+    if (activeCategory === null || !types.includes(activeCategory)) activeCategory = WF.DEFAUT_ACTIVE_TAB;
 
-    const extraFilters = WF.EXTRA_FILTERS[activeType] || [];
-    const typeBase = WF.data.filter((item) => item.type === activeType && (includeFounder || !item.founder));
+    const filters = WF.FILTERS[activeCategory] || [];
+    const typeBase = WF.data.filter((item) => matchesCategory(item, activeCategory) && (includeFounder || !item.founder));
 
     function getFilteredPool(excludeField) {
       let pool = typeBase;
 
-      if (excludeField !== "subtype" && activeSubtype !== "all") {
-        pool = pool.filter((item) => matchesFilterValue(item.subtype, activeSubtype));
+      if (excludeField !== "type" && activeType !== all) {
+        pool = pool.filter((item) => matchesFilterValue(item.type, activeType));
       }
 
-      extraFilters.forEach((extra) => {
-        if (extra.field === excludeField) return;
-        const value = activeExtra[extra.field];
-        if (value && value !== "all") pool = pool.filter((item) => matchesFilterValue(item[extra.field], value));
+      filters.forEach((filter) => {
+        if (filter.field === excludeField) return;
+        const value = activeFilter[filter.field];
+        if (value && value !== all) pool = pool.filter((item) => matchesFilterValue(item[filter.field], value));
       });
 
       return pool;
     }
     
-	function getAncestorPool(fieldName) {
-      if (fieldName === "subtype") return typeBase;
-      if (activeSubtype === "all") return typeBase;
-      return typeBase.filter((item) => matchesFilterValue(item.subtype, activeSubtype));
+  function getAncestorPool(fieldName) {
+      if (fieldName === "type") return typeBase;
+      if (activeType === all) return typeBase;
+      return typeBase.filter((item) => matchesFilterValue(item.type, activeType));
     }
 
     buildSidebar(types, progress, includeFounder);
 
-    buildFilterRow(root, Object.values(WF.SUB_TYPES[activeType] || {}), activeSubtype, (value) => { activeSubtype = value; activeExtra = {}; }, progress, "subtype", getAncestorPool("subtype"));
+    buildFilterRow(root, Object.values(WF.TYPES[activeCategory] || {}), activeType, (value) => { activeType = value; activeFilter = {}; }, progress, "type", getAncestorPool("type"));
 
-    extraFilters.forEach((extra) => {
-      const options = extra.optionsBySubtype ? extra.optionsBySubtype[activeSubtype] || null : extra.options;
+    filters.forEach((filter) => {
+      const options = filter.optionsBySubtype ? filter.optionsBySubtype[activeType] || null : filter.options;
       if (!options) return;
 
-      if (extra.showIf) {
-        const dependValue = activeExtra[extra.showIf.field] || "all";
-        const matches = dependValue === extra.showIf.value || dependValue === "all";
+      if (filter.showIf) {
+        const dependValue = activeFilter[filter.showIf.field] || all;
+        const matches = dependValue === filter.showIf.value || dependValue === all;
         if (!matches) {
-          activeExtra[extra.field] = "all";
+          activeFilter[filter.field] = all;
           return;
         }
       }
 
-      const currentValue = activeExtra[extra.field] || "all";
-      buildFilterRow(root, options, currentValue, (value) => { activeExtra[extra.field] = value; }, progress, extra.field, getAncestorPool(extra.field));
+      const currentValue = activeFilter[filter.field] || all;
+      buildFilterRow(root, options, currentValue, (value) => { activeFilter[filter.field] = value; }, progress, filter.field, getAncestorPool(filter.field));
     });
 
     const items = getFilteredPool(null);
@@ -487,13 +492,13 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
 
     buildItemList(root, searchedItems, progress, searchedItems);
     
-    WF.uiState.save({ activeType, activeSubtype, activeExtra });
+    WF.uiState.save({ activeCategory, activeType, activeFilter });
   }
 
-  function getTypeStats(type) {
+  function getCategoryStats(category) {
     const progress = WF.storage.load();
     const includeFounder = WF.options.load().includeFounderItems;
-    const items = WF.data.filter((item) => item.type === type && (includeFounder || !item.founder));
+    const items = WF.data.filter((item) => matchesCategory(item, category) && (includeFounder || !item.founder));
     let owned = 0;
     for (let i = 0; i < items.length; i++) {
       if (progress[items[i].item_name]) owned++;
@@ -501,5 +506,5 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
     return { owned, total: items.length, percent: computePercent(items, progress) };
   }
 
-  return { renderAll, getTypeStats };
+  return { renderAll, getCategoryStats };
 })();
