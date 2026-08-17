@@ -2,45 +2,59 @@ WF.render = (function () {
   const savedUiState = WF.uiState.load();
   const all  = "all";
   const todo = "todo";
-  
+
   const ITEM_BADGES = [
     { key: "vaulted",   text: "V", tooltip: (item) => `Vaulted since ${item.vaulted.toLocaleString()}` },
     { key: "masteryXp", text: "X", tooltip: (item) => `${item.masteryXp.toLocaleString()} Mastery XP` },
     { key: "hidden",    text: "H", tooltip: ()     => `Hidden until owned or discovered` },
   ];
-  
+
+  const SEARCH_DEBOUNCE_MS = 200;
+
   let activeCategory = savedUiState.activeCategory || null;
   let activeType = savedUiState.activeType || all;
   let activeFilter = savedUiState.activeFilter || {};
   let hideChecked = false;
   let searchQuery = "";
+  let lastRenderedPool = [];
+  let searchDebounceTimer = null;
+
+  const lowerCache = new Map();
+  function lower(str) {
+    let cached = lowerCache.get(str);
+    if (cached === undefined) {
+      cached = str.toLowerCase();
+      lowerCache.set(str, cached);
+    }
+    return cached;
+  }
 
   function matchesCategory(item, category) {
-    return item.category.toLowerCase() === category.toLowerCase();
+    return lower(item.category) === lower(category);
   }
 
   function categoryLabel(category) {
     return (WF.CATEGORY[category] && WF.CATEGORY[category].label) || category;
   }
 
-  function availableCategories(includeFounder) {
+  function availableCategories(includeFounder, includePvpMods) {
     return Object.keys(WF.CATEGORY).filter((category) =>
-      WF.data.some((item) => matchesCategory(item, category) && (includeFounder || !item.founder))
+      WF.data.some((item) => matchesCategory(item, category) && (includeFounder || !item.founder) && (includePvpMods || !(Array.isArray(item.type) && item.type.length === 1 && item.type[0] === WF.TYPES.mod.pvp)))
     );
   }
 
   function matchesFilterValue(itemValue, targetValue) {
-    targetValue = targetValue.toLowerCase();
-    
+    targetValue = lower(targetValue);
+
     if (targetValue === todo) {
       if (Array.isArray(itemValue)) return itemValue.length === 0;
-      return itemValue === null || itemValue === undefined || itemValue.toLowerCase() === "null";
+      return itemValue === null || itemValue === undefined || lower(itemValue) === "null";
     }
-  
-    if (Array.isArray(itemValue)) return itemValue.some((value) => value.toLowerCase() === targetValue);
+
+    if (Array.isArray(itemValue)) return itemValue.some((value) => lower(value) === targetValue);
     if (itemValue === null || itemValue === undefined) return false;
-  
-    return itemValue.toLowerCase() === targetValue;
+
+    return lower(itemValue) === targetValue;
   }
 
   function computePercent(items, progress) {
@@ -54,8 +68,24 @@ WF.render = (function () {
     return Math.floor((owned / total) * 100);
   }
 
-  function buildSidebarItem(container, category, progress, includeFounder) {
-    const typeItems = WF.data.filter((item) => matchesCategory(item, category) && (includeFounder || !item.founder));
+  let cache = { category: null, includeFounder: null, includePvpMods: null, typeBase: [], filters: [] };
+
+  function getTypeBaseAndFilters(includeFounder, includePvpMods) {
+    if (cache.category === activeCategory && cache.includeFounder === includeFounder && cache.includePvpMods === includePvpMods) {
+      return cache;
+    }
+    cache = {
+      category: activeCategory,
+      includeFounder,
+			includePvpMods,
+      typeBase: WF.data.filter((item) => matchesCategory(item, activeCategory) && (includeFounder || !item.founder) && (includePvpMods || !(Array.isArray(item.type) && item.type.length === 1 && item.type[0] === WF.TYPES.mod.pvp))),
+      filters: WF.FILTERS[activeCategory] || [],
+    };
+    return cache;
+  }
+
+  function buildSidebarItem(container, category, progress, includeFounder, includePvpMods) {
+    const typeItems = WF.data.filter((item) => matchesCategory(item, category) && (includeFounder || !item.founder) && (includePvpMods || !(Array.isArray(item.type) && item.type.length === 1 && item.type[0] === WF.TYPES.mod.pvp)));
     const percent = computePercent(typeItems, progress);
 
     const btn = document.createElement("button");
@@ -83,7 +113,7 @@ WF.render = (function () {
     }
   }
 
-  function buildSidebar(types, progress, includeFounder) {
+  function buildSidebar(types, progress, includeFounder, includePvpMods) {
     const container = document.getElementById("sidebar-groups");
     if (!container) return;
     container.textContent = "";
@@ -110,7 +140,7 @@ WF.render = (function () {
 
       groupTypes.forEach((category) => {
         categorizedTypes.add(category);
-        buildSidebarItem(groupEl, category, progress, includeFounder);
+        buildSidebarItem(groupEl, category, progress, includeFounder, includePvpMods);
       });
 
       (group.subgroups || []).forEach((subgroup) => {
@@ -127,7 +157,7 @@ WF.render = (function () {
 
         subTypes.forEach((category) => {
           categorizedTypes.add(category);
-          buildSidebarItem(subEl, category, progress, includeFounder);
+          buildSidebarItem(subEl, category, progress, includeFounder, includePvpMods);
         });
 
         groupEl.appendChild(subEl);
@@ -146,14 +176,14 @@ WF.render = (function () {
       label.textContent = "Other";
       groupEl.appendChild(label);
 
-      uncategorized.forEach((category) => buildSidebarItem(groupEl, category, progress, includeFounder));
+      uncategorized.forEach((category) => buildSidebarItem(groupEl, category, progress, includeFounder, includePvpMods));
       fragment.appendChild(groupEl);
     }
 
     container.appendChild(fragment);
   }
 
-function buildFilterRow(container, Options, currentValue, onSelect, progress, fieldName, existencePool) {
+  function buildFilterRow(container, Options, currentValue, onSelect, progress, fieldName, existencePool) {
     if (!Options) return;
 
     const options = Object.values(Options);
@@ -167,7 +197,7 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
     values.forEach((value) => {
       const subset = value === all ? existencePool : existencePool.filter((item) => matchesFilterValue(item[fieldName], value));
       if (subset.length === 0) return;
-		
+
       const percent = computePercent(subset, progress);
 
       const pill = document.createElement("button");
@@ -207,6 +237,7 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
   function updateUIFast(currentPoolItems) {
     const progress = WF.storage.load();
     const includeFounder = WF.options.load().includeFounderItems;
+    const includePvpMods = WF.options.load().includePvpMods;
 
     const total = currentPoolItems.length;
     let owned = 0;
@@ -220,14 +251,13 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
     if (label) label.textContent = `${owned} / ${total} (${percent}%)`;
     if (fill) fill.style.width = `${percent}%`;
 
+    const { typeBase } = getTypeBaseAndFilters(includeFounder, includePvpMods);
+
     const activeNav = document.querySelector(`.nav-item[data-category="${activeCategory}"]`);
     if (activeNav) {
-      const typeItems = WF.data.filter((item) => matchesCategory(item, activeCategory) && (includeFounder || !item.founder));
-      const typePercent = computePercent(typeItems, progress);
+      const typePercent = computePercent(typeBase, progress);
       activeNav.textContent = `${categoryLabel(activeCategory)} (${typePercent}%)`;
     }
-
-    const typeBase = WF.data.filter((item) => matchesCategory(item, activeCategory) && (includeFounder || !item.founder));
 
     function getAncestorPoolFast(fieldName) {
       if (fieldName === "type") return typeBase;
@@ -266,7 +296,7 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
     btn.textContent = "Hide checked";
     btn.addEventListener("click", () => {
       hideChecked = !hideChecked;
-      renderAll();
+      renderUpdate();
     });
     container.appendChild(btn);
   }
@@ -280,7 +310,7 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
     wrap.className = "category-help";
 
     const btn = document.createElement("button");
-    btn.category = "button";
+    btn.type = "button";
     btn.className = "category-help-btn";
     btn.setAttribute("aria-label", "About this category");
     btn.textContent = categoryInfo.label + " ?";
@@ -323,13 +353,16 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
     input.addEventListener("input", (event) => {
       const cursorPos = event.target.selectionStart;
       searchQuery = event.target.value;
-      renderAll();
 
-      const newInput = document.getElementById(input.id);
-      if (newInput) {
-        newInput.focus();
-        newInput.setSelectionRange(cursorPos, cursorPos);
-      }
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        renderUpdate();
+        const newInput = document.getElementById(input.id);
+        if (newInput) {
+          newInput.focus();
+          newInput.setSelectionRange(cursorPos, cursorPos);
+        }
+      }, SEARCH_DEBOUNCE_MS);
     });
     wrap.appendChild(input);
 
@@ -341,7 +374,7 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
       clearBtn.textContent = "\u00d7";
       clearBtn.addEventListener("click", () => {
         searchQuery = "";
-        renderAll();
+        renderUpdate();
       });
       wrap.appendChild(clearBtn);
     }
@@ -360,7 +393,7 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
     return div;
   }
 
-  function buildItemList(container, items, progress, currentPoolItems) {
+  function buildItemList(container, items, progress) {
     const list = document.createElement("div");
     list.className = "item-list";
 
@@ -371,41 +404,31 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
       const owned = !!progress[item.item_name];
       const row = document.createElement("label");
       row.className = "item-row" + (owned ? " owned" : "");
-     
+
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.className = "item-checkbox-hidden";
       checkbox.checked = owned;
-      checkbox.addEventListener("change", () => {
-        const isChecked = checkbox.checked;
-        WF.storage.setOwned(item.item_name, isChecked);
-        if (hideChecked && isChecked) {
-          row.remove();
-        } else {
-          row.classList.toggle("owned", isChecked);
-        }
-        updateUIFast(currentPoolItems);
-      });
-     
+      checkbox.dataset.itemName = item.item_name;
+
       const name = document.createElement("span");
       name.className = "item-name";
       name.textContent = item.display_name.en;
-     
+
       row.append(checkbox, name);
-     
+
       const normalizedItem = { ...item, masteryXp: item.mastery_xp || null };
-     
-      const activeBadges = ITEM_BADGES.filter(badge => normalizedItem[badge.key]);
-     
+      const activeBadges = ITEM_BADGES.filter((badge) => normalizedItem[badge.key]);
+
       if (activeBadges.length > 0) {
         const divInfos = document.createElement("div");
         divInfos.className = "item-infos";
-        activeBadges.forEach(badge => {
+        activeBadges.forEach((badge) => {
           divInfos.append(createInfoBadge(badge.text, badge.tooltip(normalizedItem)));
         });
         row.appendChild(divInfos);
       }
-     
+
       fragment.appendChild(row);
     });
 
@@ -413,50 +436,63 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
     container.appendChild(list);
   }
 
-  function renderAll() {
-    const root = document.getElementById("app");
-    root.textContent = "";
+  function initDelegatedEvents(root) {
+    if (root.dataset.wfDelegated === "1") return;
+    root.dataset.wfDelegated = "1";
 
-    const includeFounder = WF.options.load().includeFounderItems;
-    const types = availableCategories(includeFounder);
+    root.addEventListener("change", (event) => {
+      const checkbox = event.target.closest(".item-checkbox-hidden");
+      if (!checkbox) return;
 
-    if (types.length === 0) {
-      root.innerHTML = '<p class="empty-state">No data loaded.</p>';
-      return;
-    }
+      const itemName = checkbox.dataset.itemName;
+      const isChecked = checkbox.checked;
+      const row = checkbox.closest(".item-row");
 
-    const progress = WF.storage.load();
+      WF.storage.setOwned(itemName, isChecked);
 
-    if (activeCategory === null || !types.includes(activeCategory)) activeCategory = WF.DEFAUT_ACTIVE_TAB;
-
-    const filters = WF.FILTERS[activeCategory] || [];
-    const typeBase = WF.data.filter((item) => matchesCategory(item, activeCategory) && (includeFounder || !item.founder));
-
-    function getFilteredPool(excludeField) {
-      let pool = typeBase;
-
-      if (excludeField !== "type" && activeType !== all) {
-        pool = pool.filter((item) => matchesFilterValue(item.type, activeType));
+      if (hideChecked && isChecked) {
+        if (row) row.remove();
+      } else if (row) {
+        row.classList.toggle("owned", isChecked);
       }
 
-      filters.forEach((filter) => {
-        if (filter.field === excludeField) return;
-        const value = activeFilter[filter.field];
-        if (value && value !== all) pool = pool.filter((item) => matchesFilterValue(item[filter.field], value));
-      });
+      updateUIFast(lastRenderedPool);
+    });
+  }
 
-      return pool;
+  function ensureLayout(root) {
+    if (root.dataset.wfReady === "1") return;
+    root.innerHTML = '<div id="wf-filters-zone"></div><div id="wf-dynamic-zone"></div>';
+    root.dataset.wfReady = "1";
+  }
+
+  function getFilteredPool(typeBase, filters, excludeField) {
+    let pool = typeBase;
+
+    if (excludeField !== "type" && activeType !== all) {
+      pool = pool.filter((item) => matchesFilterValue(item.type, activeType));
     }
-    
-  function getAncestorPool(fieldName) {
+
+    filters.forEach((filter) => {
+      if (filter.field === excludeField) return;
+      const value = activeFilter[filter.field];
+      if (value && value !== all) pool = pool.filter((item) => matchesFilterValue(item[filter.field], value));
+    });
+
+    return pool;
+  }
+
+  function renderStatic(progress, typeBase, filters) {
+    const zone = document.getElementById("wf-filters-zone");
+    zone.textContent = "";
+
+    function getAncestorPool(fieldName) {
       if (fieldName === "type") return typeBase;
       if (activeType === all) return typeBase;
       return typeBase.filter((item) => matchesFilterValue(item.type, activeType));
     }
 
-    buildSidebar(types, progress, includeFounder);
-
-    buildFilterRow(root, Object.values(WF.TYPES[activeCategory] || {}), activeType, (value) => { activeType = value; activeFilter = {}; }, progress, "type", getAncestorPool("type"));
+    buildFilterRow(zone, Object.values(WF.TYPES[activeCategory] || {}), activeType, (value) => { activeType = value; activeFilter = {}; }, progress, "type", getAncestorPool("type"));
 
     filters.forEach((filter) => {
       const options = filter.optionsBySubtype ? filter.optionsBySubtype[activeType] || null : filter.options;
@@ -472,33 +508,94 @@ function buildFilterRow(container, Options, currentValue, onSelect, progress, fi
       }
 
       const currentValue = activeFilter[filter.field] || all;
-      buildFilterRow(root, options, currentValue, (value) => { activeFilter[filter.field] = value; }, progress, filter.field, getAncestorPool(filter.field));
+      buildFilterRow(zone, options, currentValue, (value) => { activeFilter[filter.field] = value; }, progress, filter.field, getAncestorPool(filter.field));
     });
+  }
 
-    const items = getFilteredPool(null);
+  function renderDynamic(progress, typeBase, filters) {
+    const zone = document.getElementById("wf-dynamic-zone");
+    zone.textContent = "";
+
+    const items = getFilteredPool(typeBase, filters, null);
     const visibleItems = hideChecked ? items.filter((item) => !progress[item.item_name]) : items;
 
     const query = searchQuery.trim().toLowerCase();
     const searchedItems = query ? visibleItems.filter((item) => item.display_name.en.toLowerCase().includes(query)) : visibleItems;
 
-    buildProgressBar(root, searchedItems, progress);
+    buildProgressBar(zone, searchedItems, progress);
 
     const actionsRow = document.createElement("div");
     actionsRow.className = "bulk-actions-row";
     buildBulkActions(actionsRow, searchedItems, progress);
     buildHideCheckedToggle(actionsRow);
     buildSearchCluster(actionsRow);
-    root.appendChild(actionsRow);
+    zone.appendChild(actionsRow);
 
-    buildItemList(root, searchedItems, progress, searchedItems);
-    
+    buildItemList(zone, searchedItems, progress);
+
+    lastRenderedPool = searchedItems;
+  }
+
+  function renderUpdate() {
+    const includeFounder = WF.options.load().includeFounderItems;
+    const includePvpMods = WF.options.load().includePvpMods;
+    const progress = WF.storage.load();
+    const { typeBase, filters } = getTypeBaseAndFilters(includeFounder, includePvpMods);
+    renderDynamic(progress, typeBase, filters);
+  }
+
+  function renderAll() {
+    const root = document.getElementById("app");
+    initDelegatedEvents(root);
+
+    const includeFounder = WF.options.load().includeFounderItems;
+    const includePvpMods = WF.options.load().includePvpMods;
+    const types = availableCategories(includeFounder, includePvpMods);
+
+    if (types.length === 0) {
+      root.innerHTML = '<p class="empty-state">No data loaded.</p>';
+      root.dataset.wfReady = "";
+      return;
+    }
+
+    ensureLayout(root);
+
+    const progress = WF.storage.load();
+
+    if (activeCategory === null || !types.includes(activeCategory)) activeCategory = WF.DEFAUT_ACTIVE_TAB;
+
+    const { typeBase, filters } = getTypeBaseAndFilters(includeFounder, includePvpMods);
+
+    const validTypes = new Set([all, ...Object.values(WF.TYPES[activeCategory] || {})]);
+    if (!validTypes.has(activeType)) {
+      activeType = all;
+      activeFilter = {};
+    }
+
+    const sanitizedFilter = {};
+    filters.forEach((filter) => {
+      const value = activeFilter[filter.field];
+      if (!value || value === all) return;
+
+      const options = filter.optionsBySubtype ? filter.optionsBySubtype[activeType] || null : filter.options;
+      const validValues = options && new Set([all, todo, ...Object.values(options)]);
+
+      if (validValues && validValues.has(value)) sanitizedFilter[filter.field] = value;
+    });
+    activeFilter = sanitizedFilter;
+
+    buildSidebar(types, progress, includeFounder, includePvpMods);
+    renderStatic(progress, typeBase, filters);
+    renderDynamic(progress, typeBase, filters);
+
     WF.uiState.save({ activeCategory, activeType, activeFilter });
   }
 
   function getCategoryStats(category) {
     const progress = WF.storage.load();
     const includeFounder = WF.options.load().includeFounderItems;
-    const items = WF.data.filter((item) => matchesCategory(item, category) && (includeFounder || !item.founder));
+    const includePvpMods = WF.options.load().includePvpMods;
+    const items = WF.data.filter((item) => matchesCategory(item, category) && (includeFounder || !item.founder) && (includePvpMods || !(Array.isArray(item.type) && item.type.length === 1 && item.type[0] === WF.TYPES.mod.pvp)));
     let owned = 0;
     for (let i = 0; i < items.length; i++) {
       if (progress[items[i].item_name]) owned++;

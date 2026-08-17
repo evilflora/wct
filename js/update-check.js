@@ -1,7 +1,11 @@
 WF.updateCheck = (function () {
   const TOAST_DURATION_MS = 3000;
+  const TOAST_UPDATE_MS = 3000;
   const LAST_SEEN_KEY = "wf_checklist_last_seen_version";
   const FILE_NAME = "version.js";
+    
+  const updateToggle = document.getElementById("btn-update-toggle");
+  updateToggle.addEventListener("click", showUpdateAvailable);
 
   function isLocalCopy() {
     return window.location.protocol === "file:";
@@ -12,24 +16,15 @@ WF.updateCheck = (function () {
       ? `A new version is available, download it from <a id="info-project-link" href="${WF.PROJECT_URL}" target="_blank" rel="noopener noreferrer">GitHub</a>.`
       : `A new version is available, refresh this page (Ctrl+F5) to get it.`;
   }
+  
+  function showUpdateAvailable()
+  {
+    WF.toast.show(updateMessage(), { timeoutMs: TOAST_UPDATE_MS, type: "info" });
+  }
 
   function versionFileUrl() {
     const rawBase = WF.PROJECT_URL.replace("github.com", "raw.githubusercontent.com");
     return `${rawBase}js/${FILE_NAME}`;
-  }
-
-  function showToast() {
-    const toast = document.createElement("div");
-    toast.className = "update-toast";
-    toast.innerHTML = updateMessage();
-    document.body.appendChild(toast);
-
-    requestAnimationFrame(() => toast.classList.add("visible"));
-
-    setTimeout(() => {
-      toast.classList.remove("visible");
-      setTimeout(() => toast.remove(), 300);
-    }, TOAST_DURATION_MS);
   }
 
   function showChangelogNotice() {
@@ -37,6 +32,7 @@ WF.updateCheck = (function () {
     if (!notice) return;
     notice.innerHTML = updateMessage();
     notice.classList.remove("hidden");
+    updateToggle.classList.remove("hidden");
   }
 
   async function check() {
@@ -66,7 +62,7 @@ WF.updateCheck = (function () {
     const lastSeenVersion = Number(localStorage.getItem(LAST_SEEN_KEY));
     if (!Number.isNaN(lastSeenVersion) && lastSeenVersion >= remoteVersion) return;
 
-    showToast();
+    WF.toast.show(updateMessage(), { timeoutMs: TOAST_DURATION_MS, type: "info" });
     localStorage.setItem(LAST_SEEN_KEY, String(remoteVersion));
   }
 

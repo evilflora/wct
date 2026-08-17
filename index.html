@@ -4,8 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Warframe Completion Tracker</title>
+	<meta name="description" content="Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more." />
+	<meta name="robots" content="index, follow" />
+	<link rel="canonical" href="https://evilflora.github.io/wct/" />
+
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="Warframe Completion Tracker" />
+	<meta property="og:title" content="Warframe Completion Tracker" />
+	<meta property="og:description" content="Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more." />
+	<meta property="og:url" content="https://evilflora.github.io/wct/" />
+	<meta property="og:locale" content="en_US" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "WebApplication",
+		"name": "Warframe Completion Tracker",
+		"url": "https://evilflora.github.io/wct/",
+		"applicationCategory": "UtilitiesApplication",
+		"operatingSystem": "Any (Web Browser)",
+		"description": "Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more."
+	}
+	</script>
   <script>
     (function () {
       try {
@@ -19,6 +40,12 @@
   </script>
 </head>
 <body>
+	<noscript>
+		<div style="padding:2rem;max-width:640px;margin:0 auto;text-align:center;">
+			<h2>JavaScript required</h2>
+			<p>Warframe Completion Tracker requires JavaScript to work. Please enable JavaScript in your browser to use this tool.</p>
+		</div>
+	</noscript>
   <div class="layout">
     <nav id="sidebar" class="sidebar">
       <div class="sidebar-header">
@@ -28,15 +55,16 @@
       <div id="sidebar-groups"></div>
     </nav>
     <div id="sidebar-overlay" class="sidebar-overlay"></div>
-
     <div class="content-column">
       <header>
         <div class="header-top">
           <button id="btn-sidebar-toggle" class="sidebar-toggle-btn" aria-label="Open menu">&#9776;</button>
           <h1>Warframe Completion Tracker</h1>
           <div class="btn-group">
-            <button id="btn-stats-toggle" class="info-toggle-btn" aria-label="Open stats">[&gt;&gt;] STATS</button>
-            <button id="btn-info-toggle" class="info-toggle-btn" aria-label="Open info">[?] INFO</button>
+            <button id="btn-update-toggle"  class="info-toggle-btn hidden" aria-label="Open update" >[&#x2B07;]</button>
+            <button id="btn-sync-toggle"    class="info-toggle-btn" aria-label="Open sync"   >[&#9823;] SYNC</button>
+            <button id="btn-stats-toggle"   class="info-toggle-btn" aria-label="Open stats"  >[&gt;&gt;] STATS</button>
+            <button id="btn-info-toggle"    class="info-toggle-btn" aria-label="Open info"   >[?] INFO</button>
             <button id="btn-options-toggle" class="info-toggle-btn" aria-label="Open options">[&#9881;] OPTIONS</button>
           </div>
         </div>
@@ -51,11 +79,52 @@
           </div>
         </div>
       </header>
-    
-      <main id="app" class="main-content"></main>
+			<main id="app" class="main-content">
+				<div>
+					<h2>Track your Warframe progress</h2>
+					<p>Warframe Completion Tracker helps you keep track of everything you've collected and everything left to unlock in Warframe: Warframes, Primary Weapons, Secondary Weapons, Melee Weapons, Companions, Archwings, Mods, Arcanes, Honorifics, Mastery Rank progress and more.</p>
+					<ul>
+						<li>Warframes &amp; Prime variants</li>
+						<li>Primary, Secondary &amp; Melee weapons</li>
+						<li>Companions &amp; Archwings</li>
+						<li>Mods &amp; Arcanes</li>
+						<li>Mastery Rank tracking</li>
+					</ul>
+					<p>All progress is saved locally in your browser, with optional export/import and cross-device sync.</p>
+				</div>
+			</main>
     </div>
   </div>
-
+	<div id="sync-overlay" class="info-overlay">
+    <div class="info-modal">
+      <div class="info-modal-header">
+        <h2>[&#9823;] Sync</h2>
+        <button id="btn-sync-close" class="info-close-btn" aria-label="Close sync">&times;</button>
+      </div>
+      <div class="info-modal-body">
+        <section>
+          <h3>Explanations</h3>
+          <p>You can synchronise your progression across multiple browsers and devices on the GitHub url (does not work without web server / http server).</p>
+          <p>If you try to sync data from a higher version to an older one, it will locally strip non-existing items.</p>
+          <p>It works by using Google Firebase and a unique ID that can be generated below.</p>
+        </section>
+        <section>
+          <h3>Usage</h3>
+          <p>By pressing "CREATE", a random secret key will be generated, <b>do not lose it</b> (it'll be included in the export file).</p>
+					<p>If you already have a secret key, you can paste it and then SYNC, this allow you to download or upload your save.</p>
+          <p><b>Keep this secret, do not share, do not show it. Anyone with this key will be able to modify your save.</b></p>
+          <p>Your secret key (mostly hiden): <input id="sync-key" class="sync-key" placeholder="64 characters key" maxlength="64" /></p>
+					<div class="sync-actions" style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
+						<button id="btn-sync-action" class="toolbar-btn-main" aria-label="Sync Action">CREATE</button>
+						<button id="btn-sync-push" class="toolbar-btn-main hidden" aria-label="Push Update">UPLOAD</button>
+						<button id="btn-sync-pull" class="toolbar-btn-main hidden" aria-label="Pull Update">DOWNLOAD</button>
+						<button id="btn-sync-disconnect" class="toolbar-btn-main hidden" aria-label="Disconnect Sync">DISCONNECT</button>
+						<button id="btn-sync-delete" class="delete-data-btn hidden" aria-label="Delete Sync">DELETE KEY AND REMOVE DATA</button>
+					</div>
+        </section>
+      </div>
+    </div>
+  </div>
   <div id="info-overlay" class="info-overlay">
     <div class="info-modal">
       <div class="info-modal-header">
@@ -65,7 +134,7 @@
       <div class="info-modal-body">
         <section>
           <h3>Changelog</h3>
-          <p id="update-available-notice" class="update-available-notice hidden">A new version is available!</p>
+          <p id="update-available-notice" class="update-available-notice hidden"></p>
           <ul id="info-changelog-list"></ul>
         </section>
         <section>
@@ -79,12 +148,11 @@
           <p>Made by @evilflora</p>
           <p>Item data provided by <a href="https://github.com/WFCD/warframe-items" target="_blank" rel="noopener noreferrer">WFCD (Warframe Community Developers)</a> and <a href="https://wiki.warframe.com" target="_blank" rel="noopener noreferrer">Wiki Warframe</a>.</p>
           <p>All data stays in your browser's local storage. Don't forget to save your data using the "Export" button.</p>
-          <p>Neither I nor this site is affiliated with "Digital Extremes" or "Warframe".<p>
+          <p>Neither I nor this site is affiliated with "Digital Extremes" or "Warframe".</p>
         </section>
       </div>
     </div>
   </div>
-
   <div id="stats-overlay" class="info-overlay">
     <div class="info-modal">
       <div class="info-modal-header">
@@ -105,7 +173,6 @@
       </div>
     </div>
   </div>
-
   <div id="options-overlay" class="info-overlay">
     <div class="info-modal">
       <div class="info-modal-header">
@@ -123,7 +190,13 @@
         <section>
           <label class="option-row">
             <input type="checkbox" id="opt-include-founder-pack-exclusive" />
-            <span>Add Founder Exclusive items: "Excalibur Prime" (Warframe), "Lato Prime" (Secondary), "Skana Prime" (Melee), this also add 2 more incarnon forms.</span>
+            <span>Add Founder Exclusive items: "Excalibur Prime" (Warframe), "Lato Prime" (Secondary), "Skana Prime" (Melee), 2 more incarnon forms, 4 more honoria titles.</span>
+          </label>
+        </section>
+        <section>
+          <label class="option-row">
+            <input type="checkbox" id="opt-include-pvp-mods" />
+            <span>Add PVP only Mods.</span>
           </label>
         </section>
         <section>
@@ -180,16 +253,15 @@
         </section>
         <section>
           <h3>Danger Zone</h3>
-          <p>Permanently erase all saved progress from this browser (after multiple confirmations). Auto-cancel after a few seconds. Export a backup first if unsure.</p>
+          <p>Permanently erase all saved progress from this browser (after multiple confirmations). Does not delete SYNC informations. Auto-cancel after a few seconds. Export a backup first if unsure.</p>
           <button id="btn-delete-data" class="delete-data-btn" data-default-label="DELETE DATA">DELETE DATA</button>
         </section>
       </div>
     </div>
   </div>
-
   <button id="btn-scroll-top" class="scroll-top-btn" aria-label="Scroll to top">&#8593;</button>
-
   <script src="js/constants.js"></script>
+	<script src="js/toast.js"></script>
   <script src="js/version.js"></script>
   <script src="js/update-check.js"></script>
   <script src="js/data/data_generated.js"></script>
@@ -201,5 +273,6 @@
   <script src="js/export-import.js"></script>
   <script src="js/render.js"></script>
   <script src="js/main.js"></script>
+  <script>if (window.location.protocol !== "file:") { import('./js/sync.js').then((module) => {}).catch((err) => { console.error("Sync can only be loaded on real web server." + err); }); }</script>
 </body>
 </html>

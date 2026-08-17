@@ -509,10 +509,24 @@ a { color: var(--accent-color); }
   overflow: hidden;
 }
 
-.main-content > .filter-row,
-.main-content > .progress-wrap,
-.main-content > .bulk-actions-row,
 .main-content > .empty-state {
+  flex-shrink: 0;
+}
+
+#wf-filters-zone {
+  flex-shrink: 0;
+}
+
+#wf-dynamic-zone {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#wf-dynamic-zone > .progress-wrap,
+#wf-dynamic-zone > .bulk-actions-row {
   flex-shrink: 0;
 }
 
@@ -718,6 +732,23 @@ a { color: var(--accent-color); }
   overflow-y: auto;
 }
 
+.hidden {
+  display: none;
+}
+
+#sync-key {
+  color: transparent;
+  text-shadow: 0 0 5px rgb(255 255 255);
+  background: none;
+  border: 0;
+	padding: 4px;
+}
+
+#sync-key:hover {
+  color: var(--text);
+  text-shadow: none;
+}
+
 .theme-swatches {
   display: flex;
   flex-wrap: wrap;
@@ -819,24 +850,44 @@ a { color: var(--accent-color); }
 
 .update-available-notice.hidden { display: none; }
 
-.update-toast {
+.wf-toast-container {
   position: fixed;
   top: 16px;
   left: 50%;
-  transform: translate(-50%, -12px);
-  background: var(--panel);
-  border: 1px solid var(--accent-color);
-  font-size: 13px;
-  padding: 10px 18px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
   z-index: 1000;
-  opacity: 0;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  pointer-events: none;
+  width: max-content;
+  max-width: calc(100vw - 32px);
 }
 
-.update-toast.visible {
+.wf-toast {
+  background: var(--panel);
+  border: 1px solid var(--accent-color);
+  color: var(--text);
+  font-size: 13px;
+  padding: 10px 18px;
+  opacity: 0;
+  transform: translateY(-12px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+.wf-toast.visible {
   opacity: 1;
-  transform: translate(-50%, 0);
+  transform: translateY(0);
+}
+
+.wf-toast-error { border-color: #e5484d; }
+.wf-toast-success { border-color: #2ecc71; }
+
+.wf-toast-clickable {
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 @media (max-width: 900px) {

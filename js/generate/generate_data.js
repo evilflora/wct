@@ -13,7 +13,7 @@ const EPHEMERA_EXCLUDE       = ["PeachBlossomsEphemera", "LunarEphemera", "LNYDr
 const FISH_EXCLUDE           = ["/HolidayGrineerBootItem", "/DuviriFishAItem", "/DuviriFishBItem", "/DuviriFishCItem", "/DuviriFishDItem", "/DuviriFishEItem", "/OrokinBootItem"];
 const FLOOF_EXCLUDE          = ["/PlushyOrdis", "/PlushyProtectorStalker", "/BirdPlush", "/FishPlush", "/DeerPlush", "/PlushyArthur", "/PlushyAoi", "/PlushyAmir", "/PlushyQuincy", "/PlushyLettie", "/PlushyEleanor", "/PlushyNokkoMushroom", "/PlushyLyon", "/PlushyMarie", "/PlushyRoathe", "/PlushyLotus", "/GaussPrimePlush", "/PlushyTiger", "/PlushyLNY2023Rabbit", "/PlushyLNY2024Dragon", "/PlushySnake", "/PlushyLNYMirage", "/PlushyLNYKaithe", "/TennoCon2024CosplayTrophy"];
 const FOCUS_WAYBOUND         = ["/MoreAmmoFocusUpgrade", "/RegenAmmoFocusUpgrade", "/HealthMaxFocusUpgrade", "/HealthRegenFocusUpgrade", "/MoveSpeedFocusUpgrade", "/ProjectionStretchUpgrade", "/SecondChanceFocusUpgrade", "/SecondChanceDamageBuffFocusUpgrade", "/EnergyPoolFocusUpgrade", "/EnergyRestoreFocusUpgrade"];
-const FOUNDER_EXCLUSIVE      = ["/Powersuits/Excalibur/ExcaliburPrime", "LatoPrime", "SkanaPrime"];
+const FOUNDER_EXCLUSIVE      = ["/Powersuits/Excalibur/ExcaliburPrime", "LatoPrime", "SkanaPrime", "FounderLvl1Title", "FounderLvl2Title", "FounderLvl3Title", "FounderLvl4Title"];
 const FRAMEFIGHTER           = ["Ash", "Atlas", "Banshee", "Baruuk", "Chroma", "Ember", "Equinox", "Excalibur", "Excalibur Umbra", "Frost", "Gara", "Garuda", "Gauss", "Grendel", "Harrow", "Hildryn", "Hydroid", "Inaros", "Ivara", "Khora", "Lavos", "Limbo", "Loki", "Mag", "Mesa", "Mirage", "Nekros", "Nezha", "Nidus", "Nova", "Nyx", "Oberon", "Octavia", "Protea", "Revenant", "Rhino", "Saryn", "Sevagoth", "Titania", "Trinity", "Valkyr", "Vauban", "Volt", "Wisp", "Wukong", "Xaku", "Yareli", "Zephyr"];
 const GEAR_INCLUDE           = ["LureGearItem", "/FishBait/", "RarityBoost"];
 const GLOBAL_EXCLUDE         = ["/Lotus/Upgrades/Mods/Randomized/Lotus", "/Lotus/Upgrades/Mods/Randomized/Player", "/Lotus/StoreItems/Upgrades/Mods/Randomized",  "/TransmuteCores/", "/Engineering/Base", "CloakPullFocusUpgrade", "DashElectricityFocusUpgrade", "CloakStaticFocusUpgrade", "BlastBurstFocusUpgrade", "DashFireFocusUpgrade", "BlastFireballFocusUpgrade", "DashDamageFocusUpgrade", "ElementalDamageFocusUpgrade", "BlastChargeFocusUpgrade", "CloakBlindFocusUpgrade", "BlastRadiusFocusUpgrade", "ArmourIncreaseFocusUpgrade", "DashReduceDamageFocusUpgrade", "MagneticFieldFocusUpgrade", "DashReduceArmourFocusUpgrade", "BlastDamagePickupFocusUpgrade", "CloakReduceDamageFocusUpgrade", "CloakAllyCloakFocusUpgrade", "ReflectDamageFocusUpgrade", "BlastSelfShieldFocusUpgrade", "BlastDisarmFocusUpgrade", "BlastConfuseFocusUpgrade", "DashFinisherFocusUpgrade", "DashSpeedFocusUpgrade", "CloakRevealFocusUpgrade", "SonarPvPAugmentCard", "CloakMeleeCritFocusUpgrade", "CloakShieldFocusUpgrade", "CloakHealOthersFocusUpgrade", "DashShockwaveFocusUpgrade", "DashWaveFocusUpgrade", "AirborneMeleeAutoTargetBonus", "GroundingMeleeMod", "/Lotus/Upgrades/CosmeticEnhancers/Defensive/PoisonProcResist", "/Lotus/Upgrades/CosmeticEnhancers/Defensive/GasProcResist", "/Lotus/Upgrades/CosmeticEnhancers/Defensive/CorrosiveProcResist", "/Lotus/Upgrades/CosmeticEnhancers/Utility/SlowerBleedOutOnPredeath", "/Lotus/Upgrades/CosmeticEnhancers/Utility/DamageReductionDuringRevive", "/Lotus/Upgrades/CosmeticEnhancers/Utility/NoCostCastChanceAbility", "SiriusOrion/OrionSuit", "/Lotus/Types/Keys/DojoKey", "SolNode254", "SolNode255", "SolNode256", "AvatarResistanceOnDamageMod", "AvatarDamageResistanceLaserExpert", "AvatarDamageResistanceFireExpert", "HealthPickupGivesArmourMax", "AvatarDamageResistanceIceExpert", "AvatarAbilityStrengthModExpert", "AvatarDamageResistanceElectricityExpert", "AvatarShieldRechargeRateModExpert", "AvatarAbilityEfficiencyModExpert", "AvatarDamageToEnergyModExpert", "AvatarParryReflectModExpert", "AvatarDamageResistanceStun", "AvatarAbilityRangeModExpert", "/DangerRoomKey", "/AvatarImagePHGlyph", "/PunctureProcResist"];
@@ -54,7 +54,7 @@ const CATEGORY_MAPPERS = {
   "AirSupport": mapAirSupport,     // 7/7
   "ArtGallery": mapArtGallery,     // 15/15
   "Challenge": mapChallenge,       // 212/212 
-  "Enemy": mapEnemy,               // KO (is no more updated by WFCD)
+  "Enemy": mapEnemy,               // ?/1368 (is no more updated by WFCD)
   "Fish": mapFish,                 // KO
   "FocusSchool": mapFocusSchool,   // 85/85 (75 + 10 => 15 for each scholl + 2 waybound for each school)
   "Fragment": mapFragment,         // 222/222 (46 cephalon + 20 cetus + 5 gara + 13 ghoul + 35 solaris + 8 partnership + 68 prex + 11 tenet + 10 duviri + 5 albrecht + 1 isleweaver)
@@ -68,7 +68,8 @@ const CATEGORY_MAPPERS = {
   "Misc": mapMisc,                 // KO 
   "Mods": mapMod,                  // 1441/1441 (No flawed mods nor unobtainable ones, but they still might be owned by a few.)
   "Node": mapNode,                 // 560/580 (a few nodes are missings)
-  "PeelyPix": mapPeelyPix,         // 25/25 
+  "Object": mapObject,             // ?/?
+	"PeelyPix": mapPeelyPix,         // 25/25 
   "Pets": mapPet,                  // 17/17
   "Primary": mapPrimary,           // 203/203 (194 normal + 9 amp)
   "Quests": mapQuest,              // 45/45 prelude to war ? the new war ?
@@ -291,23 +292,20 @@ function mapFocusSchool(raw) {
 }
 
 function mapFragment(raw, type = null) {
-  let subType = WF.TYPES.fragment_category.warframe;
+  let subType = null; 
   if (type === null) type = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
   
   switch (type) {
     case WF.TYPES.fragment.prex:
+			subType = WF.TYPES.fragment_category.warframe;
       if (raw.uniqueName.includes("/Emotions/")) subType = WF.TYPES.fragment_category.palladino;
       else if (raw.uniqueName.includes("Tenno") && !raw.uniqueName.includes("TennoCon")) subType = WF.TYPES.fragment_category.other;
       else if (raw.uniqueName.includes("TennoCon")) subType = WF.TYPES.fragment_category.deimos;
       else if (raw.uniqueName.endsWith("Heirloom")) subType = WF.TYPES.fragment_category.heirloom;
       break;
-    case WF.TYPES.fragment.cephalon:
-    case WF.TYPES.fragment.tenet:
-      subType = null;
-      break;
   }
     
-  return [entry(raw, WF.CATEGORY.fragment.name, type, { fragment_category: subType })];
+  return [entry(raw, WF.CATEGORY.fragment.name, type, { ...( subType && { fragment_category: subType }) })];
 }
 
 function mapFramefighter(raw) {
@@ -323,7 +321,8 @@ function mapHelminth(raw) {
 
 function mapHonoria(raw) {
   const typeField = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
-  return [entry(raw, WF.CATEGORY.honoria.name, typeField)];
+	const isFounder = getIsFounder(raw.uniqueName);
+  return [entry(raw, WF.CATEGORY.honoria.name, typeField, { ...(isFounder && { founder: isFounder }) })];
 }
 
 function mapIntrinsic(raw) {
@@ -376,7 +375,7 @@ function mapMod(raw) { // I know it's a fuc**ng mess
   if (raw.uniqueName.startsWith("/Lotus/Upgrades/Focus") ||raw.uniqueName.startsWith("/Lotus/Upgrades/Mods/Sets/")) return mapFocusSchool(raw);
   
   if (MOD_PVEVP.some(element => raw.uniqueName.endsWith(element))) typeField.push(WF.TYPES.mod.pvp);
-  else if (raw.uniqueName.includes("PvP")) typeField = WF.TYPES.mod.pvp;
+  else if (raw.uniqueName.includes("PvP")) typeField = [WF.TYPES.mod.pvp];
   
   if(MOD_IS_AUGMENT_END.some(element => raw.uniqueName.endsWith(element))) subType.push(WF.TYPES.mod_category.augment);
   
@@ -461,6 +460,11 @@ function mapNode(raw) { // 238 normal and SP, but I have 237 and 237 I can't fin
   returnValue.push(entry(spRaw, WF.CATEGORY.node.name, system, { node_solar: planetField, node_difficulty: WF.TYPES.node_difficulty.steel, ...(xpReward && { mastery_xp: xpReward }) }));
 
   return returnValue;
+}
+
+function mapObject(raw) { 
+  const typeField   = raw.type ? `${escapeQuotes(raw.type.split(" ")[0])}` : NULL;
+  return [entry(raw, WF.CATEGORY.object.name, typeField)]; 
 }
 
 function mapPeelyPix(raw) { 
@@ -558,7 +562,7 @@ function mapRelic(raw) {
 }
 
 function mapResource(raw) { 
-  return [entry(raw, WF.CATEGORY.resource.name, null)];
+  return [];
 }
 
 function mapScene(raw) {

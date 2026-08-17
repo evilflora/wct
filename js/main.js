@@ -10,6 +10,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const sidebar                = getEl("sidebar");
   const sidebarOverlay         = getEl("sidebar-overlay");
+  const syncOverlay            = getEl("sync-overlay");
+  const syncKey                = getEl("sync-key");
+  const syncActionBtn          = getEl("btn-sync-action");
+  const syncPushBtn            = getEl("btn-sync-push");
+  const syncPullBtn            = getEl("btn-sync-pull");
+  const syncDisconnectBtn      = getEl("btn-sync-disconnect");
+  const syncDeleteBtn          = getEl("btn-sync-delete");
   const infoOverlay            = getEl("info-overlay");
   const statsOverlay           = getEl("stats-overlay");
   const optionsOverlay         = getEl("options-overlay");
@@ -18,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const changelogList          = getEl("info-changelog-list");
   const includeOptionsCheckbox = getEl("opt-include-options-in-export");
   const includeFounderCheckbox = getEl("opt-include-founder-pack-exclusive");
+  const includePvpModsCheckbox = getEl("opt-include-pvp-mods");
   const importFileInput        = getEl("import-file-input");
   const themeSwatches          = document.querySelectorAll(".theme-swatch");
 
@@ -94,7 +102,194 @@ document.addEventListener("DOMContentLoaded", function () {
   getEl("btn-sidebar-toggle").addEventListener("click", openSidebar);
   getEl("btn-sidebar-close").addEventListener("click", closeSidebar);
   sidebarOverlay.addEventListener("click", closeSidebar);
+  
+	async function generateRandomHash() {
+		const bytes = crypto.getRandomValues(new Uint8Array(32));
+		return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+	}
+	
+	function checkRealServer()
+	{
+		if (window.location.protocol === "file:") {
+			WF.toast.show(`Sync only work when using web server / http server.`, { type: "error" }); 
+			return false;
+		}
+		return true;
+	}
 
+  function applyRemoteData(remoteObj) {
+    if (!remoteObj) return;
+    if (remoteObj.data) WF.storage.save(remoteObj.data);
+    if (remoteObj.options) WF.options.save(remoteObj.options);
+    WF.render.renderAll();
+    WF.mastery.render();
+  }
+
+  function updateSyncUIState() {
+    const options = WF.options.load();
+    const hasStoredKey = options.syncKey && options.syncKey.length === 64;
+			
+    if (hasStoredKey) {
+      syncKey.value = options.syncKey;
+      syncKey.readOnly = true;
+      
+      syncActionBtn.classList.add("hidden");
+      syncPushBtn.classList.remove("hidden");
+      syncPullBtn.classList.remove("hidden");
+      syncDisconnectBtn.classList.remove("hidden");
+      syncDeleteBtn.classList.remove("hidden");
+    } else {
+      syncKey.readOnly = false;
+      syncPushBtn.classList.add("hidden");
+      syncPullBtn.classList.add("hidden");
+      syncDisconnectBtn.classList.add("hidden");
+      syncDeleteBtn.classList.add("hidden");
+      syncActionBtn.classList.remove("hidden");
+			
+      if (syncKey.value.trim().length === 64) {
+        syncActionBtn.textContent = "SYNC";
+      } else {
+        syncActionBtn.textContent = "CREATE";
+      }
+    }
+  }
+
+  syncKey.addEventListener("input", () => {
+    const options = WF.options.load();
+    if (!options.syncKey) {
+      if (syncKey.value.trim().length === 64) {
+        syncActionBtn.textContent = "SYNC";
+      } else {
+        syncActionBtn.textContent = "CREATE";
+      }
+    }
+  });
+
+  syncActionBtn.addEventListener("click", async () => {
+		if (checkRealServer() == false) return;
+    const inputVal = syncKey.value.trim();
+
+    if (inputVal.length === 64) {
+      const options = WF.options.load();
+      WF.options.save({ ...options, syncKey: inputVal });
+      updateSyncUIState();
+      WF.toast.show(`Successfully connected. Use DOWNLOAD or UPLOAD to transfer data.`, { type: "success" });
+    } else {
+      const newHash = await generateRandomHash();
+      if (WF.sync) {
+        try {
+          await WF.sync.pushData(newHash);
+
+          const options = WF.options.load();
+          WF.options.save({ ...options, syncKey: newHash });
+          syncKey.value = newHash;
+
+					WF.toast.show(`Successfully connected.`, { type: "success" });
+        } catch (e) {
+          syncKey.value = "";
+          WF.toast.show(`Failed to connect. Please try again.`, { type: "error" });
+        }
+      }
+      updateSyncUIState();
+    }
+  });
+
+  syncPullBtn.addEventListener("click", async () => {
+		if (checkRealServer() == false) return;
+    const options = WF.options.load();
+    if (options.syncKey && WF.sync) {
+      try {
+        const remoteObj = await WF.sync.pullData(options.syncKey);
+        if (remoteObj) {
+          applyRemoteData(remoteObj);
+					WF.toast.show(`Successfully downloaded cloud data.`, { type: "success" });
+        } else {
+				  WF.toast.show(`No remote data found.`, { type: "error" });
+        }
+      } catch (e) {
+				if (e.message === "CLIENT_RATE_LIMITED")
+						WF.toast.show(`You are being rate limited, maximum 1 DOWNLOAD per 10 seconds.`, { timeoutMs: 3000, type: "info" });
+				else
+					WF.toast.show(`Failed to download cloud data.`, { type: "error" });
+      }
+    }
+  });
+
+  syncPushBtn.addEventListener("click", async () => {
+		if (checkRealServer() == false) return;
+    const options = WF.options.load();
+    if (options.syncKey && WF.sync) {
+      try {
+        await WF.sync.pushData(options.syncKey);
+				WF.toast.show(`Data successfully sent.`, { type: "success" });
+      } catch (e) {
+				if (e.message === "CLIENT_RATE_LIMITED" || e.message === "RATE_LIMITED")
+					WF.toast.show(`You are being rate limited, maximum 1 UPLOAD per 10 seconds.`, { timeoutMs: 3000, type: "info" });
+				else
+					WF.toast.show(`Failed to send data.`, { type: "error" });
+      }
+    }
+  });
+
+  syncDisconnectBtn.addEventListener("click", () => {
+    const options = WF.options.load();
+    
+		if (!confirm("Are you sure you want to disconnect? The key will be lost if it is not manually saved.")) return;
+		
+    if (WF.sync) {
+      WF.sync.stopSync();
+    }
+
+    const updatedOptions = { ...options };
+    delete updatedOptions.syncKey;
+    WF.options.save(updatedOptions);
+
+    syncKey.value = "";
+    updateSyncUIState();
+		WF.toast.show(`Disconnected. Local data preserved.`, { type: "success" });
+  });
+
+  syncDeleteBtn.addEventListener("click", async () => {
+		if (checkRealServer() == false) return;
+    const options = WF.options.load();
+    const currentKey = options.syncKey;
+
+    if (!currentKey) return;
+    if (!confirm("Are you sure you want to remove this key and delete all cloud data?")) return;
+
+    try {
+      if (WF.sync) {
+        await WF.sync.deleteRemoteData(currentKey);
+      }
+      
+      const updatedOptions = { ...options };
+      delete updatedOptions.syncKey;
+      WF.options.save(updatedOptions);
+
+      syncKey.value = "";
+      updateSyncUIState();
+			WF.toast.show(`Key removed and cloud data deleted.`, { type: "success" });
+    } catch (e) {
+      WF.toast.show(`Error deleting key and cloud data.`, { type: "error" });
+    }
+  });
+
+  function openSync() {
+    updateSyncUIState();
+    toggleOverlay(syncOverlay, true);
+  }
+
+  function closeSync() {
+    toggleOverlay(syncOverlay, false);
+  }
+	  
+  getEl("btn-sync-toggle").addEventListener("click", openSync);
+  getEl("btn-sync-close").addEventListener("click", closeSync);
+  
+  syncOverlay.addEventListener("click", (event) => {
+    if (event.target === syncOverlay) closeSync();
+  });
+  
   function openInfo() {
     toggleOverlay(infoOverlay, true);
   }
@@ -138,23 +333,13 @@ document.addEventListener("DOMContentLoaded", function () {
     if (event.target === infoOverlay) closeInfo();
   });
 
-  function closeTypeHelp() {
-    const openHelp = document.querySelector(".type-help.open");
-    if (openHelp) openHelp.classList.remove("open");
-  }
-
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
+      closeSync();
       closeInfo();
       closeStats();
       closeOptions();
-      closeTypeHelp();
     }
-  });
-
-  document.addEventListener("click", (event) => {
-    const openHelp = document.querySelector(".type-help.open");
-    if (openHelp && !openHelp.contains(event.target)) closeTypeHelp();
   });
 
   getEl("info-project-link-live").href = WF.PROJECT_URL;
@@ -240,35 +425,43 @@ document.addEventListener("DOMContentLoaded", function () {
     if (targetPanel) targetPanel.classList.add("active");
   });
 
-  function renderStatsTable() {
+	function renderStatsTable() {
     const table = getEl("stats-table");
     table.textContent = "";
-
     const thead = document.createElement("thead");
     thead.innerHTML = "<tr><th>Category</th><th>Progress</th><th>%</th></tr>";
-
     const tbody = document.createElement("tbody");
     const fragment = document.createDocumentFragment();
-    
+    const rows = [];
+
     WF.NAV_GROUPS.forEach((group) => {
       const rawTypes = [...group.types, ...(group.subgroups || []).flatMap((sg) => sg.types)];
-
       rawTypes.forEach((typeObj) => {
         const category = typeObj.name || typeObj;
         const stats = WF.render.getCategoryStats(category);
         if (stats.total === 0) return;
-
-        const label = typeObj.label || category;
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${label}</td><td>${stats.owned}/${stats.total}</td><td>${stats.percent}%</td>`;
-        fragment.appendChild(tr);
+        rows.push({ label: typeObj.label || category, stats });
       });
+    });
+
+    const totalOwned = rows.reduce((sum, r) => sum + r.stats.owned, 0);
+    const totalAll = rows.reduce((sum, r) => sum + r.stats.total, 0);
+    const globalPercent = totalAll > 0 ? Math.round((totalOwned / totalAll) * 100) : 0;
+
+    const globalTr = document.createElement("tr");
+    globalTr.className = "global-progression";
+    globalTr.innerHTML = `<td><strong>Global progression</strong></td><td>${totalOwned}/${totalAll}</td><td>${globalPercent}%</td>`;
+    fragment.appendChild(globalTr);
+
+    rows.forEach(({ label, stats }) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${label}</td><td>${stats.owned}/${stats.total}</td><td>${stats.percent}%</td>`;
+      fragment.appendChild(tr);
     });
 
     tbody.appendChild(fragment);
     table.append(thead, tbody);
-  }
+  };
 
   function renderMasteryBreakdown() {
     const container = getEl("mastery-breakdown");
@@ -299,6 +492,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const options = WF.options.load();
     includeOptionsCheckbox.checked = options.includeOptionsInExport;
     includeFounderCheckbox.checked = options.includeFounderItems;
+    includePvpModsCheckbox.checked = options.includePvpMods;
     themeSwatches.forEach((swatch) => {
       const input = swatch.querySelector("input[type=color]");
       if (input) input.value = WF.theme.getColor(swatch.dataset.var);
@@ -323,6 +517,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   includeFounderCheckbox.addEventListener("change", () => {
     WF.options.save({ ...WF.options.load(), includeFounderItems: includeFounderCheckbox.checked });
+    WF.render.renderAll();
+    WF.mastery.render();
+  });
+	
+  includePvpModsCheckbox.addEventListener("change", () => {
+    WF.options.save({ ...WF.options.load(), includePvpMods: includePvpModsCheckbox.checked });
     WF.render.renderAll();
     WF.mastery.render();
   });
