@@ -4,29 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Warframe Completion Tracker</title>
-	<meta name="description" content="Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more." />
-	<meta name="robots" content="index, follow" />
-	<link rel="canonical" href="https://evilflora.github.io/wct/" />
+  <meta name="description" content="Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://evilflora.github.io/wct/" />
 
-	<meta property="og:type" content="website" />
-	<meta property="og:site_name" content="Warframe Completion Tracker" />
-	<meta property="og:title" content="Warframe Completion Tracker" />
-	<meta property="og:description" content="Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more." />
-	<meta property="og:url" content="https://evilflora.github.io/wct/" />
-	<meta property="og:locale" content="en_US" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Warframe Completion Tracker" />
+  <meta property="og:title" content="Warframe Completion Tracker" />
+  <meta property="og:description" content="Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more." />
+  <meta property="og:url" content="https://evilflora.github.io/wct/" />
+  <meta property="og:locale" content="en_US" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-	<script type="application/ld+json">
-	{
-		"@context": "https://schema.org",
-		"@type": "WebApplication",
-		"name": "Warframe Completion Tracker",
-		"url": "https://evilflora.github.io/wct/",
-		"applicationCategory": "UtilitiesApplication",
-		"operatingSystem": "Any (Web Browser)",
-		"description": "Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more."
-	}
-	</script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Warframe Completion Tracker",
+    "url": "https://evilflora.github.io/wct/",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any (Web Browser)",
+    "description": "Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more."
+  }
+  </script>
   <script>
     (function () {
       try {
@@ -40,12 +40,12 @@
   </script>
 </head>
 <body>
-	<noscript>
-		<div style="padding:2rem;max-width:640px;margin:0 auto;text-align:center;">
-			<h2>JavaScript required</h2>
-			<p>Warframe Completion Tracker requires JavaScript to work. Please enable JavaScript in your browser to use this tool.</p>
-		</div>
-	</noscript>
+  <noscript>
+    <div style="padding:2rem;max-width:640px;margin:0 auto;text-align:center;">
+      <h2>JavaScript required</h2>
+      <p>Warframe Completion Tracker requires JavaScript to work. Please enable JavaScript in your browser to use this tool.</p>
+    </div>
+  </noscript>
   <div class="layout">
     <nav id="sidebar" class="sidebar">
       <div class="sidebar-header">
@@ -79,23 +79,23 @@
           </div>
         </div>
       </header>
-			<main id="app" class="main-content">
-				<div>
-					<h2>Track your Warframe progress</h2>
-					<p>Warframe Completion Tracker helps you keep track of everything you've collected and everything left to unlock in Warframe: Warframes, Primary Weapons, Secondary Weapons, Melee Weapons, Companions, Archwings, Mods, Arcanes, Honorifics, Mastery Rank progress and more.</p>
-					<ul>
-						<li>Warframes &amp; Prime variants</li>
-						<li>Primary, Secondary &amp; Melee weapons</li>
-						<li>Companions &amp; Archwings</li>
-						<li>Mods &amp; Arcanes</li>
-						<li>Mastery Rank tracking</li>
-					</ul>
-					<p>All progress is saved locally in your browser, with optional export/import and cross-device sync.</p>
-				</div>
-			</main>
+      <main id="app" class="main-content">
+        <div>
+          <h2>Track your Warframe progress</h2>
+          <p>Warframe Completion Tracker helps you keep track of everything you've collected and everything left to unlock in Warframe: Warframes, Primary Weapons, Secondary Weapons, Melee Weapons, Companions, Archwings, Mods, Arcanes, Honorifics, Mastery Rank progress and more.</p>
+          <ul>
+            <li>Warframes &amp; Prime variants</li>
+            <li>Primary, Secondary &amp; Melee weapons</li>
+            <li>Companions &amp; Archwings</li>
+            <li>Mods &amp; Arcanes</li>
+            <li>Mastery Rank tracking</li>
+          </ul>
+          <p>All progress is saved locally in your browser, with optional export/import and cross-device sync.</p>
+        </div>
+      </main>
     </div>
   </div>
-	<div id="sync-overlay" class="info-overlay">
+  <div id="sync-overlay" class="info-overlay">
     <div class="info-modal">
       <div class="info-modal-header">
         <h2>[&#9823;] Sync</h2>
@@ -111,16 +111,16 @@
         <section>
           <h3>Usage</h3>
           <p>By pressing "CREATE", a random secret key will be generated, <b>do not lose it</b> (it'll be included in the export file).</p>
-					<p>If you already have a secret key, you can paste it and then SYNC, this allow you to download or upload your save.</p>
+          <p>If you already have a secret key, you can paste it and then SYNC, this allow you to download or upload your save.</p>
           <p><b>Keep this secret, do not share, do not show it. Anyone with this key will be able to modify your save.</b></p>
           <p>Your secret key (mostly hiden): <input id="sync-key" class="sync-key" placeholder="64 characters key" maxlength="64" /></p>
-					<div class="sync-actions" style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
-						<button id="btn-sync-action" class="toolbar-btn-main" aria-label="Sync Action">CREATE</button>
-						<button id="btn-sync-push" class="toolbar-btn-main hidden" aria-label="Push Update">UPLOAD</button>
-						<button id="btn-sync-pull" class="toolbar-btn-main hidden" aria-label="Pull Update">DOWNLOAD</button>
-						<button id="btn-sync-disconnect" class="toolbar-btn-main hidden" aria-label="Disconnect Sync">DISCONNECT</button>
-						<button id="btn-sync-delete" class="delete-data-btn hidden" aria-label="Delete Sync">DELETE KEY AND REMOVE DATA</button>
-					</div>
+          <div class="sync-actions" style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <button id="btn-sync-action" class="toolbar-btn-main" aria-label="Sync Action">CREATE</button>
+            <button id="btn-sync-push" class="toolbar-btn-main hidden" aria-label="Push Update">UPLOAD</button>
+            <button id="btn-sync-pull" class="toolbar-btn-main hidden" aria-label="Pull Update">DOWNLOAD</button>
+            <button id="btn-sync-disconnect" class="toolbar-btn-main hidden" aria-label="Disconnect Sync">DISCONNECT</button>
+            <button id="btn-sync-delete" class="delete-data-btn hidden" aria-label="Delete Sync">DELETE KEY AND REMOVE DATA</button>
+          </div>
         </section>
       </div>
     </div>
@@ -261,7 +261,7 @@
   </div>
   <button id="btn-scroll-top" class="scroll-top-btn" aria-label="Scroll to top">&#8593;</button>
   <script src="js/constants.js"></script>
-	<script src="js/toast.js"></script>
+  <script src="js/toast.js"></script>
   <script src="js/version.js"></script>
   <script src="js/update-check.js"></script>
   <script src="js/data/data_generated.js"></script>
