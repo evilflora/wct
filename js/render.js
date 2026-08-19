@@ -183,6 +183,20 @@ WF.render = (function () {
     container.appendChild(fragment);
   }
 
+  function preserveFilterScroll(rebuildFn) {
+    const zone = document.getElementById("wf-filters-zone");
+    const scrollByField = {};
+    zone.querySelectorAll(".filter-row").forEach((row) => { scrollByField[row.dataset.field] = row.scrollLeft; });
+    const zoneScrollLeft = zone.scrollLeft;
+
+    rebuildFn();
+
+    zone.scrollLeft = zoneScrollLeft;
+    zone.querySelectorAll(".filter-row").forEach((row) => {
+      if (scrollByField[row.dataset.field] !== undefined) row.scrollLeft = scrollByField[row.dataset.field];
+    });
+  }
+
   function buildFilterRow(container, Options, currentValue, onSelect, progress, fieldName, existencePool) {
     if (!Options) return;
 
@@ -192,6 +206,7 @@ WF.render = (function () {
 
     const row = document.createElement("div");
     row.className = "filter-row";
+    row.dataset.field = fieldName;
 
     const values = [all, ...options, todo];
     values.forEach((value) => {
@@ -207,7 +222,14 @@ WF.render = (function () {
       pill.textContent = `${value === all ? all : value} (${percent}%)`;
       pill.addEventListener("click", () => {
         onSelect(value);
-        renderAll();
+
+        if (fieldName === "type") {
+          preserveFilterScroll(renderAll);
+          return;
+        }
+
+        row.querySelectorAll(".filter-pill").forEach((p) => p.classList.toggle("active", p.dataset.value === value));
+        renderUpdate();
       });
       row.appendChild(pill);
     });
@@ -464,6 +486,19 @@ WF.render = (function () {
     if (root.dataset.wfReady === "1") return;
     root.innerHTML = '<div id="wf-filters-zone"></div><div id="wf-dynamic-zone"></div>';
     root.dataset.wfReady = "1";
+    bindFilterWheelScroll();
+	}
+
+  function bindFilterWheelScroll() {
+    const zone = document.getElementById("wf-filters-zone");
+    zone.addEventListener("wheel", (e) => {
+      const row = e.target.closest(".filter-row");
+      if (!row || row.scrollWidth <= row.clientWidth) return; 
+      if (e.shiftKey) return;
+
+      row.scrollLeft += e.deltaY;
+      e.preventDefault();
+    }, { passive: false });
   }
 
   function getFilteredPool(typeBase, filters, excludeField) {

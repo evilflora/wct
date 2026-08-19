@@ -64,10 +64,6 @@ CUSTOM_ENTRIES = [
 	// /Lotus/Types/Items/Titles/RailjackAshTitle
 	// /Lotus/Types/Items/Titles/RailjackGarudaTitle
 	// /Lotus/Types/Items/Titles/RememberTogetherTitle
-	// /Lotus/Types/Items/Titles/AmirCampaignAnnoyTitle
-  // /Lotus/Types/Items/Titles/AmirCampaignLootTitle
-  // /Lotus/Types/Items/Titles/AmirCampaignCompleteTitle
-  //{ uniquename: "/Lotus/Types/Items/Titles/AmirCampaignButterfingersTitle"         ,name: "Butterfingers"                    , category: "Honoria", type: "Suffix" }, 
 	// honoria https://wiki.warframe.com/w/Honoria/Checklist & https://github.com/calamity-inc/warframe-public-export/blob/senpai/ExportFlavour_en.json
 	{ uniqueName: "/Lotus/Types/Items/Titles/FounderLvl1Title"                       , name: "Disciple Founder"                , category: "Honoria", type: "Prefix" },
 	{ uniqueName: "/Lotus/Types/Items/Titles/FounderLvl2Title"                       , name: "Hunter Founder"                  , category: "Honoria", type: "Prefix" },
@@ -157,7 +153,7 @@ CUSTOM_ENTRIES = [
 	{ uniqueName: "/Lotus/Types/Items/Titles/GuardianTitle"                          , name: "Make Your Own Fate"              , category: "Honoria", type: "Prefix" },
 	{ uniqueName: "/Lotus/Types/Items/Titles/RoatheTitles/TitleHydroid"              , name: "Marauder of the Deep"            , category: "Honoria", type: "Suffix" },
 	{ uniqueName: "/Lotus/Types/Items/Titles/DefendMarieTitle"                       , name: "Marie's Champion"                , category: "Honoria", type: "Suffix" },
-	{ uniqueName: "/Lotus/Types/Items/Titles/TheHexCompleteTitle"                    , name: "Marty <NAME> McFlea"             , category: "Honoria", type: "Both" }  ,
+	{ uniqueName: "/Lotus/Types/Items/Titles/TheHexCompleteTitle"                    , name: "Marty <NAME> McFlea"             , category: "Honoria", type: "Both"   },
 	{ uniqueName: "/Lotus/Types/Items/Titles/MR28Title"                              , name: "Master"                          , category: "Honoria", type: "Prefix" },
 	{ uniqueName: "/Lotus/Types/Items/Titles/RoatheTitles/NyxTitle"                  , name: "Master of Minds"                 , category: "Honoria", type: "Suffix" },
 	{ uniqueName: "/Lotus/Types/Items/Titles/RoatheTitles/TitleMotherTokens"         , name: "Matriarch"                       , category: "Honoria", type: "Prefix" },
@@ -263,6 +259,10 @@ CUSTOM_ENTRIES = [
 	{ uniqueName: "/Lotus/Types/Items/Titles/KuvaMasteryTitle"                       , name: "Worm Queen"                      , category: "Honoria", type: "Prefix" },
 	{ uniqueName: "/Lotus/Types/Items/Titles/RoatheTitles/TitleKuva"                 , name: "Yuvan Rising"                    , category: "Honoria", type: "Suffix" },
 	{ uniqueName: "/Lotus/Types/Items/Titles/ZenurikFocusHoarderTitle"               , name: "Zenurik Vanguard"                , category: "Honoria", type: "Prefix" },
+	{ uniqueName: "/Lotus/Types/Items/Titles/AmirCampaignAnnoyTitle"                 , name: "Legally Distinct"                , category: "Honoria", type: "Prefix" },
+	{ uniqueName: "/Lotus/Types/Items/Titles/AmirCampaignLootTitle"                  , name: "Busy Monologuing"                , category: "Honoria", type: "Suffix" },
+	{ uniqueName: "/Lotus/Types/Items/Titles/AmirCampaignCompleteTitle"              , name: "Forever Fablemaster"             , category: "Honoria", type: "Suffix" },
+	{ uniqueName: "/Lotus/Types/Items/Titles/AmirCampaignButterfingersTitle"         , name: "Butterfingers"                   , category: "Honoria", type: "Suffix" },
 	// helminth https://wiki.warframe.com/w/Helminth#Metamorphosis
 	{ uniqueName: "/Lotus/Powersuits/PowersuitAbilities/HelminthStrengthAbility"   , name: "Empower (1st)"              , category: "Helminth", type: "Metamorphosis" },
 	{ uniqueName: "/Lotus/Powersuits/PowersuitAbilities/HelminthSpeedAbility"      , name: "Infested Mobility (2nd)"    , category: "Helminth", type: "Metamorphosis" },

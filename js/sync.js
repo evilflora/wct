@@ -83,10 +83,4 @@ WF.sync = {
       throw err;
     }
   },
-  stopSync() {
-    if (activeUnsubscribe) {
-      activeUnsubscribe();
-      activeUnsubscribe = null;
-    }
-  },
 };

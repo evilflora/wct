@@ -235,10 +235,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const options = WF.options.load();
     
 		if (!confirm("Are you sure you want to disconnect? The key will be lost if it is not manually saved.")) return;
-		
-    if (WF.sync) {
-      WF.sync.stopSync();
-    }
 
     const updatedOptions = { ...options };
     delete updatedOptions.syncKey;

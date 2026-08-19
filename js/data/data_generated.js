@@ -1,4 +1,4 @@
-// Generated with "generate.html" on 2026-08-16 11:11:56 ET in 123.50ms - 19238 items source, 16087 lines created.
+// Generated with "generate.html" on 2026-08-19 01:34:03 ET in 119.10ms - 19242 items source, 16091 lines created.
 // Dont change this by hand, use my "generated.html" and download "all.json" from WFCD, or for custom data, use "js/generade/custom_data.js".
 // If you don't know what you're doing, PLEASE do nothing.
 WF.data = WF.data || [];
@@ -13991,6 +13991,10 @@ WF.data.push(
 	{ item_name: "/Lotus/Types/Items/Titles/KuvaMasteryTitle", display_name: { en: "Worm Queen" }, category: "honoria", type: "Prefix" },
 	{ item_name: "/Lotus/Types/Items/Titles/RoatheTitles/TitleKuva", display_name: { en: "Yuvan Rising" }, category: "honoria", type: "Suffix" },
 	{ item_name: "/Lotus/Types/Items/Titles/ZenurikFocusHoarderTitle", display_name: { en: "Zenurik Vanguard" }, category: "honoria", type: "Prefix" },
+	{ item_name: "/Lotus/Types/Items/Titles/AmirCampaignAnnoyTitle", display_name: { en: "Legally Distinct" }, category: "honoria", type: "Prefix" },
+	{ item_name: "/Lotus/Types/Items/Titles/AmirCampaignLootTitle", display_name: { en: "Busy Monologuing" }, category: "honoria", type: "Suffix" },
+	{ item_name: "/Lotus/Types/Items/Titles/AmirCampaignCompleteTitle", display_name: { en: "Forever Fablemaster" }, category: "honoria", type: "Suffix" },
+	{ item_name: "/Lotus/Types/Items/Titles/AmirCampaignButterfingersTitle", display_name: { en: "Butterfingers" }, category: "honoria", type: "Suffix" },
 	{ item_name: "/Lotus/Powersuits/PowersuitAbilities/HelminthStrengthAbility", display_name: { en: "Empower (1st)" }, category: "helminth", type: "Metamorphosis" },
 	{ item_name: "/Lotus/Powersuits/PowersuitAbilities/HelminthSpeedAbility", display_name: { en: "Infested Mobility (2nd)" }, category: "helminth", type: "Metamorphosis" },
 	{ item_name: "/Lotus/Powersuits/PowersuitAbilities/HelminthCompanionAbility", display_name: { en: "Masters Summons (3rd)" }, category: "helminth", type: "Metamorphosis" },
