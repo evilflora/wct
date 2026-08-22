@@ -18,7 +18,7 @@ const db = getFirestore(app);
 
 let _lastPushAt = 0;
 let _lastPullAt = 0;
-const PUSH_COOLDOWN_MS = 10000; // doit rester synchronisé avec les 10s de isNotRateLimited() dans les rules Firebase
+const PUSH_COOLDOWN_MS = 10000;
 const PULL_COOLDOWN_MS = 10000;
 
 window.WF = window.WF || {};

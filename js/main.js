@@ -100,7 +100,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   getEl("btn-sidebar-toggle").addEventListener("click", openSidebar);
-  getEl("btn-sidebar-close").addEventListener("click", closeSidebar);
   sidebarOverlay.addEventListener("click", closeSidebar);
   
 	async function generateRandomHash() {

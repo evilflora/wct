@@ -8,15 +8,19 @@ const XP60 = 6000;
 const XP80 = 8000;
 
 //
+
 const DOMESTIK_EXCLUDE       = ["/LisetPropCleaningDroneYareliDeluxe", "/LisetPropCleaningDroneYareliPrime", "/LisetPropCleaningDroneYareli", "/LisetProp1999TankDrone", "/LisetPropCleaningDroneColorOne", "/LisetPropCleaningDroneColorTwo", "/LisetPropCleaningDroneColorThree", "/LisetPropCleaningDroneColorFour", "/LisetPropCleaningDroneColorFive", "/LisetPropCleaningDroneColorSix", "/LisetPropCleaningDrone", "/LisetPropCleaningDroneCaliberChicks", "/LisetPropCleaningDroneInfested", "/LisetPropOrokinMaggot", "/LisetPropCleaningDroneTwitch"];
+const EMBLEM_EXCLUDE_END     = ["ClanEmblemItem", "AllianceEmblemItem", "Community10YearEmblemItem", "TennoGenBadgeItem", "WikiaBadgeItem", "TranslatorBadgeItem", "LotusGuideBadgeItem", "ZarimanEvolvingSekharaBadgeItemA", "1999CommunityARGBadgeItem", "SkullBadgeGoldItem", "SkullBadgeSilverItem", "SkullBadgeBronzeItem", "CYCCBBadgeItem", "CYOBBadgeItem", "CY17173MediaBadge", "CYDuowanMediaBadge", "CYPlayBadgeItem", "TennoCon2016BadgeItem", "XBoneJadeClemBadgeItem", "DrakeRifleBadgeItem", "PS5OkinaBadgeItem", "LeaderBadgeGhostItem", "LeaderBadgeMoonItem", "LeaderBadgeMountainItem", "LeaderBadgeShadowItem", "LeaderBadgeStormItem", "ZawVariantBadgeItemA", "ZawVariantBadgeItemB", "ZawVariantBadgeItemC", "PvpRepBadgeItem", "ExcaliburUmbraBadgeItem", "ZarimanEvolvingSekharaBadgeItemB", "ZarimanEvolvingSekharaBadgeItemC", "GolemRaidBadgeItem", "SevantiHaloBadgeItem", "NightmareSevantiHaloBadgeItem", "SevantiLegacyHaloBadgeItem"];
 const EPHEMERA_EXCLUDE       = ["PeachBlossomsEphemera", "LunarEphemera", "LNYDragonEphemera", "LNYStonesEphemera", "LNYKaitheDagathEphemera", "EphemeraNezhaPrime", "EphemeraGaraPrime", "EphemeraPrimeA", "PrimeVorunaEphemera", "GrendelPrimeEphemera", "GarudaPrimeEphemera", "ProteaPrimeEphemera", "YareliPrimeEphemera", "BaruukPrimeEphemera", "NarmerEvolvingEphemeraA", "NarmerEvolvingEphemeraB", "NarmerEvolvingEphemeraC", "CitrineDeluxeEphemera", "DeimosEphemera", "GrendelDeluxeIIFootstepsEphemera", "CalibanDeluxeEphemera", "TennoCon2026Ephemera", "VoltDeluxeRaijinEphemera", "XakuDeluxeEphemera", "VorunaDeluxeEphemera", "NovaDeluxeAoandonEphemera", "ObsidianEphemeraA", "WerewolfEphemera", "LavosDeluxeEphemera", "SandmanEphemera", "NokkoEphemera", "TennoCon2021Ephemera", "TwitchEphemera", "OraxiaEphemera"];
 const FISH_EXCLUDE           = ["/HolidayGrineerBootItem", "/DuviriFishAItem", "/DuviriFishBItem", "/DuviriFishCItem", "/DuviriFishDItem", "/DuviriFishEItem", "/OrokinBootItem"];
 const FLOOF_EXCLUDE          = ["/PlushyOrdis", "/PlushyProtectorStalker", "/BirdPlush", "/FishPlush", "/DeerPlush", "/PlushyArthur", "/PlushyAoi", "/PlushyAmir", "/PlushyQuincy", "/PlushyLettie", "/PlushyEleanor", "/PlushyNokkoMushroom", "/PlushyLyon", "/PlushyMarie", "/PlushyRoathe", "/PlushyLotus", "/GaussPrimePlush", "/PlushyTiger", "/PlushyLNY2023Rabbit", "/PlushyLNY2024Dragon", "/PlushySnake", "/PlushyLNYMirage", "/PlushyLNYKaithe", "/TennoCon2024CosplayTrophy"];
 const FOCUS_WAYBOUND         = ["/MoreAmmoFocusUpgrade", "/RegenAmmoFocusUpgrade", "/HealthMaxFocusUpgrade", "/HealthRegenFocusUpgrade", "/MoveSpeedFocusUpgrade", "/ProjectionStretchUpgrade", "/SecondChanceFocusUpgrade", "/SecondChanceDamageBuffFocusUpgrade", "/EnergyPoolFocusUpgrade", "/EnergyRestoreFocusUpgrade"];
-const FOUNDER_EXCLUSIVE      = ["/Powersuits/Excalibur/ExcaliburPrime", "LatoPrime", "SkanaPrime", "FounderLvl1Title", "FounderLvl2Title", "FounderLvl3Title", "FounderLvl4Title"];
+const FOUNDER_EXCLUSIVE      = ["/Powersuits/Excalibur/ExcaliburPrime", "LatoPrime", "SkanaPrime", "FounderLvl1Title", "FounderLvl2Title", "FounderLvl3Title", "FounderLvl4Title", "FoundersBadgeDiscipleItem", "FoundersBadgeHunterItem", "FoundersBadgeMasterItem", "FoundersBadgeGrandMasterItem", "FounderSigilDisciple", "FounderSigilHunter", "FounderSigilMaster", "FounderSigilGrandMaster"];
 const FRAMEFIGHTER           = ["Ash", "Atlas", "Banshee", "Baruuk", "Chroma", "Ember", "Equinox", "Excalibur", "Excalibur Umbra", "Frost", "Gara", "Garuda", "Gauss", "Grendel", "Harrow", "Hildryn", "Hydroid", "Inaros", "Ivara", "Khora", "Lavos", "Limbo", "Loki", "Mag", "Mesa", "Mirage", "Nekros", "Nezha", "Nidus", "Nova", "Nyx", "Oberon", "Octavia", "Protea", "Revenant", "Rhino", "Saryn", "Sevagoth", "Titania", "Trinity", "Valkyr", "Vauban", "Volt", "Wisp", "Wukong", "Xaku", "Yareli", "Zephyr"];
 const GEAR_INCLUDE           = ["LureGearItem", "/FishBait/", "RarityBoost"];
-const GLOBAL_EXCLUDE         = ["/Lotus/Upgrades/Mods/Randomized/Lotus", "/Lotus/Upgrades/Mods/Randomized/Player", "/Lotus/StoreItems/Upgrades/Mods/Randomized",  "/TransmuteCores/", "/Engineering/Base", "CloakPullFocusUpgrade", "DashElectricityFocusUpgrade", "CloakStaticFocusUpgrade", "BlastBurstFocusUpgrade", "DashFireFocusUpgrade", "BlastFireballFocusUpgrade", "DashDamageFocusUpgrade", "ElementalDamageFocusUpgrade", "BlastChargeFocusUpgrade", "CloakBlindFocusUpgrade", "BlastRadiusFocusUpgrade", "ArmourIncreaseFocusUpgrade", "DashReduceDamageFocusUpgrade", "MagneticFieldFocusUpgrade", "DashReduceArmourFocusUpgrade", "BlastDamagePickupFocusUpgrade", "CloakReduceDamageFocusUpgrade", "CloakAllyCloakFocusUpgrade", "ReflectDamageFocusUpgrade", "BlastSelfShieldFocusUpgrade", "BlastDisarmFocusUpgrade", "BlastConfuseFocusUpgrade", "DashFinisherFocusUpgrade", "DashSpeedFocusUpgrade", "CloakRevealFocusUpgrade", "SonarPvPAugmentCard", "CloakMeleeCritFocusUpgrade", "CloakShieldFocusUpgrade", "CloakHealOthersFocusUpgrade", "DashShockwaveFocusUpgrade", "DashWaveFocusUpgrade", "AirborneMeleeAutoTargetBonus", "GroundingMeleeMod", "/Lotus/Upgrades/CosmeticEnhancers/Defensive/PoisonProcResist", "/Lotus/Upgrades/CosmeticEnhancers/Defensive/GasProcResist", "/Lotus/Upgrades/CosmeticEnhancers/Defensive/CorrosiveProcResist", "/Lotus/Upgrades/CosmeticEnhancers/Utility/SlowerBleedOutOnPredeath", "/Lotus/Upgrades/CosmeticEnhancers/Utility/DamageReductionDuringRevive", "/Lotus/Upgrades/CosmeticEnhancers/Utility/NoCostCastChanceAbility", "SiriusOrion/OrionSuit", "/Lotus/Types/Keys/DojoKey", "SolNode254", "SolNode255", "SolNode256", "AvatarResistanceOnDamageMod", "AvatarDamageResistanceLaserExpert", "AvatarDamageResistanceFireExpert", "HealthPickupGivesArmourMax", "AvatarDamageResistanceIceExpert", "AvatarAbilityStrengthModExpert", "AvatarDamageResistanceElectricityExpert", "AvatarShieldRechargeRateModExpert", "AvatarAbilityEfficiencyModExpert", "AvatarDamageToEnergyModExpert", "AvatarParryReflectModExpert", "AvatarDamageResistanceStun", "AvatarAbilityRangeModExpert", "/DangerRoomKey", "/AvatarImagePHGlyph", "/PunctureProcResist"];
+const GLOBAL_EXCLUDE         = ["/Lotus/Upgrades/Mods/Randomized/Lotus", "/Lotus/Upgrades/Mods/Randomized/Player", "/Lotus/StoreItems/Upgrades/Mods/Randomized",  "/TransmuteCores/", "/Engineering/Base", "CloakPullFocusUpgrade", "DashElectricityFocusUpgrade", "CloakStaticFocusUpgrade", "BlastBurstFocusUpgrade", "DashFireFocusUpgrade", "BlastFireballFocusUpgrade", "DashDamageFocusUpgrade", "ElementalDamageFocusUpgrade", "BlastChargeFocusUpgrade", "CloakBlindFocusUpgrade", "BlastRadiusFocusUpgrade", "ArmourIncreaseFocusUpgrade", "DashReduceDamageFocusUpgrade", "MagneticFieldFocusUpgrade", "DashReduceArmourFocusUpgrade", "BlastDamagePickupFocusUpgrade", "CloakReduceDamageFocusUpgrade", "CloakAllyCloakFocusUpgrade", "ReflectDamageFocusUpgrade", "BlastSelfShieldFocusUpgrade", "BlastDisarmFocusUpgrade", "BlastConfuseFocusUpgrade", "DashFinisherFocusUpgrade", "DashSpeedFocusUpgrade", "CloakRevealFocusUpgrade", "SonarPvPAugmentCard", "CloakMeleeCritFocusUpgrade", "CloakShieldFocusUpgrade", "CloakHealOthersFocusUpgrade", "DashShockwaveFocusUpgrade", "DashWaveFocusUpgrade", "AirborneMeleeAutoTargetBonus", "GroundingMeleeMod", "/Lotus/Upgrades/CosmeticEnhancers/Defensive/PoisonProcResist", "/Lotus/Upgrades/CosmeticEnhancers/Defensive/GasProcResist", "/Lotus/Upgrades/CosmeticEnhancers/Defensive/CorrosiveProcResist", "/Lotus/Upgrades/CosmeticEnhancers/Utility/SlowerBleedOutOnPredeath", "/Lotus/Upgrades/CosmeticEnhancers/Utility/DamageReductionDuringRevive", "/Lotus/Upgrades/CosmeticEnhancers/Utility/NoCostCastChanceAbility", "SiriusOrion/OrionSuit", "/Lotus/Types/Keys/DojoKey", "SolNode254", "SolNode255", "SolNode256", "AvatarResistanceOnDamageMod", "AvatarDamageResistanceLaserExpert", "AvatarDamageResistanceFireExpert", "HealthPickupGivesArmourMax", "AvatarDamageResistanceIceExpert", "AvatarAbilityStrengthModExpert", "AvatarDamageResistanceElectricityExpert", "AvatarShieldRechargeRateModExpert", "AvatarAbilityEfficiencyModExpert", "AvatarDamageToEnergyModExpert", "AvatarParryReflectModExpert", "AvatarDamageResistanceStun", "AvatarAbilityRangeModExpert", "/DangerRoomKey", "/AvatarImagePHGlyph", "/PunctureProcResist", "/Rank00Trophy",
+"VoidProjectionProteaIvaraVault" // temporary, prevent spoil
+];
 const NODE_LOCATIONS         = { "SolNode": WF.TYPES.node.solar, "ClanNode": WF.TYPES.node.solar, "Junction": WF.TYPES.node.solar, "SettlementNode": WF.TYPES.node.solar, "CrewBattleNode": WF.TYPES.node.empyrean };
 const MOD_BEASTS             = ["beast", "kavat", "kubrow", "predasite", "vulpaphyla", "helminth charger"];
 const MOD_DO_NOT_EXCLUDE     = ["/Lotus/Upgrades/Mods/Melee/Expert/WeaponFireRateModExpert", "/Lotus/Upgrades/Mods/Melee/Expert/WeaponToxinDamageModExpert", "/Lotus/Upgrades/Mods/Melee/Expert/WeaponImpactDamageModExpert", "/Lotus/Upgrades/Mods/Pistol/Expert/WeaponFireDamageModExpert", "Shotgun/Expert/WeaponElectricityDamageModExpert", "Shotgun/Expert/WeaponFreezeDamageModExpert", "Rifle/Expert/WeaponFreezeDamageModExpert", "Mods/Shotgun/Expert/WeaponCritDamageModExpert"];
@@ -30,9 +34,13 @@ const MOD_PVEVP              = ["FasterMovementWhileAimingRifleMod", "RubicoLowZ
 const MOD_ROBOTS             = ["robotic", "carrier", "shade", "hound", "moa", "diriga", "nautilus", "oxylus", "wyrm", "dethcube", "djinn", "helios", "taxon", "sentinel"];
 const MOD_VEHICLES           = ["archwing", "k-drive", "necramech", "elytron", "itzal", "odonata"];
 const NODE_MAPPING           = {"SolNode203": 138, "SolNode4": 51, "SolNode181": 177, "SolNode88": 51, "SolNode106": 51, "SolNode97": 51, "SolNode73": 51, "SolNode31": 55, "SolNode2": 18, "SolNode45": 51, "SolNode113": 51, "SolNode33": 69, "SolNode204": 138, "SolNode41": 51, "SolNode16": 51, "SolNode205": 138, "SolNode185": 50, "SolNode132": 163, "SolNode223": 3, "SolNode153": 279, "SolNode907": 69, "SolNode60": 69, "SolNode25": 51, "SolNode119": 3, "SolNode82": 55, "SolNode79": 24, "SolNode74": 51, "SolNode121": 51, "SolNode70": 55, "SolNode149": 163, "SolNode43": 51, "SolNode75": 24, "SolNode196": 177, "SolNode147": 163, "SolNode83": 69, "SolNode56": 51, "SolNode23": 18, "SolNode98": 69, "SolNode6": 52, "SolNode67": 55, "SolNode146": 163, "SolNode128": 18, "SolNode27": 24, "SolNode100": 51, "SolNode12": 3, "SolNode19": 49, "SolNode903": 24, "SolNode59": 24, "SolNode39": 24, "SolNode144": 163, "SolNode104": 41, "SolNode85": 20, "SolNode1": 52, "SolNode905": 51, "SolNode87": 51, "SolNode65": 45, "SettlementNode11": 157, "SolNode51": 51, "SolNode42": 55, "SolNode58": 51, "SolNode76": 51, "SolNode195": 177, "SettlementNode20": 100, "SolNode125": 51, "SolNode61": 24, "SolNode162": 279, "SolNode164": 279, "SolNode177": 177, "SolNode93": 55, "SolNode188": 177, "SettlementNode10": 157, "SolNode141": 163, "SolNode101": 18, "SolNode140": 163, "SolNode220": 138, "SolNode118": 52, "SolNode130": 3, "SolNode49": 52, "SolNode139": 163, "SolNode109": 18, "SolNode26": 24, "SolNode138": 163, "SolNode103": 3, "SolNode63": 24, "SolNode89": 24, "SolNode191": 177, "SolNode36": 51, "SolNode193": 100, "SolNode126": 51, "SolNode38": 51, "SettlementNode12": 157, "SolNode902": 18, "SolNode209": 138, "SolNode210": 138, "SolNode175": 279, "SolNode189": 177, "SolNode190": 177, "SolNode21": 51, "SolNode84": 52, "SolNode62": 52, "SolNode166": 279, "SolNode50": 55, "SolNode137": 163, "SolNode102": 51, "SolNode224": 3, "SolNode167": 279, "SolNode30": 51, "SolNode69": 69, "SolNode129": 24, "SolNode217": 138, "SolNode24": 24, "SolNode211": 138, "SolNode72": 51, "SolNode15": 24, "SolNode212": 138, "SolNode131": 163, "SolNode81": 51, "SolNode906": 55, "SolNode226": 3, "SolNode228": 24, "SolNode17": 52, "SolNode127": 52, "SolNode114": 44, "SolNode48": 51, "SolNode18": 55, "SettlementNode1": 157, "SolNode9": 69, "SolNode184": 177, "SolNode908": 52, "SolNode57": 52, "SolNode171": 279, "SolNode187": 177, "SettlementNode15": 157, "SettlementNode14": 157, "SettlementNode2": 157, "SolNode173": 279, "SolNode214": 138, "SolNode46": 51, "SolNode122": 69, "SettlementNode3": 157, "SolNode225": 3, "SolNode34": 69, "SolNode904": 51, "SolNode20": 55, "SolNode22": 18, "SolNode32": 55, "SolNode11": 51, "SolNode740": 55, "SolNode10": 51, "SolNode53": 51, "SolNode135": 163, "SolNode96": 55, "SolNode105": 69, "SolNode108": 25, "SolNode78": 52, "SolNode450": 18, "SolNode14": 51, "SolNode64": 69, "SolNode66": 18, "SolNode123": 18, "SolNode215": 138, "SolNode216": 138, "SolNode68": 51, "SolNode107": 18, "SolNode239": 50, "SolNode183": 177, "SolNode99": 51, "SolNode172": 279, "SolNode199": 177,};
+const POSTER_EXCLUDE_END     = ["SolarisPosterA", "SolarisPosterB", "SolarisPosterC", "SolarisPosterD", "SolarisPosterE", "SolarisPosterF", "ThisIsWhatYouAreAchievement", "TNWGlintTeshinDisplay", "TNWGlintUmbraDisplay", "TNWGlintOperatorDisplay", "CNY2021Poster", "CaliberChicksPoster", "EmpyreanPoster", "YareliQuestComic"]; // ExplorationPoster ?
 const QUEST_SIDE             = ["KubrowQuestKeyChain", "SpyQuestKeyChain", "KahlQuestKeyChain", "InfestedAladVQuestKeyChain", "GetClemQuestKeyChain", "GlassQuestKeyChain"];
 const QUEST_WARFRAME         = ["ProteaQuestKeyChain", "WraithQuestKeyChain", "DragonQuestKeyChain", "IndexQuestKeyChain", "BardQuestKeyChain", "MummyQuestKeyChain", "MirageQuestKeyChain", "RevenantQuestKeyChain", "FairyQuestKeyChain", "YareliQuestKeyChain", "LimboQuestKeyChain", "GolemQuestKeyChainItem"];
-const SIGNA_EXCLUDE          = ["DexVinesCrown", "ChoirFrameHaloCrown", "TnTempleSignaCrown", "PrimeSevagothHaloCrown", "SWZamariuSignaCrown", "SWSignaPragmaticaCrown"];
+const SIGIL_EXCLUDE_END      = ["BansheeDeluxeArmLeftArmor", "WukongDeluxeBSigil", "WeGameNewYearTigerSigil", "WeGameNewYearRabbitSigil", "WeGameNewYearDragonSigil", "WeGameNewYearSnakeSigil", "WeGameNewYearHorseSigil", "LavosDeluxeSigil", "GaussDeluxeIISigil", "GaussDeluxeIIDamageSigil", "ColourPickerHeirloom", "ColourPickerEmberHeirloom", "ColourPickerMesaHeirloom", "ColourPickerRhinoHeirloom", "ColourPickerValkyrHeirloom", "ColourPickerVaubanHeirloom", "PrimeAccessSigilSaryn", "PrimeAccessSigilLimbo", "PrimeAccessSigilFive", "StarterPackASigil", "StarterPackLotusSigil", "ArchwingSigil", "TwitchPrimeSigil", "BladeAndGunSigil", "DawnsEarlyLightSigil", "SigilVideoContest", "TennoLive2015Sigil", "TennoLivePromoSigil", "WikiaSigil", "TranslatorSigil", "TennoGenSigil", "LotusGuideSigil", "PS4OneYearSigil", "PS4TwoYearSigil", "PS4ThreeYearSigil", "PS4FourYearSigil", "PS4FiveYearSigil", "PS4RenownXSigil", "ObsidianIndraSigil", "PS4CrowSigil", "XBoneOneYearSigil", "XBoneTwoYearSigil", "XBoneThreeYearSigil", "XBoneFourYearSigil", "XBoneJadeSigil", "XboneJadeTwoSigil", "Community10YearAnniversarySigil", "NewWar2021Sigil", "GeodeSigil", "Cyte09Sigil", "KoumeiSigil", "TempleSigil", "DanteSigil", "HolidaySigilSnowflake", "FireSigil", "SparkSigil", "FormaSigil", "TwoToneSigil", "InktoberSigil", "JadeSigil", "KahlSupporterPackSigil", "BossSigilNefAnyo", "NarmerEyeSigil", "MechEventSigil", "VorDuviriSigil", "NecramechSigilSnake", "SigilSnake", "YareliSigil", "CNYRoosterCYSigil", "ZarimanSupporterPackSigil", "MonquisCYSigil", "MonquisSigil", "CNYRoosterPWSigil", "ClanSigilBasic", "AllianceSigilBasic", "OpticorConclaveVariantSigil"]; // OpticorConclaveVariantSigil
+const SIGNA_EXCLUDE          = ["DexVinesCrown", "ChoirFrameHaloCrown", "TnTempleSignaCrown", "PrimeSevagothHaloCrown", "SWZamariuSignaCrown", "SWSignaPragmaticaCrown", "SWCenturioSignaCrown", "SWachetaSignaCrown"];
+const SUGATRA_EXCLUDE_END    = ["CitrineSugatra", "SurakaPrimeDangle", "LNYBirdSugatra", "ESGrnSugatraMeleeDangle", "GrnMeleeDangle", "CatenoPrimeMeleeDangle", "PrimeDangleF", "LNYSnakeMeleeDangle", "/PrimeMeleeDangle", "PolearmFriendlyMeleeDangle", "ChromaDeluxeMeleeDangle", "WukongDlxSugatra", "LimboDeluxeDangle", "XBoxSugatra2MeleeDangle", "JadePatikaMeleeDangle", "KazeruPrimeMeleeDangle", "GrnQueensMeleeDangle", "WegameChinaKnotDangle", "LNYCarpSugatra", "VaubanDeluxeMeleeDangle", "SarynDeluxeMeleeDangle", "ScrollingPrimeMeleeDangle", "ObsidianSugatraMeleeDangle", "Obsidian2SugatraMeleeDangle", "SugatraNintendo", "TnSugatraNewPlayerXpMeleeDangle", "TennoMeleeDangle", "ChainTridentMeleeDangle", "CorpusMeleeDangle", "YareliDlxSugatra", "PrimeDangleEMeleeDangle", "IceMeleeDangle", "TnRailJackSugatra", "TwitchPrimeMeleeDangle", "SentSugatraNewWarDangle", "LotusPointMeleeDangle", "LNYFireSugatra", "CordsMeleeDangle", "TennoCon2022SugatraMeleeDangle", "EmbolistMeleeDangle", "NekrosDeluxeMeleeDangle", "RazorMeleeDangle", "ValaPrimeMeleeDangle"]; 
+const SYANDANA_EXCLUDE_END   = ["PrimeScarfG", "HalloweenErosionCape", "ErosionCape", "LavosDeluxeSyandana", "PaxDuviricusSyandana", "SWAkSuraScarf", "PacifistSyandana", "SWAlocanaSyandana", "PrimeAltraScarf", "SapientCape", "GrnAmphisScarf", "IvaraPrimeCape", "KazInfestedScarf", "SWRThreeAquirosScarf", "SWArcturusScarf", "SWArmalystSyandana", "SWAropanexSyandana", "PrimeArtifexSyandana", "TnBrokenFrameSyandana", "EnergyScarfVoidSkin", "EnergyScarf", "PrimeAkrabuSyandana", "ZorbaScarf", "PrimeRevenantCape", "PrimeAviaSyandana", "InfBatCape", "SWAlyaScarf", "EmberDeluxeSyandana", "SWBodoScarf", "GaussDeluxeCape", "SWBoltaraScarf", "TennoAngleCapeScarf", "CephSyandana", "HildrynDeluxeSyandana", "TnLargeCape", "HydroidDeluxeBlazers", "NezhaDeluxeScarf", "PrimeScarfF", "NokkoSyandana", "TnVoltDeluxeSyandana", "CenturionCape", "SummerSolsticeCenturionCape", "SWChemtankSyandana", "EquinoxDeluxeCape", "PrimeScarfV", "ZephyrQTCCSyandana", "MesaDeluxeSyandana", "CitrineDeluxeSyandana", "SWCoronaScarf", "SWCovenantScarf", "TnAshDeluxe2Syandana", "NidusPrimeSyandana", "SWCryonaScarf", "KulervoDeluxeSyandana", "BillowingCape", "PrimeScarfDItem", "NovaDeluxeScarf", "UmbraDaxSyandana", "SWDeruScarf", "SWDespotScarf", "GarudaDeluxeSyandana", "DexScarf", "SWDiablilloSyandana", "SWDisconnectScarf", "SWDominusCape", "SWDraugenSyandana", "SWDueVolpiScarf", "SWEklisSyandana", "PrimeWispSyandana", "NyxDeluxeSyandana", "SWEzrielSyandana", "SWFeiSyandana", "CrpCubinatorScarf", "TennoFeathersCapeScarf", "TitaniaPrimeShortSyandana", "TitaniaPrimeSyandana", "GlassDeluxeSyandana", "LasNightwaveCape", "SWGothicaSyandana", "SWRSixSpitefireScarf", "PrimeVorunaSyandana", "GrineerTurbinesScarf", "HornSkullScarfDefault", "StyanaxDeluxeSyandana", "TnGlassSyandana", "SWIcariusScarf", "HalloweenFireFlyScarf", "FireFlyScarf", "InfestedFinsScarf", "HolidayTurtleNeckScarf", "JadeTurtleNeckScarf", "TurtleNeckScarf", "PrimeChromaCape", "SWIncubusScarf", "PrimeCapeEquinox", "Halloween2024U17TnoCapeScarf", "U17TnoCapeItem", "JadeSyandana", "JadeBombyxScarf", "TnLargeCapeXbox", "SiriusOrionBothSyandana", "SWRThreeJattukScarf", "PrimeWukongSyandana", "SWJotunheimMusic", "SWJotunheimScarf", "LasBackpackMedkitSyandana", "PrimeInarosSyandana", "KhoraPrimeSyandana", "QuillCape", "BaruukDeluxeCape", "QuillCanistersSyandana", "DeimosSupporterFireFlyBlueScarf", "BaroCape2RazzaExilisScarf", "/BaroCape", "SWKunshuScarf", "GrnQueenScarf", "/GrnHoodedCape", "HalloweenKyropteraScarf", "BrassAndGoldScarf", "MixerKyropteraScarf", "April2015Scarf", "GrnStrapsScarf", "PrimeStyanaxSyandana", "TnStyanaxSyandana", "SWLaprosysSyandana", "TnSundialCape", "NefSyandanaScarf", "GrendelDeluxeIISyandana", "SWLunariusSyandana", "DaxSquareCape", "DaxTwoTailsCape", "InfGrnWolfCape", "GrnVhCape", "SummerSolsticeMaggorCape", "SWMaharliqaScarf", "PrimeScarfAtlas", "PrimeMerulinaSyandana", "YareliCape", "PrimeScarf", "SWMithraScarf", "TnGuandaoScarf", "InfTentacleScarf", "SWMushussuScarf", "SWNaruScarf", "PrimeNaveScarf", "PriestScarf", "LotusCapeItem", "NeurovyrePrimeSyandana", "SentSyandanaB", "SWNighthunterSyandana", "NoruPrimeScarf", "NidusDeluxeScarf", "SWRThreeNsaruScarf", "TC2025OrokinScarf", "TC2025EvolvedOrokinScarf", "PrimeLimboCape", "ObsidianAzureScarf", "ObsidianCrowSyandana", "ObsidianKyropteraScarf", "ObsidianSamiaScarf", "PS5Syandana", "SWOfficiumScarf", "NintendoTurtleNeckScarf", "CrpAladScarf", "SiriusOrionLeftSyandana", "TnNewPlayerSyandana", "StalkerCapeItem", "RhinoDeluxeScarf", "TnLefaucheuxSyandana", "TnSparrowCape", "SWPaxisScarf", "SWPistrisScarf", "TnConcreteSyandana", "NarmerEvolvingSyandanaCCape", "NarmerEvolvingSyandanaBCape", "NarmerEvolvingSyandanaACape", "TnKorahSyandanaDeluxe", "PrimeFlameScarf", "FlameScarf", "CrpMBundleSyandana", "NovaIIDeluxeSyandana", "SWRaijiScarf", "SWRanulystSyandana", "GrnTubeScarf", "SWRauSyandana", "TitaniaDeluxeV2Cape", "TnPagemasterSyandana", "SWRepalaScarf", "SWRetrorolystSyandana", "RevenantDeluxeCape", "SWRhodoraSyandana", "PrimeRhoptronSyandana", "TnOdaliskSyandana", "ArcherCape", "TennoLeafDotCapeScarf", "SWRSixSariScarf", "SWSarvaHarnessScarf", "SWScapulisScarf", "InarosDlxCape", "SWSciathinScarf", "SWScyllaScarf", "SWSenvictisSyandana", "SWSeraphimScarf", "PrimeOctaviaSyandana", "SWSetharSyandana", "SWSetkaScarf", "SWShirokuSyandana", "SWShurihoshiScarf", "LimboDeluxeCape", "TnRailjackSyandana", "SWSildargScarf", "SiriusOrionRightSyandana", "SWSolidaScarf", "SolsticeCenturionCape", "InfCoralSyandana", "SWSovereignScarf", "TwitchPrimeScarf", "AtlasDeluxeSyandana", "SWStyxSyandana", "WukongDeluxeSyandana", "TnWispDeluxeSyandana", "PrimeOberonCape", "PrimeGrendelSyandana", "TnOniSyandana", "GarudaCape", "PrimeSuratorSyandana", "ShieldFrameCape", "SWSydekoScarf", "TnSmallBatteryCape", "GaussDeluxeIISyandana", "TennoConScarf", "TennoCon2017Scarf", "TennoCon2020Scarf", "TennoCon2023Cape", "TennoCon2024Scarf", "TC2025Scarf", "TC2025EvolvedScarf", "SWTenuiSyandana", "SWTeploScarf", "IvaraDeluxeSyandana", "InfScarfRibCage", "SWTonacaScarf", "PrimeGyreSyandana", "TnGyreCape", "SWTsujinasaSyandana", "U17IntermScarfItem", "UruPrimeScarf", "/RazorScarf", "ValdurBackCape", "SWValestiScarf", "GrnBannerScarfItem", "HalloweenGrnBannerScarf", "MagDeluxeScarf", "TnOctaviaDeluxeCape", "CrpModularScarf", "PrimeTwitchScarf", "VitamPrimeSyandana", "TnAlchemistSyandana", "TnWraitheSyandana", "EmberDeluxeIISyandana", "WispPrimeDefaultCape", "SWXikonosSyandana", "YamakoPrimeScarf", "RubedoDinoSpikeScarf", "/DinoSpikeScarf", "PS4ArmScarf", "ArmScarf", "SWZaikhyaScarf", "SWZamariuSyandana"];
 const RAILJACK_EXCLUDE       = ["TierA", "TierB", "TierC"];
 const RAILJACK_TIERS         = [...RAILJACK_EXCLUDE, "TierD"];
 const RECLIC_EXCLUDE_END     = ["T5VoidProjectionImmortal", "T5VoidProjectionImmortalOmni", "VoidProjection"];
@@ -46,48 +54,60 @@ const NULL = "null";
 //
 
 const CATEGORY_MAPPERS = {
-  "Arcanes": mapArcane,            // 168 (64 warframe + 16 primary + 18 secondary + 12 melee + 8 kitgun + 8 zaw + 22 operator + 13 amp + 5 tektolyst
-  "Arch-Gun": mapArchGun,          // 20/20
-  "Arch-Melee": mapArchMelee,      // 8/8
-  "Archwing": mapArchwing,         // 5/5
-  "Adversary": mapAdversary,       // 51 (check if your adversary weapon has 60% valence)
-  "AirSupport": mapAirSupport,     // 7/7
-  "ArtGallery": mapArtGallery,     // 15/15
-  "Challenge": mapChallenge,       // 212/212 
-  "Enemy": mapEnemy,               // ?/1368 (is no more updated by WFCD)
-  "Fish": mapFish,                 // KO
-  "FocusSchool": mapFocusSchool,   // 85/85 (75 + 10 => 15 for each scholl + 2 waybound for each school)
-  "Fragment": mapFragment,         // 222/222 (46 cephalon + 20 cetus + 5 gara + 13 ghoul + 35 solaris + 8 partnership + 68 prex + 11 tenet + 10 duviri + 5 albrecht + 1 isleweaver)
+  "AirSupport"  : mapAirSupport,   // 7/7
+  "Adversary"   : mapAdversary,    // 51 (check if your adversary weapon has 60% valence)
+  "Arcade"      : mapArcade,       // 
+  "Arcanes"     : mapArcane,       // 168 (64 warframe + 16 primary + 18 secondary + 12 melee + 8 kitgun + 8 zaw + 22 operator + 13 amp + 5 tektolyst
+  "Arch-Gun"    : mapArchGun,      // 20/20
+  "Arch-Melee"  : mapArchMelee,    // 8/8
+  "Archwing"    : mapArchwing,     // 5/5
+  "ArtGallery"  : mapArtGallery,   // 15/15
+  "Articula"    : mapArticula,     // 
+  "Challenge"   : mapChallenge,    // 212/212 
+  "Domestik"    : mapDomestik,     // 
+  "Emblem"      : mapEmblem,       // 
+  "Emote"       : mapEmote,        // 
+  "Enemy"       : mapEnemy,        // ?/1368 (is no more updated by WFCD)
+  "Ephemera"    : mapEphemera,     // 
+  "Archweapon"  : mapArchweapon,   // 
+  "Fish"        : mapFish,         // KO
+  "Floof"       : mapFloof,        // 
+  "FocusSchool" : mapFocusSchool,  // 85/85 (75 + 10 => 15 for each school + 2 waybound for each school)
+  "Fragment"    : mapFragment,     // 222/222 (46 cephalon + 20 cetus + 5 gara + 13 ghoul + 35 solaris + 8 partnership + 68 prex + 11 tenet + 10 duviri + 5 albrecht + 1 isleweaver)
   "Framefighter": mapFramefighter, // 48/48
-  "Helminth": mapHelminth,         // 79/79 (66 frames + 13 metamorphosis)
-  "Honoria": mapHonoria,           // 169/169 
-  "Intrinsic": mapIntrinsic,       // 90/90 (50 railjack + 40 drifter)
-  "Gear": mapGear,                 // KO
-  "Glyphs": mapGlyph,              // KO 956 ingame in "Change Glyph) vs 1672
-  "Melee": mapMelee,               // 234/234 (223 normal + 11 zaw)
-  "Misc": mapMisc,                 // KO 
-  "Mods": mapMod,                  // 1441/1441 (No flawed mods nor unobtainable ones, but they still might be owned by a few.)
-  "Node": mapNode,                 // 560/580 (a few nodes are missings)
-  "Object": mapObject,             // ?/?
-	"PeelyPix": mapPeelyPix,         // 25/25 
-  "Pets": mapPet,                  // 17/17
-  "Primary": mapPrimary,           // 203/203 (194 normal + 9 amp)
-  "Quests": mapQuest,              // 45/45 prelude to war ? the new war ?
-  "Railjack": mapArmament,         // KO
-  "Relics": mapRelic,              // 772/772 (197 lith + 188 meso + 187 neo + 196 axi + 9 requiem)
-  "Resources": mapResource,        // KO
-  "Scene": mapScene,               // 200/200
-  "Secondary": mapSecondary,       // 152/152 (146 normal + 6 kitgun)
-  "Sentinels": mapSentinel,        // 48/48 (24 robotics + 24 robotic weapons)
-  "Sigils": mapSigil,              // KO 240+ ingame in customization vs 331
-  "Simulacrum": mapSimulacrum,     // 13/13
-  "Skins": mapSkin,                // KO (holy shit)
-  "Somachord": mapSomachord,       // 150/150 
-  "Sumdali": mapSumdali,           // 16/16
-  "Vehicle": mapVehicle,           // 1/1 Plexus
-  "Warframes": mapWarframe         // 116/116 (66 non prime + 50 prime)
-                                   // 2/2 necramech
-                                   // 5/5 K-drive
+  "Helminth"    : mapHelminth,     // 79/79 (66 frames + 13 metamorphosis)
+  "Honoria"     : mapHonoria,      // 169/169 
+  "Intrinsic"   : mapIntrinsic,    // 90/90 (50 railjack + 40 drifter)
+  "Gear"        : mapGear,         // KO
+  "Glyphs"      : mapGlyph,        // KO 956 ingame in "Change Glyph) vs 1672
+  "Melee"       : mapMelee,        // 234/234 (223 normal + 11 zaw)
+  "Misc"        : mapMisc,         // KO 
+  "Mods"        : mapMod,          // 1441/1441 (No flawed mods nor unobtainable ones, but they still might be owned by a few.)
+  "Node"        : mapNode,         // 560/580 (a few nodes are missings)
+  "Object"      : mapObject,       // ?/?
+  "PeelyPix"    : mapPeelyPix,     // 25/25 
+  "Pets"        : mapPet,          // 17/17
+  "Poster"      : mapPoster,       // 
+  "Primary"     : mapPrimary,      // 203/203 (194 normal + 9 amp)
+  "Quests"      : mapQuest,        // 45/45 prelude to war ? the new war ?
+  "Railjack"    : mapArmament,     // KO
+  "Relics"      : mapRelic,        // 772/772 (197 lith + 188 meso + 187 neo + 196 axi + 9 requiem)
+  "Resources"   : mapResource,     // KO
+  "Scene"       : mapScene,        // 200/200
+  "Secondary"   : mapSecondary,    // 152/152 (146 normal + 6 kitgun)
+  "Sentinels"   : mapSentinel,     // 48/48 (24 robotics + 24 robotic weapons)
+  "Sigils"      : mapSigil,        // KO 240+ ingame in customization vs 331
+  "Simulacrum"  : mapSimulacrum,   // 13/13
+  "Skins"       : mapSkin,         // KO (holy shit)
+  "Somachord"   : mapSomachord,    // 150/150 
+  "Signa"       : mapSigna,        // 9/6
+  "Sugatra"     : mapSugatra,      // 13/13
+  "Sumdali"     : mapSumdali,      // 16/16
+  "Syandana"    : mapSyandana,     // 38/38
+  "Trophy"      : mapTrophy,       // 101/101
+  "Vehicle"     : mapVehicle,      // 13/13 (1 plexus, 2 necramech, 5 k-drive, 5 archwing)
+  "Weapon"      : mapWeapon,       // 591/591 => 589 + 2 founder 
+  "Warframes"   : mapWarframe      // 117/117 => 116 (66 non prime + 50 prime) + 1 founder
 };
 
 //
@@ -182,11 +202,17 @@ function mapDomestik(raw) {
           raw.uniqueName.endsWith("LisetPropCleaningDroneGarudaGemini"))           typeField = WF.TYPES.domestik.hunhow;
   else if(raw.uniqueName.endsWith("LisetPropCleaningDroneTenno"))                  typeField = WF.TYPES.domestik.nightwave;
 
-  return [entry(raw, WF.CATEGORY.domestik.name, NULL)]; 
+  return [entry(raw, WF.CATEGORY.domestik.name, typeField)]; 
 }
 
 function mapEmblem(raw) {
-  return [entry(raw, WF.CATEGORY.emblem.name, NULL)]; 
+	if(EMBLEM_EXCLUDE_END.some(element => raw.uniqueName.endsWith(element))) return [];
+	const isFounder = getIsFounder(raw.uniqueName);
+  return [entry(raw, WF.CATEGORY.emblem.name, NULL, { ...(isFounder && { founder: isFounder }) })];
+}
+
+function mapEmote(raw) {
+  return [entry(raw, WF.CATEGORY.emote.name, NULL)]; 
 }
 
 function mapEnemy(raw) { 
@@ -273,10 +299,6 @@ function mapFloof(raw) {
   return entry(raw, WF.CATEGORY.floof.name, NULL);
 }
 
-function mapFocusRepresent(raw, type) {
-  return entry(raw, WF.CATEGORY.focusrepresent.name, type);
-}
-
 function mapFocusSchool(raw) {
   const schoolField = raw.polarity ? `${escapeQuotes(raw.polarity)}` : NULL;
   const schoolAbility = entry(raw, WF.CATEGORY.focusschool.name, schoolField);
@@ -291,9 +313,9 @@ function mapFocusSchool(raw) {
   return [schoolAbility];
 }
 
-function mapFragment(raw, type = null) {
+function mapFragment(raw, type = NULL) {
   let subType = null; 
-  if (type === null) type = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
+  if (type === NULL) type = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
   
   switch (type) {
     case WF.TYPES.fragment.prex:
@@ -311,7 +333,7 @@ function mapFragment(raw, type = null) {
 function mapFramefighter(raw) {
   const newRaw = { ...raw };
   newRaw.uniqueName += "FrameFighter";
-  return [entry(newRaw, WF.CATEGORY.framefighter.name, null)];
+  return [entry(newRaw, WF.CATEGORY.framefighter.name, NULL)];
 }
 
 function mapHelminth(raw) {
@@ -342,11 +364,11 @@ function mapGear(raw) {
 }
 
 function mapGlyph(raw) {
-  return [entry(raw, WF.CATEGORY.glyph.name, null)]; // There aren't enough fields in the dataset to add TYPES.
+  return [entry(raw, WF.CATEGORY.glyph.name, NULL)]; // There aren't enough fields in the dataset to add TYPES.
 }
 
 function mapMelee(raw) {
-  return mapWeapon(raw, WF.TYPES.weapon.melee, null); 
+  return mapWeapon(raw, WF.TYPES.weapon.melee, NULL); 
 }
 
 function mapMisc(raw) {
@@ -446,7 +468,7 @@ function mapNode(raw) { // 238 normal and SP, but I have 237 and 237 I can't fin
   const match = Object.entries(NODE_LOCATIONS).find(([prefix]) => raw.uniqueName.includes(prefix));
   let system = match ? match[1] : NULL;
   const spRaw = { ...raw, uniqueName: `${raw.uniqueName}SP`, name: `${raw.name} (SP)` };
-  let planetField = raw.systemName ? raw.systemName.toLowerCase() : null;
+  let planetField = raw.systemName ? raw.systemName.toLowerCase() : NULL;
   let returnValue = [];
   let xpReward = NODE_MAPPING[raw.uniqueName] || 0;
   
@@ -473,8 +495,8 @@ function mapPeelyPix(raw) {
 }
 
 function mapPet(raw) {
-  let category = null;
-  let type     = null;
+  let category = NULL;
+  let type     = NULL;
   let rank     = getIsPrime(raw);
   
   if (raw.uniqueName.endsWith("ChargerKubrowPetPowerSuit")) {
@@ -502,10 +524,11 @@ function mapPet(raw) {
 }
 
 function mapPoster(raw) {
+  if(POSTER_EXCLUDE_END.some(element => raw.uniqueName.endsWith(element))) return [];
   return [entry(raw, WF.CATEGORY.poster.name, NULL)];
 }
 
-function mapPrimary(raw) { return mapWeapon(raw, WF.TYPES.weapon.primary, null); }
+function mapPrimary(raw) { return mapWeapon(raw, WF.TYPES.weapon.primary, NULL); }
 
 function mapQuest(raw) {
   let category = WF.TYPES.quest.main;
@@ -567,11 +590,11 @@ function mapResource(raw) {
 
 function mapScene(raw) {
   if(raw.uniqueName.endsWith("/Lotus/Types/Items/MiscItems/PhotoboothTile")) return [];
-  return [entry(raw, WF.CATEGORY.scene.name, null)]
+  return [entry(raw, WF.CATEGORY.scene.name, NULL)]
 }
 
 function mapSecondary(raw) {
-  return mapWeapon(raw, WF.TYPES.weapon.secondary, null);
+  return mapWeapon(raw, WF.TYPES.weapon.secondary, NULL);
 }
 
 function mapSentinel(raw, category, xpReward) {
@@ -584,31 +607,36 @@ function mapSentinel(raw, category, xpReward) {
 
 function mapSigil(raw) {
   if(raw.uniqueName.includes("Heirloom") || raw.uniqueName.includes("TennoVIP") || raw.uniqueName.includes("TennoCon")) return [];
-  return [entry(raw, WF.CATEGORY.sigil.name, null)];
+  if(SIGIL_EXCLUDE_END.some(element => raw.uniqueName.endsWith(element))) return [];
+	const isFounder = getIsFounder(raw.uniqueName);
+  return [entry(raw, WF.CATEGORY.sigil.name, NULL, { ...(isFounder && { founder: isFounder })} )];
 }
 
 function mapSimulacrum(raw) {
   if(raw.uniqueName.endsWith("DangerRoomTile")) return []; // we can't put this in the GLOBAL_EXCLUDE, it'll remove all of them
-  return [entry(raw, WF.CATEGORY.simulacrum.name, null)];
+  return [entry(raw, WF.CATEGORY.simulacrum.name, NULL)];
 }
 
 // Skin Mapping
 function mapSkin(raw) {
   let typeField = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
   if(typeField === WF.TYPES.skin.theme_sound) return [];
+  if(typeField === "Emotes")                  return mapEmote(raw);
   
-       if (raw.uniqueName.includes("/ShipDecos/TarotCard"))      return mapFragment(raw, WF.TYPES.fragment.prex);
-  else if (raw.uniqueName.includes("/ShipDecos/CorpusGreed"))    return mapFragment(raw, WF.TYPES.fragment.tenet);
-  else if (raw.uniqueName.includes("/Lotus/Types/Items/Titles")) return [];              // ignore data incomplet, don't put this in GLOBAL_EXCLUDE
+       if (raw.uniqueName.includes("ShipDecos/TarotCard"))       return mapFragment(raw, WF.TYPES.fragment.prex);
+  else if (raw.uniqueName.includes("ShipDecos/CorpusGreed"))     return mapFragment(raw, WF.TYPES.fragment.tenet);
   else if (raw.uniqueName.includes("HoodOrnament"))              return mapSumdali(raw);
-  else if (raw.uniqueName.endsWith("Syandana") || 
+  else if (raw.uniqueName.includes("MeleeDangles"))              return mapSugatra(raw);
+  else if (raw.uniqueName.endsWith("Syandana") || raw.uniqueName.endsWith("Cape") || 
            raw.uniqueName.includes("/Scarves/"))                                       return mapSyandana(raw);
-  else if (raw.uniqueName.startsWith("/Lotus/Upgrades/Skins/Clan"))                    return mapEmblem(raw);
+  else if (raw.uniqueName.startsWith("/Lotus/Types/Items/Titles"))                     return []; // don't put this in GLOBAL_EXCLUDE
+  else if (raw.uniqueName.startsWith("/Lotus/Upgrades/Skins/Clan") || // don't remove, some emblems dont have "Emblem" in their name
+	         raw.name.endsWith("Emblem"))                                                return mapEmblem(raw);
   else if (raw.uniqueName.startsWith("/Lotus/Types/Items/ShipDecos/Vignettes"))        return mapArticula(raw);
   else if (raw.uniqueName.startsWith("/Lotus/Types/Items/ShipDecos/MasteryTrophies/")) return mapTrophy(raw, WF.TYPES.trophy.mastery);
   else if (raw.uniqueName.startsWith("/Lotus/Types/Items/ShipDecos/PlanetTrophies/"))  return mapTrophy(raw, WF.TYPES.trophy.planet);
-  else if (raw.uniqueName.startsWith("/Lotus/Types/Items/ShipDecos/Focus/"))           return mapFocusRepresent(raw, WF.TYPES.focusrepresent.poster);
-  else if (raw.uniqueName.startsWith("/Lotus/Types/Items/ShipDecos/Operator/"))        return mapFocusRepresent(raw, WF.TYPES.focusrepresent.glyph);
+  else if (raw.uniqueName.startsWith("/Lotus/Types/Items/ShipDecos/Focus/"))           return mapPoster(raw);
+  else if (raw.uniqueName.startsWith("/Lotus/Types/Items/ShipDecos/Operator/"))        return mapGlyph(raw);
   else if (raw.uniqueName.startsWith("/Lotus/Types/Items/Arcade/"))                    return mapArcade(raw);
   else if (raw.name.includes("Poster"))                             return mapPoster(raw);
   else if (raw.name.includes("Floof"))                              return mapFloof(raw);
@@ -642,13 +670,19 @@ function mapSigna(raw) {
   return [entry(raw, WF.CATEGORY.signa.name, typeField)];
 }
 
+
+function mapSugatra(raw) {
+  if(SUGATRA_EXCLUDE_END.some(element => raw.uniqueName.endsWith(element))) return [];
+  return [entry(raw, WF.CATEGORY.sugatra.name, NULL)];
+}
+
 function mapSumdali(raw) {
-  const typeField = raw.type ? `${escapeQuotes(raw.type)}` : NULL;
-  return [entry(raw, WF.CATEGORY.sumdali.name, null)];
+  return [entry(raw, WF.CATEGORY.sumdali.name, NULL)];
 }
 
 function mapSyandana(raw) {
-  return [entry(raw, WF.CATEGORY.syandana.name, null)];
+	if(SYANDANA_EXCLUDE_END.some(element => raw.uniqueName.endsWith(element))) return [];
+  return [entry(raw, WF.CATEGORY.syandana.name, NULL)];
 }
 
 function mapTrophy(raw, type, trophy_fish) {
@@ -672,7 +706,7 @@ function mapWeapon(raw, type, category) {
       (raw.uniqueName.includes("Pets/ZanukaPets") && !SENTITEL_EXCEPTION.some(element => raw.uniqueName.includes(element)))) return [];
   if (raw.uniqueName.includes("/Lotus/Weapons/Ostron/Melee/Modular") && !raw.uniqueName.includes("/Tips/PvPVariant") && !raw.uniqueName.includes("/Tip/Tip")) return [];
   
-  if (category == null) {
+  if (category == NULL) {
     if (raw.uniqueName.includes("/SentinelWeapons/")) {
       return mapSentinel(raw, WF.TYPES.companion_category.sentinel_weapon, XP30);
     } else if (raw.uniqueName.includes("Pets/ZanukaPets")) {

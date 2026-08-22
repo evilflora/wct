@@ -10,6 +10,10 @@ WF.render = (function () {
   ];
 
   const SEARCH_DEBOUNCE_MS = 200;
+  const SIDEBAR_SEARCH_MAX_LENGTH = 64;
+  const SIDEBAR_SEARCH_MAX_RESULTS = 15;
+  const SIDEBAR_SEARCH_MIN_LENGTH = 3;
+  const SIDEBAR_SEARCH_DROPDOWN_MIN_WIDTH = 320;
 
   let activeCategory = savedUiState.activeCategory || null;
   let activeType = savedUiState.activeType || all;
@@ -18,6 +22,10 @@ WF.render = (function () {
   let searchQuery = "";
   let lastRenderedPool = [];
   let searchDebounceTimer = null;
+  let sidebarSearchQuery = "";
+  let sidebarSearchDebounceTimer = null;
+  let sidebarSearchResultsEl = null;
+  let sidebarSearchMountEl = null;
 
   const lowerCache = new Map();
   function lower(str) {
@@ -113,10 +121,180 @@ WF.render = (function () {
     }
   }
 
+  function getSidebarSearchResultsEl() {
+    if (!sidebarSearchResultsEl) {
+      sidebarSearchResultsEl = document.createElement("div");
+      sidebarSearchResultsEl.className = "sidebar-search-results";
+      document.body.appendChild(sidebarSearchResultsEl);
+    }
+    return sidebarSearchResultsEl;
+  }
+
+  function positionSidebarSearchResults(wrapEl) {
+    const resultsEl = getSidebarSearchResultsEl();
+    const rect = wrapEl.getBoundingClientRect();
+    const width = Math.max(rect.width, SIDEBAR_SEARCH_DROPDOWN_MIN_WIDTH);
+
+    resultsEl.style.top = `${rect.bottom + 4}px`;
+    resultsEl.style.width = `${width}px`;
+  }
+
+  function hideSidebarSearchResults() {
+    if (sidebarSearchResultsEl) sidebarSearchResultsEl.classList.remove("visible");
+  }
+
+  function showSidebarSearchResults(wrapEl, progress, includeFounder, includePvpMods) {
+    const resultsEl = getSidebarSearchResultsEl();
+    renderSidebarSearchResults(resultsEl, progress, includeFounder, includePvpMods);
+
+    if (sidebarSearchQuery.trim().length < SIDEBAR_SEARCH_MIN_LENGTH) {
+      resultsEl.classList.remove("visible");
+      return;
+    }
+
+    positionSidebarSearchResults(wrapEl);
+    resultsEl.classList.add("visible");
+  }
+
+  function renderSidebarSearchResults(resultsEl, progress, includeFounder, includePvpMods) {
+    resultsEl.textContent = "";
+
+    const query = sidebarSearchQuery.trim().toLowerCase();
+    if (query.length < SIDEBAR_SEARCH_MIN_LENGTH) return;
+
+    const allMatches = WF.data.filter((item) =>
+      (includeFounder || !item.founder) &&
+      (includePvpMods || !(Array.isArray(item.type) && item.type.length === 1 && item.type[0] === WF.TYPES.mod.pvp)) &&
+      item.display_name.en.toLowerCase().includes(query)
+    );
+    const matches = allMatches.slice(0, SIDEBAR_SEARCH_MAX_RESULTS);
+
+    if (matches.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "sidebar-search-empty";
+      empty.textContent = "No results";
+      resultsEl.appendChild(empty);
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    matches.forEach((item) => {
+      const owned = !!progress[item.item_name];
+
+      const resultBtn = document.createElement("button");
+      resultBtn.type = "button";
+      resultBtn.className = "sidebar-search-result" + (owned ? " owned" : "");
+
+      const categoryEl = document.createElement("span");
+      categoryEl.className = "sidebar-search-result-category";
+      categoryEl.textContent = categoryLabel(item.category);
+
+      const nameEl = document.createElement("span");
+      nameEl.className = "sidebar-search-result-name";
+      nameEl.textContent = item.display_name.en;
+
+      resultBtn.append(categoryEl, nameEl);
+
+      resultBtn.addEventListener("mousedown", (event) => event.preventDefault());
+
+      resultBtn.addEventListener("click", () => {
+        activeCategory = item.category;
+        activeType = all;
+        activeFilter = {};
+        searchQuery = item.display_name.en;
+        sidebarSearchQuery = "";
+
+        hideSidebarSearchResults();
+        renderAll();
+        closeSidebarOnMobile();
+      });
+
+      fragment.appendChild(resultBtn);
+    });
+
+    resultsEl.appendChild(fragment);
+
+    const remaining = allMatches.length - matches.length;
+    if (remaining > 0) {
+      const moreEl = document.createElement("div");
+      moreEl.className = "sidebar-search-more";
+      moreEl.textContent = `+${remaining} more result${remaining > 1 ? "s" : ""} (refine your search)`;
+      resultsEl.appendChild(moreEl);
+    }
+  }
+
+  function buildSidebarSearch(container, progress, includeFounder, includePvpMods) {
+    const wrap = document.createElement("div");
+    wrap.classList.add("search-wrap");
+    wrap.classList.add("search-wrap-padding");
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.id = "sidebar-search-input";
+    input.className = "search-input";
+    input.placeholder = "Search all items...";
+    input.maxLength = SIDEBAR_SEARCH_MAX_LENGTH;
+    input.value = sidebarSearchQuery;
+
+    const clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.className = "search-clear-btn";
+    clearBtn.setAttribute("aria-label", "Clear search");
+    clearBtn.textContent = "\u00d7";
+    clearBtn.style.display = sidebarSearchQuery ? "flex" : "none";
+    clearBtn.addEventListener("mousedown", (event) => event.preventDefault());
+
+    clearBtn.addEventListener("click", () => {
+      sidebarSearchQuery = "";
+      input.value = "";
+      clearBtn.style.display = "none";
+      input.focus();
+      showSidebarSearchResults(wrap, progress, includeFounder, includePvpMods);
+    });
+
+    input.addEventListener("focus", () => {
+      showSidebarSearchResults(wrap, progress, includeFounder, includePvpMods);
+    });
+
+    input.addEventListener("blur", () => {
+      hideSidebarSearchResults();
+    });
+
+    input.addEventListener("input", (event) => {
+      sidebarSearchQuery = event.target.value;
+      clearBtn.style.display = sidebarSearchQuery ? "flex" : "none";
+
+      clearTimeout(sidebarSearchDebounceTimer);
+      sidebarSearchDebounceTimer = setTimeout(() => {
+        showSidebarSearchResults(wrap, progress, includeFounder, includePvpMods);
+      }, SEARCH_DEBOUNCE_MS);
+    });
+
+    wrap.append(input, clearBtn);
+    container.appendChild(wrap);
+  }
+
+  function getSidebarSearchMountEl() {
+    if (!sidebarSearchMountEl) {
+      const sidebar = document.getElementById("sidebar");
+      if (!sidebar) return null;
+      sidebarSearchMountEl = document.createElement("div");
+      sidebarSearchMountEl.id = "sidebar-search-mount";
+      sidebar.insertBefore(sidebarSearchMountEl, sidebar.firstChild);
+    }
+    return sidebarSearchMountEl;
+  }
+
   function buildSidebar(types, progress, includeFounder, includePvpMods) {
     const container = document.getElementById("sidebar-groups");
     if (!container) return;
     container.textContent = "";
+
+    const searchMount = getSidebarSearchMountEl();
+    if (searchMount) {
+      searchMount.textContent = "";
+      buildSidebarSearch(searchMount, progress, includeFounder, includePvpMods);
+    }
 
     const availableSet = new Set(types);
     const categorizedTypes = new Set();
@@ -435,7 +613,11 @@ WF.render = (function () {
 
       const name = document.createElement("span");
       name.className = "item-name";
-      name.textContent = item.display_name.en;
+
+      const nameInner = document.createElement("span");
+      nameInner.className = "item-name-inner";
+      nameInner.textContent = item.display_name.en;
+      name.appendChild(nameInner);
 
       row.append(checkbox, name);
 
@@ -479,6 +661,29 @@ WF.render = (function () {
       }
 
       updateUIFast(lastRenderedPool);
+    });
+
+    root.addEventListener("mouseover", (event) => {
+      const row = event.target.closest(".item-row");
+      if (!row) return;
+
+      const nameEl = row.querySelector(".item-name");
+      if (!nameEl || nameEl.classList.contains("is-scrolling")) return;
+
+      const overflow = nameEl.scrollWidth - nameEl.clientWidth;
+      if (overflow <= 1) return;
+
+      nameEl.style.setProperty("--scroll-distance", `-${overflow}px`);
+      nameEl.classList.add("is-scrolling");
+    });
+
+    root.addEventListener("mouseout", (event) => {
+      const row = event.target.closest(".item-row");
+      if (!row) return;
+      if (event.relatedTarget && row.contains(event.relatedTarget)) return;
+
+      const nameEl = row.querySelector(".item-name");
+      if (nameEl) nameEl.classList.remove("is-scrolling");
     });
   }
 

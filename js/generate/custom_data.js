@@ -973,7 +973,6 @@ CUSTOM_ENTRIES = [
 	{ uniqueName: "Somachord/SanctumAnatomica"                  , name: "Sanctum Anatomica"                        , category: "Somachord", type: "Fragment" }       ,
 	{ uniqueName: "Somachord/SeeItInTheFlesh"                   , name: "See It In The Flesh"                      , category: "Somachord", type: "Fragment" }       ,
 	{ uniqueName: "Somachord/SentientTombs"                     , name: "Sentient Tombs"                           , category: "Somachord", type: "Fragment" }       ,
-	{ uniqueName: "Somachord/SevagothsLullaby"                  , name: "Sevagoth's Lullaby"                       , category: "Somachord", type: "Shop" }           ,
 	{ uniqueName: "Somachord/ShadowsAndSummoning"               , name: "Shadows And Summoning"                    , category: "Somachord", type: "Fragment" }       ,
 	{ uniqueName: "Somachord/ShutItDown"                        , name: "Shut It Down"                             , category: "Somachord", type: "Aoi" }            ,
 	{ uniqueName: "Somachord/Skybreak"                          , name: "Skybreak"                                 , category: "Somachord", type: "Fragment" }       ,

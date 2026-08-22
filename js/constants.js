@@ -3,9 +3,6 @@ window.WF = WF;
 
 WF.SCHEMA_VERSION = 1;
 
-// todo
-// displays, market ?, noogles ?, posters ?, shawzin ?, syndicates and vendors ?, Baro Ki'Teer, Miscellaneous ? (and perhaps some earlier items on this list, because there are too few of them) 
-
 WF.CATEGORY = {
   TODO:             { name: "todo",           label: "TODO / Unsorted" , description: "Unknown items are put here" },
   adversary:        { name: "adversary",      label: "Max Fusioned"    , description: "Weapons with a 60% Valence Bonus" },
@@ -19,12 +16,12 @@ WF.CATEGORY = {
   challenge:        { name: "challenge",      label: "Challenges"      , description: "Profile / Challenges" },
   companion:        { name: "companion",      label: "Companions"      , description: "Profile / Equipement" },
   domestik:         { name: "domestik",       label: "Domestik Drone"  , description: "Equipement / Orbiter / Decorate" },
-  emblem:           { name: "emblem",         label: "Emblems (WIP)"   , description: "Arsenal / Warframe Appearance / ???" },
-  enemy:            { name: "enemy",          label: "Factions (WIP)"  , description: "Codex / Universe" },
-  ephemera:         { name: "ephemera",       label: "Ephemera"        , description: "Arsenal / Warframe Appearance / Arrachments" },
+  emblem:           { name: "emblem",         label: "Emblems"         , description: "Arsenal / Warframe Appearance / Sigils / Emblem" },
+  emote:            { name: "emote",          label: "Emotes (WIP)"    , description: "???" },
+  enemy:            { name: "enemy",          label: "Factions"        , description: "Codex / Universe" },
+  ephemera:         { name: "ephemera",       label: "Ephemera"        , description: "Arsenal / Warframe Appearance / Attachments / Ephemera" },
   floof:            { name: "floof",          label: "Floofs"          , description: "Equipement / Orbiter / Decorate" },
   focusschool:      { name: "focusschool",    label: "Focus School"    , description: "At your Operator/Drifter" },
-  focusrepresent:   { name: "focusrepresent", label: "Focus Represent" , description: "At your Operator/Drifter" },
   fragment:         { name: "fragment",       label: "Fragments"       , description: "Codex / Universe" },
   framefighter:     { name: "framefighter",   label: "Frame Fighters"  , description: "Use the Ludoplex" },
   gear:             { name: "gear",           label: "Gears (WIP)"     , description: "Arsenal / Third tab" },
@@ -36,19 +33,20 @@ WF.CATEGORY = {
   mod:              { name: "mod",            label: "Mods"            , description: "Codex / Universe" },
   necramech:        { name: "necramech",      label: "Necramechs"      , description: "Profile / Equipement" },
   node:             { name: "node",           label: "Star Chart"      , description: "Profile / Stats" },
-  object:           { name: "object",         label: "Objects (WIP)"   , description: "Codex / Universe" },
+  object:           { name: "object",         label: "Objects"         , description: "Codex / Universe" },
   peelypix:         { name: "peelypix",       label: "Peely Pix"       , description: "Höllvania Central Mall / Kaya Velasco" },
   poster:           { name: "poster",         label: "Posters (WIP)"   , description: "Equipement / Orbiter / Decorate" },
   quest:            { name: "quest",          label: "Quests"          , description: "Codex / Quets" },
   relic:            { name: "relic",          label: "Relics"          , description: "Codex / Universe" },
   scene:            { name: "scene",          label: "Scenes"          , description: "Arsenal / Warframe Appearance / Camera button" },
-  sigil:            { name: "sigil",          label: "Sigils (WIP)"    , description: "Arsenal / Warframe Appearance / Sigils" },
-  signa:            { name: "signa",          label: "Signa"           , description: "Arsenal / Warframe Appearance / Signa" },
+  sigil:            { name: "sigil",          label: "Sigils"          , description: "Arsenal / Warframe Appearance / Sigils / Sigil" },
+  signa:            { name: "signa",          label: "Signa"           , description: "Arsenal / Warframe Appearance / Attachments / Signa" },
   simulacrum:       { name: "simulacrum",     label: "Simulacrum"      , description: "Relay / Cephalon Simaris Room" },
-  skin:             { name: "skin",           label: "Skins (WIP)"     , description: "???" },
+  skin:             { name: "skin",           label: "Skins (WIP)"     , description: "Arsenal / ???" },
   somachord:        { name: "somachord",      label: "Somachord"       , description: "Codex / Universe" },
+  sugatra:          { name: "sugatra",        label: "Sugatra"         , description: "Arsenal / Melee / Attachments / Accessories" },
   sumdali:          { name: "sumdali",        label: "Sumdali"         , description: "Equipement / Orbiter / Landing Craft Customize screen" },
-  syandana:         { name: "syandana",       label: "Syandana (WIP)"  , description: "Arsenal / Warframe Appearance / ???" },
+  syandana:         { name: "syandana",       label: "Syandana"        , description: "Arsenal / Warframe Appearance / Syandana" },
   vehicle:          { name: "vehicle",        label: "Vehicles"        , description: "Profile / Equipement" },
   trophy:           { name: "trophy" ,        label: "Trophies"        , description: "Equipement / Orbiter / Decorate" },
   warframe:         { name: "warframe",       label: "Warframes"       , description: "Profile / Equipement" },
@@ -67,7 +65,6 @@ WF.TYPES = {
   domestik:           { dogday: "Dog Days", baro: "Baro Ki'Teer", hunhow: "Hunhow", nightwave: "Nightwave"},
   enemy:              { grineer: "Grineer", corpus: "Corpus", infestation: "Infestation", unaffiliated: "Unaffiliated", orokin: "Orokin", sentient: "Sentient", stalker: "Stalker", narmer: "Narmer", murmur: "Murmur", scaldra: "Scaldra", techrot: "Techrot", anarchs: "Anarchs" },
   ephemera:           { vengeful: "Vengeful", sister: "Sisters", coda: "Coda", aspirus: "Aspirus", atramentum: "Atramentum", body: "Body", conquera: "Conquera", constellation: "Constellations", baro: "Baro Ki'Teer", oneoff: "One-Offs", easter: "Easter", halloween: "Halloween", summer: "Summer", valentine: "Valentines", winter: "Winter", shard: "Shard", step: "Step", zariman: "Zariman"},
-  focusrepresent:     { poster: "Poster", glyph: "Vosphene Glyph" },
   focusschool:        { zenurik: "zenurik", unairu: "unairu", vazarin: "vazarin", naramon: "naramon", madurai: "madurai" },
   fragment:           { cephalon: "cephalon", cetus: "cetus", gara: "gara", ghouls: "ghouls", solaris: "solaris", partnership: "partnership", prex: "prex", tenet: "tenet", duviri: "duviri", albrecht: "albrecht", isleweaver: "isleweaver" },
   fragment_category:  { other: "other", warframe: "warframe", palladino: "palladino", heirloom: "heirloom", deimos: "deimos" },
@@ -91,7 +88,7 @@ WF.TYPES = {
   relic_vanguard:     { vanguard: "vanguard" },
   signa:              { event: "Event", nightwave: "Nightwave", baro: "Baro Ki'Teer", hunhow: "Hunhow" },
   skin:               { skin: "Skin", ship: "Ship Decoration", misc: "Misc", palette: "Color Palette", note: "Note Packs", emotes: "Emotes", fur_color: "Fur Color", fur_pattern: "Fur Pattern", theme_background: "Theme Background", themes: "Themes", arcade: "Arcade Minigame Unlock", theme_sound: "Theme Sound", syandana: "Syandana", skins: "Skins", fish: "Fish", glyph: "Glyph", resource: "Resource", emblem: "emblem", poster: "poster", floof: "floof", ephemera: "ephemera", drone: "drone", signa: "signa"},
-  somachord:          { baro: "Baro Ki'Teer", aoi: "Aoi", fragment: "Fragment", hunhow: "Hunhow", aspirant: "Aspirant Zorba", varzia: "Varzia", shop: "Shop", awakening: "Awakening Quest", teshin: "Teshin", koumei: "Koumei's Shrine" },
+  somachord:          { baro: "Baro Ki'Teer", aoi: "Aoi", fragment: "Fragment", hunhow: "Hunhow", aspirant: "Aspirant Zorba", varzia: "Varzia", awakening: "Awakening Quest", teshin: "Teshin", koumei: "Koumei's Shrine" },
   trophy:             { mastery: "Mastery", planet: "Planets", fish: "Fish" },
   trophy_fish:        { poe: "Plain Of Eidolon", ov: "Orb Vallis", cd: "Cambion Drift" },
   vehicle:            { archwing: "archwing", necramech: "necramech", plexus: "plexus", kdrive: "k-drive" },
@@ -201,11 +198,11 @@ WF.NAV_GROUPS = [
   },
   {
     label: "Appearance",
-    types: [WF.CATEGORY.ephemera, WF.CATEGORY.emblem, WF.CATEGORY.glyph, WF.CATEGORY.sigil, WF.CATEGORY.signa, WF.CATEGORY.skin, WF.CATEGORY.sumdali, WF.CATEGORY.syandana],
+    types: [WF.CATEGORY.ephemera, WF.CATEGORY.emblem, WF.CATEGORY.emote, WF.CATEGORY.glyph, WF.CATEGORY.sigil, WF.CATEGORY.signa, WF.CATEGORY.skin, WF.CATEGORY.sugatra, WF.CATEGORY.sumdali, WF.CATEGORY.syandana],
   },
   {
     label: "Decorations",
-    types: [WF.CATEGORY.arcade, WF.CATEGORY.articula, WF.CATEGORY.domestik, WF.CATEGORY.floof, WF.CATEGORY.focusrepresent, WF.CATEGORY.poster, WF.CATEGORY.trophy],
+    types: [WF.CATEGORY.arcade, WF.CATEGORY.articula, WF.CATEGORY.domestik, WF.CATEGORY.floof, WF.CATEGORY.poster, WF.CATEGORY.trophy],
   },
 ];
 
@@ -219,6 +216,8 @@ WF.PROJECT_SRC = "https://github.com/evilflora/wct";
 WF.PROJECT_URL = "https://evilflora.github.io/wct/";
  
 WF.CHANGELOG = [
+	{ date: "2026/08/22 00:00:00", version: "43.5.4", text: `More items are classified. </br>Global search is now available (and redirect to the category).</br>Small animation for items with long names when hovered and with ellipsis. ` },
+	{ date: "2026/08/19 00:00:00", version: "43.5.4", text: `Items with long names now have an animation on hover.</br>Added new items.` },
 	{ date: "2026/08/19 00:00:00", version: "43.5.1", text: `Fixed disconnect not working for SYNC.</br>Added previously missing patch note.</br>4 new honoria for Fables & Frontiers.` },
   { date: "2026/08/16 00:00:00", version: "43.5.1", text: `Added SYNC functionalities with a secret key.</br> Fixed broken honoria unique's name.</br> Added new honoria and added 2 categories: enemies and objects.</br> Added a setting to see or not PVP only mods.</br> Removed resources category.</br> Added global progression in STATS.` },
   { date: "2026/08/09 00:00:00", version: "43.0.8", text: `New items and new categories.</br>New badge for items hidden until owned.</br>Navigation menu order has changed a bit.` },
