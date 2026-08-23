@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const changelogList          = getEl("info-changelog-list");
   const includeOptionsCheckbox = getEl("opt-include-options-in-export");
   const includeFounderCheckbox = getEl("opt-include-founder-pack-exclusive");
-  const includePvpModsCheckbox = getEl("opt-include-pvp-mods");
+  const includePvpItemsCheckbox = getEl("opt-include-pvp-mods");
   const importFileInput        = getEl("import-file-input");
   const themeSwatches          = document.querySelectorAll(".theme-swatch");
 
@@ -36,26 +36,24 @@ document.addEventListener("DOMContentLoaded", function () {
   tooltip.className = "global-tooltip";
   document.body.appendChild(tooltip);
 
-  const appRoot = getEl("app");
+	document.addEventListener("mouseover", (event) => { // yay js, because i can't figure a way in css wtih content-visibility
+		const el = event.target.closest("[data-tooltip]");
+		if (!el) return;
 
-  appRoot.addEventListener("mouseover", (event) => { // yay js, because i can't figure a way in css wtih content-visibility
-    const el = event.target.closest(".item-info[data-tooltip]");
-    if (!el) return;
+		const rect = el.getBoundingClientRect();
+		tooltip.textContent = el.dataset.tooltip;
+		tooltip.style.left = rect.right + "px";
+		tooltip.style.top = (rect.top - 6) + "px";
+		tooltip.style.transform = "translate(-100%, -100%)";
+		tooltip.classList.add("visible");
+	});
 
-    const rect = el.getBoundingClientRect();
-    tooltip.textContent = el.dataset.tooltip;
-    tooltip.style.left = rect.right + "px";
-    tooltip.style.top = (rect.top - 6) + "px";
-    tooltip.style.transform = "translate(-100%, -100%)";
-    tooltip.classList.add("visible");
-  });
-
-  appRoot.addEventListener("mouseout", (event) => {
-    const el = event.target.closest(".item-info[data-tooltip]");
-    if (!el) return;
-    if (el.contains(event.relatedTarget)) return; 
-    tooltip.classList.remove("visible");
-  });
+	document.addEventListener("mouseout", (event) => {
+		const el = event.target.closest("[data-tooltip]");
+		if (!el) return;
+		if (el.contains(event.relatedTarget)) return;
+		tooltip.classList.remove("visible");
+	});
 
   getEl("btn-export").addEventListener("click", () => {
     WF.exportImport.exportToFile();
@@ -487,7 +485,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const options = WF.options.load();
     includeOptionsCheckbox.checked = options.includeOptionsInExport;
     includeFounderCheckbox.checked = options.includeFounderItems;
-    includePvpModsCheckbox.checked = options.includePvpMods;
+    includePvpItemsCheckbox.checked = options.includePvpItems;
     themeSwatches.forEach((swatch) => {
       const input = swatch.querySelector("input[type=color]");
       if (input) input.value = WF.theme.getColor(swatch.dataset.var);
@@ -501,6 +499,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
   getEl("btn-options-toggle").addEventListener("click", openOptions);
   getEl("btn-options-close").addEventListener("click", closeOptions);
+	
+	const itemListOverlay = getEl("item-list-overlay");
+	const itemListTitle   = getEl("item-list-title");
+	const itemListBody    = getEl("item-list-body");
+
+	function openItemList(title, flagField) {
+		const matching = WF.data.filter((item) => item[flagField]);
+		itemListTitle.textContent = `${title} (${matching.length})`;
+		WF.render.renderFlagList(itemListBody, matching);
+		toggleOverlay(itemListOverlay, true);
+	}
+
+	function closeItemList() {
+		toggleOverlay(itemListOverlay, false);
+	}
+
+	getEl("opt-show-founder-items").addEventListener("click", (event) => {
+		event.preventDefault();
+		event.stopPropagation();
+		openItemList("Founder Exclusive Items", "founder");
+	});
+
+	getEl("opt-show-conclave-items").addEventListener("click", (event) => {
+		event.preventDefault();
+		event.stopPropagation();
+		openItemList("Conclave / PVP Items", "conclave");
+	});
+
+	getEl("btn-item-list-close").addEventListener("click", closeItemList);
+
+	itemListOverlay.addEventListener("click", (event) => {
+		if (event.target === itemListOverlay) closeItemList();
+	});
 
   optionsOverlay.addEventListener("click", (event) => {
     if (event.target === optionsOverlay) closeOptions();
@@ -516,8 +547,8 @@ document.addEventListener("DOMContentLoaded", function () {
     WF.mastery.render();
   });
 	
-  includePvpModsCheckbox.addEventListener("change", () => {
-    WF.options.save({ ...WF.options.load(), includePvpMods: includePvpModsCheckbox.checked });
+  includePvpItemsCheckbox.addEventListener("change", () => {
+    WF.options.save({ ...WF.options.load(), includePvpItems: includePvpItemsCheckbox.checked });
     WF.render.renderAll();
     WF.mastery.render();
   });

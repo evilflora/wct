@@ -3,7 +3,7 @@ WF.options = (function () {
   const DEFAULTS = {
     includeOptionsInExport: false,
     includeFounderItems: false,
-    includePvpMods: false,
+    includePvpItems: false,
     syncKey: null,
   };
 

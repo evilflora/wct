@@ -45,9 +45,9 @@ WF.render = (function () {
     return (WF.CATEGORY[category] && WF.CATEGORY[category].label) || category;
   }
 
-  function availableCategories(includeFounder, includePvpMods) {
+  function availableCategories(includeFounder, includePvpItems) {
     return Object.keys(WF.CATEGORY).filter((category) =>
-      WF.data.some((item) => matchesCategory(item, category) && (includeFounder || !item.founder) && (includePvpMods || !(Array.isArray(item.type) && item.type.length === 1 && item.type[0] === WF.TYPES.mod.pvp)))
+      WF.data.some((item) => matchesCategory(item, category) && (includeFounder || !item.founder) && (includePvpItems || !item.conclave))
     );
   }
 
@@ -76,24 +76,24 @@ WF.render = (function () {
     return Math.floor((owned / total) * 100);
   }
 
-  let cache = { category: null, includeFounder: null, includePvpMods: null, typeBase: [], filters: [] };
+  let cache = { category: null, includeFounder: null, includePvpItems: null, typeBase: [], filters: [] };
 
-  function getTypeBaseAndFilters(includeFounder, includePvpMods) {
-    if (cache.category === activeCategory && cache.includeFounder === includeFounder && cache.includePvpMods === includePvpMods) {
+  function getTypeBaseAndFilters(includeFounder, includePvpItems) {
+    if (cache.category === activeCategory && cache.includeFounder === includeFounder && cache.includePvpItems === includePvpItems) {
       return cache;
     }
     cache = {
       category: activeCategory,
       includeFounder,
-			includePvpMods,
-      typeBase: WF.data.filter((item) => matchesCategory(item, activeCategory) && (includeFounder || !item.founder) && (includePvpMods || !(Array.isArray(item.type) && item.type.length === 1 && item.type[0] === WF.TYPES.mod.pvp))),
+			includePvpItems,
+      typeBase: WF.data.filter((item) => matchesCategory(item, activeCategory) && (includeFounder || !item.founder) && (includePvpItems || !item.conclave)),
       filters: WF.FILTERS[activeCategory] || [],
     };
     return cache;
   }
 
-  function buildSidebarItem(container, category, progress, includeFounder, includePvpMods) {
-    const typeItems = WF.data.filter((item) => matchesCategory(item, category) && (includeFounder || !item.founder) && (includePvpMods || !(Array.isArray(item.type) && item.type.length === 1 && item.type[0] === WF.TYPES.mod.pvp)));
+  function buildSidebarItem(container, category, progress, includeFounder, includePvpItems) {
+    const typeItems = WF.data.filter((item) => matchesCategory(item, category) && (includeFounder || !item.founder) && (includePvpItems || !item.conclave));
     const percent = computePercent(typeItems, progress);
 
     const btn = document.createElement("button");
@@ -143,9 +143,9 @@ WF.render = (function () {
     if (sidebarSearchResultsEl) sidebarSearchResultsEl.classList.remove("visible");
   }
 
-  function showSidebarSearchResults(wrapEl, progress, includeFounder, includePvpMods) {
+  function showSidebarSearchResults(wrapEl, progress, includeFounder, includePvpItems) {
     const resultsEl = getSidebarSearchResultsEl();
-    renderSidebarSearchResults(resultsEl, progress, includeFounder, includePvpMods);
+    renderSidebarSearchResults(resultsEl, progress, includeFounder, includePvpItems);
 
     if (sidebarSearchQuery.trim().length < SIDEBAR_SEARCH_MIN_LENGTH) {
       resultsEl.classList.remove("visible");
@@ -156,17 +156,13 @@ WF.render = (function () {
     resultsEl.classList.add("visible");
   }
 
-  function renderSidebarSearchResults(resultsEl, progress, includeFounder, includePvpMods) {
+  function renderSidebarSearchResults(resultsEl, progress, includeFounder, includePvpItems) {
     resultsEl.textContent = "";
 
     const query = sidebarSearchQuery.trim().toLowerCase();
     if (query.length < SIDEBAR_SEARCH_MIN_LENGTH) return;
 
-    const allMatches = WF.data.filter((item) =>
-      (includeFounder || !item.founder) &&
-      (includePvpMods || !(Array.isArray(item.type) && item.type.length === 1 && item.type[0] === WF.TYPES.mod.pvp)) &&
-      item.display_name.en.toLowerCase().includes(query)
-    );
+    const allMatches = WF.data.filter((item) => (includeFounder || !item.founder) && (includePvpItems || !item.conclave) && item.display_name.en.toLowerCase().includes(query));
     const matches = allMatches.slice(0, SIDEBAR_SEARCH_MAX_RESULTS);
 
     if (matches.length === 0) {
@@ -223,7 +219,7 @@ WF.render = (function () {
     }
   }
 
-  function buildSidebarSearch(container, progress, includeFounder, includePvpMods) {
+  function buildSidebarSearch(container, progress, includeFounder, includePvpItems) {
     const wrap = document.createElement("div");
     wrap.classList.add("search-wrap");
     wrap.classList.add("search-wrap-padding");
@@ -249,11 +245,11 @@ WF.render = (function () {
       input.value = "";
       clearBtn.style.display = "none";
       input.focus();
-      showSidebarSearchResults(wrap, progress, includeFounder, includePvpMods);
+      showSidebarSearchResults(wrap, progress, includeFounder, includePvpItems);
     });
 
     input.addEventListener("focus", () => {
-      showSidebarSearchResults(wrap, progress, includeFounder, includePvpMods);
+      showSidebarSearchResults(wrap, progress, includeFounder, includePvpItems);
     });
 
     input.addEventListener("blur", () => {
@@ -266,7 +262,7 @@ WF.render = (function () {
 
       clearTimeout(sidebarSearchDebounceTimer);
       sidebarSearchDebounceTimer = setTimeout(() => {
-        showSidebarSearchResults(wrap, progress, includeFounder, includePvpMods);
+        showSidebarSearchResults(wrap, progress, includeFounder, includePvpItems);
       }, SEARCH_DEBOUNCE_MS);
     });
 
@@ -285,7 +281,7 @@ WF.render = (function () {
     return sidebarSearchMountEl;
   }
 
-  function buildSidebar(types, progress, includeFounder, includePvpMods) {
+  function buildSidebar(types, progress, includeFounder, includePvpItems) {
     const container = document.getElementById("sidebar-groups");
     if (!container) return;
     container.textContent = "";
@@ -293,7 +289,7 @@ WF.render = (function () {
     const searchMount = getSidebarSearchMountEl();
     if (searchMount) {
       searchMount.textContent = "";
-      buildSidebarSearch(searchMount, progress, includeFounder, includePvpMods);
+      buildSidebarSearch(searchMount, progress, includeFounder, includePvpItems);
     }
 
     const availableSet = new Set(types);
@@ -318,7 +314,7 @@ WF.render = (function () {
 
       groupTypes.forEach((category) => {
         categorizedTypes.add(category);
-        buildSidebarItem(groupEl, category, progress, includeFounder, includePvpMods);
+        buildSidebarItem(groupEl, category, progress, includeFounder, includePvpItems);
       });
 
       (group.subgroups || []).forEach((subgroup) => {
@@ -335,7 +331,7 @@ WF.render = (function () {
 
         subTypes.forEach((category) => {
           categorizedTypes.add(category);
-          buildSidebarItem(subEl, category, progress, includeFounder, includePvpMods);
+          buildSidebarItem(subEl, category, progress, includeFounder, includePvpItems);
         });
 
         groupEl.appendChild(subEl);
@@ -354,7 +350,7 @@ WF.render = (function () {
       label.textContent = "Other";
       groupEl.appendChild(label);
 
-      uncategorized.forEach((category) => buildSidebarItem(groupEl, category, progress, includeFounder, includePvpMods));
+      uncategorized.forEach((category) => buildSidebarItem(groupEl, category, progress, includeFounder, includePvpItems));
       fragment.appendChild(groupEl);
     }
 
@@ -437,7 +433,7 @@ WF.render = (function () {
   function updateUIFast(currentPoolItems) {
     const progress = WF.storage.load();
     const includeFounder = WF.options.load().includeFounderItems;
-    const includePvpMods = WF.options.load().includePvpMods;
+    const includePvpItems = WF.options.load().includePvpItems;
 
     const total = currentPoolItems.length;
     let owned = 0;
@@ -451,7 +447,7 @@ WF.render = (function () {
     if (label) label.textContent = `${owned} / ${total} (${percent}%)`;
     if (fill) fill.style.width = `${percent}%`;
 
-    const { typeBase } = getTypeBaseAndFilters(includeFounder, includePvpMods);
+    const { typeBase } = getTypeBaseAndFilters(includeFounder, includePvpItems);
 
     const activeNav = document.querySelector(`.nav-item[data-category="${activeCategory}"]`);
     if (activeNav) {
@@ -778,9 +774,9 @@ WF.render = (function () {
 
   function renderUpdate() {
     const includeFounder = WF.options.load().includeFounderItems;
-    const includePvpMods = WF.options.load().includePvpMods;
+    const includePvpItems = WF.options.load().includePvpItems;
     const progress = WF.storage.load();
-    const { typeBase, filters } = getTypeBaseAndFilters(includeFounder, includePvpMods);
+    const { typeBase, filters } = getTypeBaseAndFilters(includeFounder, includePvpItems);
     renderDynamic(progress, typeBase, filters);
   }
 
@@ -789,8 +785,8 @@ WF.render = (function () {
     initDelegatedEvents(root);
 
     const includeFounder = WF.options.load().includeFounderItems;
-    const includePvpMods = WF.options.load().includePvpMods;
-    const types = availableCategories(includeFounder, includePvpMods);
+    const includePvpItems = WF.options.load().includePvpItems;
+    const types = availableCategories(includeFounder, includePvpItems);
 
     if (types.length === 0) {
       root.innerHTML = '<p class="empty-state">No data loaded.</p>';
@@ -804,7 +800,7 @@ WF.render = (function () {
 
     if (activeCategory === null || !types.includes(activeCategory)) activeCategory = WF.DEFAUT_ACTIVE_TAB;
 
-    const { typeBase, filters } = getTypeBaseAndFilters(includeFounder, includePvpMods);
+    const { typeBase, filters } = getTypeBaseAndFilters(includeFounder, includePvpItems);
 
     const validTypes = new Set([all, ...Object.values(WF.TYPES[activeCategory] || {})]);
     if (!validTypes.has(activeType)) {
@@ -824,7 +820,7 @@ WF.render = (function () {
     });
     activeFilter = sanitizedFilter;
 
-    buildSidebar(types, progress, includeFounder, includePvpMods);
+    buildSidebar(types, progress, includeFounder, includePvpItems);
     renderStatic(progress, typeBase, filters);
     renderDynamic(progress, typeBase, filters);
 
@@ -834,14 +830,60 @@ WF.render = (function () {
   function getCategoryStats(category) {
     const progress = WF.storage.load();
     const includeFounder = WF.options.load().includeFounderItems;
-    const includePvpMods = WF.options.load().includePvpMods;
-    const items = WF.data.filter((item) => matchesCategory(item, category) && (includeFounder || !item.founder) && (includePvpMods || !(Array.isArray(item.type) && item.type.length === 1 && item.type[0] === WF.TYPES.mod.pvp)));
+    const includePvpItems = WF.options.load().includePvpItems;
+    const items = WF.data.filter((item) => matchesCategory(item, category) && (includeFounder || !item.founder) && (includePvpItems || !item.conclave));
     let owned = 0;
     for (let i = 0; i < items.length; i++) {
       if (progress[items[i].item_name]) owned++;
     }
     return { owned, total: items.length, percent: computePercent(items, progress) };
   }
+	
+	function renderFlagList(container, matching) {
+		container.textContent = "";
+		const progress = WF.storage.load();
 
-  return { renderAll, getCategoryStats };
+		const byCategory = new Map();
+		matching.forEach((item) => {
+			if (!byCategory.has(item.category)) byCategory.set(item.category, []);
+			byCategory.get(item.category).push(item);
+		});
+
+		const categories = [...byCategory.keys()].sort((a, b) => naturalCompare(categoryLabel(a), categoryLabel(b)));
+
+		const fragment = document.createDocumentFragment();
+		categories.forEach((category) => {
+			const items = byCategory.get(category).sort((a, b) => naturalCompare(a.display_name.en, b.display_name.en));
+			
+			const header = document.createElement("div");
+			header.className = "nav-group-label";
+			header.textContent = `${categoryLabel(category)} (${items.length})`;;
+			fragment.appendChild(header);
+
+			const list = document.createElement("div");
+			list.className = "item-list";
+
+			items.forEach((item) => {
+				const owned = !!progress[item.item_name];
+				const row = document.createElement("div");
+				row.className = "item-row" + (owned ? " owned" : "");
+
+				const name = document.createElement("span");
+				name.className = "item-name";
+				const nameInner = document.createElement("span");
+				nameInner.className = "item-name-inner";
+				nameInner.textContent = item.display_name.en;
+				name.appendChild(nameInner);
+
+				row.appendChild(name);
+				list.appendChild(row);
+			});
+
+			fragment.appendChild(list);
+		});
+
+		container.appendChild(fragment);
+	}
+
+  return { renderAll, getCategoryStats, renderFlagList };
 })();

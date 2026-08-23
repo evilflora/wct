@@ -216,7 +216,8 @@ WF.PROJECT_SRC = "https://github.com/evilflora/wct";
 WF.PROJECT_URL = "https://evilflora.github.io/wct/";
  
 WF.CHANGELOG = [
-	{ date: "2026/08/22 00:00:00", version: "43.5.4", text: `More items are classified. </br>Global search is now available (and redirect to the category).</br>Small animation for items with long names when hovered and with ellipsis. ` },
+	{ date: "2026/08/23 00:00:00", version: "43.5.4", text: `Visual improvements to the global search bar.</br>Category headers are now sticky and stay at the top of the list when scrolling.</br>Added a button in the options menu to view the impacted items list when the option is enabled.</br>Added an overlay panel to easily view the list of added items.</br>Removed "Gears" equipment.</br>Updated posters.</br>Database cleanup: removed items and refined filtering.</br>Renamed the "PvpMods" option to "Conclave" for better clarity.` },
+	{ date: "2026/08/22 00:00:00", version: "43.5.4", text: `More items are classified. </br>Global search is now available (and redirect to the category).</br>Small animation for items with long names when hovered and with ellipsis.` },
 	{ date: "2026/08/19 00:00:00", version: "43.5.4", text: `Items with long names now have an animation on hover.</br>Added new items.` },
 	{ date: "2026/08/19 00:00:00", version: "43.5.1", text: `Fixed disconnect not working for SYNC.</br>Added previously missing patch note.</br>4 new honoria for Fables & Frontiers.` },
   { date: "2026/08/16 00:00:00", version: "43.5.1", text: `Added SYNC functionalities with a secret key.</br> Fixed broken honoria unique's name.</br> Added new honoria and added 2 categories: enemies and objects.</br> Added a setting to see or not PVP only mods.</br> Removed resources category.</br> Added global progression in STATS.` },

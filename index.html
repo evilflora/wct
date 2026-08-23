@@ -180,20 +180,20 @@
           <h3>Settings</h3>
           <label class="option-row">
             <input type="checkbox" id="opt-include-options-in-export" />
-            <span>Save options when exporting (re-applied automatically on the next import of that file)</span>
+            <span>Save options when exporting</span>
           </label>
         </section>
         <section>
-          <label class="option-row">
-            <input type="checkbox" id="opt-include-founder-pack-exclusive" />
-            <span>Add Founder Exclusive items: "Excalibur Prime" (Warframe), "Lato Prime" (Secondary), "Skana Prime" (Melee), 2 more incarnon forms, 4 more honoria titles, 4 more sigils and 4 more emblems.</span>
-          </label>
+					<label class="option-row">
+						<input type="checkbox" id="opt-include-founder-pack-exclusive" />
+						<span>Add Founder Exclusive items <button type="button" id="opt-show-founder-items" class="item-info-btn">Show item list</button></span>
+					</label>
         </section>
         <section>
-          <label class="option-row">
-            <input type="checkbox" id="opt-include-pvp-mods" />
-            <span>Add PVP only Mods.</span>
-          </label>
+					<label class="option-row">
+						<input type="checkbox" id="opt-include-pvp-mods" />
+						<span>Add Conclave items <button type="button" id="opt-show-conclave-items" class="item-info-btn">Show item list</button></span>
+					</label>
         </section>
         <section>
           <h3>Data Management</h3>
@@ -255,7 +255,18 @@
       </div>
     </div>
   </div>
-  <button id="btn-scroll-top" class="scroll-top-btn" aria-label="Scroll to top">&#8593;</button>
+	<div id="item-list-overlay" class="info-overlay">
+		<div class="info-modal">
+			<div class="info-modal-header">
+				<h2 id="item-list-title">Items</h2>
+				<button id="btn-item-list-close" class="info-close-btn" aria-label="Close list">&times;</button>
+			</div>
+			<div class="info-modal-body">
+				<div id="item-list-body"></div>
+			</div>
+		</div>
+	</div>
+	<button id="btn-scroll-top" class="scroll-top-btn" aria-label="Scroll to top">&#8593;</button>
   <script src="js/constants.js"></script>
   <script src="js/toast.js"></script>
   <script src="js/version.js"></script>
