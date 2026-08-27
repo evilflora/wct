@@ -159,12 +159,16 @@
         <div class="stats-tabs" role="tablist">
           <button type="button" class="stats-tab active" data-tab="mastery" role="tab" aria-selected="true">Mastery Breakdown</button>
           <button type="button" class="stats-tab" data-tab="progression" role="tab" aria-selected="false">Progression</button>
+          <button type="button" class="stats-tab" data-tab="endospent" role="tab" aria-selected="false">Endo</button>
         </div>
         <div id="stats-panel-mastery" class="stats-panel active" role="tabpanel">
           <div id="mastery-breakdown" class="mastery-breakdown"></div>
         </div>
         <div id="stats-panel-progression" class="stats-panel" role="tabpanel">
           <table id="stats-table" class="stats-table"></table>
+        </div>
+        <div id="stats-panel-endospent" class="stats-panel" role="tabpanel">
+          <table id="endo-spent" class="stats-table"></table>
         </div>
       </div>
     </div>
@@ -186,14 +190,16 @@
         <section>
 					<label class="option-row">
 						<input type="checkbox" id="opt-include-founder-pack-exclusive" />
-						<span>Add Founder Exclusive items <button type="button" id="opt-show-founder-items" class="item-info-btn">Show item list</button></span>
+						<span>Add Founder Exclusive items</span>
 					</label>
+          <button type="button" id="opt-show-founder-items" class="item-info-btn">Show item list</button>
         </section>
         <section>
 					<label class="option-row">
 						<input type="checkbox" id="opt-include-pvp-mods" />
-						<span>Add Conclave items <button type="button" id="opt-show-conclave-items" class="item-info-btn">Show item list</button></span>
+						<span>Add Conclave items</span>
 					</label>
+          <button type="button" id="opt-show-conclave-items" class="item-info-btn">Show item list</button>
         </section>
         <section>
           <h3>Data Management</h3>

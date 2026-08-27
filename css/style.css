@@ -66,6 +66,42 @@ header p {
 
 a { color: var(--accent-color); }
 
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  display: inline-grid;
+  place-content: center;
+  margin: 0 4px 0 0;
+  vertical-align: text-top;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+input[type="checkbox"]:hover {
+  border-color: var(--accent-color);
+}
+
+input[type="checkbox"]:focus-visible {
+  outline: 1px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+input[type="checkbox"]:checked {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+input[type="checkbox"]:checked::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  background-color: var(--bg);
+}
+
 #app:not(.main-content) {
   max-width: 920px;
   margin: 0 auto;
@@ -225,12 +261,12 @@ a { color: var(--accent-color); }
   color: var(--text);
   font-size: 0.75rem;
   cursor: pointer;
-	padding: 4px;
+  padding: 4px;
 }
 
 .item-info-btn:hover {
   border: 1px solid var(--accent-color);
-	color: var(--accent-color);
+  color: var(--accent-color);
 }
 
 #item-list-body {
@@ -860,7 +896,7 @@ a { color: var(--accent-color); }
   text-shadow: 0 0 5px rgb(255 255 255);
   background: none;
   border: 0;
-	padding: 4px;
+  padding: 4px;
 }
 
 #sync-key:hover {

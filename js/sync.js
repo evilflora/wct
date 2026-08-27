@@ -31,26 +31,26 @@ WF.sync = {
     return LZString.compressToBase64(JSON.stringify(payloadObj));
   },
 
-	async pushData(syncKey) {
-		if (!syncKey || syncKey.length !== 64) return false;
-		if (Date.now() - _lastPushAt < PUSH_COOLDOWN_MS) throw new Error(ERROR_RATE_LIMITED);
-		try {
-			const compressedPayload = this.getCompressedPayload();
-			await setDoc(doc(db, COLLECTION_NAME, syncKey), {
-				payload: compressedPayload,
-				updatedAt: serverTimestamp()
-			}, { merge: true });
-			_lastPushAt = Date.now();
-			return true;
-		} catch (err) {
-			if (err.code === "permission-denied") {
-				throw new Error(ERROR_RATE_LIMITED);
-			}
-			console.error("[Sync] Error pushing data:", err.code, err.message);
-			throw err;
-		}
-	},
-	
+  async pushData(syncKey) {
+    if (!syncKey || syncKey.length !== 64) return false;
+    if (Date.now() - _lastPushAt < PUSH_COOLDOWN_MS) throw new Error(ERROR_RATE_LIMITED);
+    try {
+      const compressedPayload = this.getCompressedPayload();
+      await setDoc(doc(db, COLLECTION_NAME, syncKey), {
+        payload: compressedPayload,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+      _lastPushAt = Date.now();
+      return true;
+    } catch (err) {
+      if (err.code === "permission-denied") {
+        throw new Error(ERROR_RATE_LIMITED);
+      }
+      console.error("[Sync] Error pushing data:", err.code, err.message);
+      throw err;
+    }
+  },
+  
   async pullData(syncKey) {
     if (!syncKey || syncKey.length !== 64) return null;
     if (Date.now() - _lastPullAt < PULL_COOLDOWN_MS) throw new Error(ERROR_RATE_LIMITED);
