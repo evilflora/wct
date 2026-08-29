@@ -1,11 +1,35 @@
 WF.storage = (function () {
   const STORAGE_KEY = "wf_checklist_progress";
+  const VERSION_KEY = "wf_checklist_current_version";
+  const DELETE = true;
+
+  function pruneOrphanKeys(progressMap) {
+    if (!WF.data || typeof WF.WCT_VERSION === "undefined") return progressMap;
+
+    const storedVersion = localStorage.getItem(VERSION_KEY);
+    if (storedVersion === String(WF.WCT_VERSION)) return progressMap;
+
+    const validKeys = new Set(WF.data.map((item) => item.item_name));
+    const orphanKeys = Object.keys(progressMap).filter((key) => !validKeys.has(key));
+
+    if (orphanKeys.length > 0) {
+      console.log("Deleted: ", orphanKeys);
+      if (DELETE) {
+        orphanKeys.forEach((key) => delete progressMap[key]);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(progressMap));
+      }
+    }
+
+    localStorage.setItem(VERSION_KEY, String(WF.WCT_VERSION));
+    
+    return progressMap;
+  }
 
   function load() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return {};
-      return JSON.parse(raw);
+      return pruneOrphanKeys(JSON.parse(raw));
     } catch (err) {
       console.error("Unreadable or corrupted localStorage progress, reset.", err);
       return {};

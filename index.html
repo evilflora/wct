@@ -1,266 +1,295 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Warframe Completion Tracker</title>
-  <meta name="description" content="Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more." />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://evilflora.github.io/wct/" />
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<title>Warframe Completion Tracker</title>
+	<meta name="description" content="Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more." />
+	<meta name="robots" content="index, follow" />
+	<link rel="canonical" href="https://evilflora.github.io/wct/" />
 
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Warframe Completion Tracker" />
-  <meta property="og:title" content="Warframe Completion Tracker" />
-  <meta property="og:description" content="Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more." />
-  <meta property="og:url" content="https://evilflora.github.io/wct/" />
-  <meta property="og:locale" content="en_US" />
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "Warframe Completion Tracker",
-    "url": "https://evilflora.github.io/wct/",
-    "applicationCategory": "UtilitiesApplication",
-    "operatingSystem": "Any (Web Browser)",
-    "description": "Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more."
-  }
-  </script>
-  <script>
-    (function () {
-      try {
-        const options = JSON.parse(localStorage.getItem("wf_checklist_options") || "{}");
-        const colors = options.themeColors || {};
-        Object.keys(colors).forEach((cssVar) => document.documentElement.style.setProperty(cssVar, colors[cssVar]));
-      } catch (err) {
-        // I don't care
-      }
-    })();
-  </script>
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="Warframe Completion Tracker" />
+	<meta property="og:title" content="Warframe Completion Tracker" />
+	<meta property="og:description" content="Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more." />
+	<meta property="og:url" content="https://evilflora.github.io/wct/" />
+	<meta property="og:locale" content="en_US" />
+	<link rel="stylesheet" href="css/style.css" />
+	<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "WebApplication",
+		"name": "Warframe Completion Tracker",
+		"url": "https://evilflora.github.io/wct/",
+		"applicationCategory": "UtilitiesApplication",
+		"operatingSystem": "Any (Web Browser)",
+		"description": "Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more."
+	}
+	</script>
+	<script>
+		(function () {
+			try {
+				const options = JSON.parse(localStorage.getItem("wf_checklist_options") || "{}");
+				const colors = options.themeColors || {};
+				Object.keys(colors).forEach((cssVar) => document.documentElement.style.setProperty(cssVar, colors[cssVar]));
+			} catch (err) {
+				// I don't care
+			}
+		})();
+	</script>
 </head>
 <body>
-  <noscript>
-    <div style="padding:2rem;max-width:640px;margin:0 auto;text-align:center;">
-      <h2>JavaScript required</h2>
-      <p>Warframe Completion Tracker requires JavaScript to work. Please enable JavaScript in your browser to use this tool.</p>
-    </div>
-  </noscript>
-  <div class="layout">
-    <nav id="sidebar" class="sidebar">
-      <div id="sidebar-groups"></div>
-    </nav>
-    <div id="sidebar-overlay" class="sidebar-overlay"></div>
-    <div class="content-column">
-      <header>
-        <div class="header-top">
-          <button id="btn-sidebar-toggle" class="sidebar-toggle-btn" aria-label="Open menu">&#9776;</button>
-          <h1>Warframe Completion Tracker</h1>
-          <div class="btn-group">
-            <button id="btn-update-toggle"  class="info-toggle-btn hidden" aria-label="Open update" >[&#x2B07;]</button>
-            <button id="btn-sync-toggle"    class="info-toggle-btn" aria-label="Open sync"   >[&#9823;] SYNC</button>
-            <button id="btn-stats-toggle"   class="info-toggle-btn" aria-label="Open stats"  >[&gt;&gt;] STATS</button>
-            <button id="btn-info-toggle"    class="info-toggle-btn" aria-label="Open info"   >[?] INFO</button>
-            <button id="btn-options-toggle" class="info-toggle-btn" aria-label="Open options">[&#9881;] OPTIONS</button>
-          </div>
-        </div>
-        <div id="mastery-bar" class="mastery-bar">
-          <div class="mastery-progress-wrap">
-            <div class="mastery-progress-track"><div id="mastery-progress-fill" class="mastery-progress-fill"></div></div>
-            <div class="mastery-container">
-              <div id="mastery-rank-label" class="mastery-rank-label"></div>
-              <div id="mastery-progress-text" class="mastery-progress-text"></div>
-              <div id="mastery-total-text" class="mastery-total-text"></div>
-            </div>
-          </div>
-        </div>
-      </header>
-      <main id="app" class="main-content">
-        <div>
-          <h2>Track your Warframe progress</h2>
-          <p>Warframe Completion Tracker helps you keep track of everything you've collected and everything left to unlock in Warframe: Warframes, Primary Weapons, Secondary Weapons, Melee Weapons, Companions, Archwings, Mods, Arcanes, Honorifics, Mastery Rank progress and more.</p>
-          <ul>
-            <li>Warframes &amp; Prime variants</li>
-            <li>Primary, Secondary &amp; Melee weapons</li>
-            <li>Companions &amp; Archwings</li>
-            <li>Mods &amp; Arcanes</li>
-            <li>Mastery Rank tracking</li>
-          </ul>
-          <p>All progress is saved locally in your browser, with optional export/import and cross-device sync.</p>
-        </div>
-      </main>
-    </div>
-  </div>
-  <div id="sync-overlay" class="info-overlay">
-    <div class="info-modal">
-      <div class="info-modal-header">
-        <h2>[&#9823;] Sync</h2>
-        <button id="btn-sync-close" class="info-close-btn" aria-label="Close sync">&times;</button>
-      </div>
-      <div class="info-modal-body">
-        <section>
-          <h3>Explanations</h3>
-          <p>You can synchronise your progression across multiple browsers and devices on the GitHub url (does not work without web server / http server).</p>
-          <p>If you try to sync data from a higher version to an older one, it will locally strip non-existing items.</p>
-          <p>It works by using Google Firebase and a unique ID that can be generated below.</p>
-        </section>
-        <section>
-          <h3>Usage</h3>
-          <p>By pressing "CREATE", a random secret key will be generated, <b>do not lose it</b> (it'll be included in the export file).</p>
-          <p>If you already have a secret key, you can paste it and then SYNC, this allow you to download or upload your save.</p>
-          <p><b>Keep this secret, do not share, do not show it. Anyone with this key will be able to modify your save.</b></p>
-          <p>Your secret key (mostly hiden): <input id="sync-key" class="sync-key" placeholder="64 characters key" maxlength="64" /></p>
-          <div class="sync-actions" style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
-            <button id="btn-sync-action" class="toolbar-btn-main" aria-label="Sync Action">CREATE</button>
-            <button id="btn-sync-push" class="toolbar-btn-main hidden" aria-label="Push Update">UPLOAD</button>
-            <button id="btn-sync-pull" class="toolbar-btn-main hidden" aria-label="Pull Update">DOWNLOAD</button>
-            <button id="btn-sync-disconnect" class="toolbar-btn-main hidden" aria-label="Disconnect Sync">DISCONNECT</button>
-            <button id="btn-sync-delete" class="delete-data-btn hidden" aria-label="Delete Sync">DELETE KEY AND REMOVE DATA</button>
-          </div>
-        </section>
-      </div>
-    </div>
-  </div>
-  <div id="info-overlay" class="info-overlay">
-    <div class="info-modal">
-      <div class="info-modal-header">
-        <h2>[?] Info</h2>
-        <button id="btn-info-close" class="info-close-btn" aria-label="Close info">&times;</button>
-      </div>
-      <div class="info-modal-body">
-        <section>
-          <h3>Changelog</h3>
-          <p id="update-available-notice" class="update-available-notice hidden"></p>
-          <ul id="info-changelog-list"></ul>
-        </section>
-        <section>
-          <h3>Project</h3>
-          <p>Please remember, data may be incorrect; I can't check all data at every update.</p>
-          <p><a id="info-project-link-live" href="#" target="_blank" rel="noopener noreferrer">Live version on GitHub</a></p>
-          <p><a id="info-project-link-src" href="#" target="_blank" rel="noopener noreferrer">Source code on GitHub</a></p>
-        </section>
-        <section>
-          <h3>Credits &amp; Privacy</h3>
-          <p>Made by @evilflora</p>
-          <p>Item data provided by <a href="https://github.com/WFCD/warframe-items" target="_blank" rel="noopener noreferrer">WFCD (Warframe Community Developers)</a> and <a href="https://wiki.warframe.com" target="_blank" rel="noopener noreferrer">Wiki Warframe</a>.</p>
-          <p>All data stays in your browser's local storage. Don't forget to save your data using the "Export" button.</p>
-          <p>Neither I nor this site is affiliated with "Digital Extremes" or "Warframe".</p>
-        </section>
-      </div>
-    </div>
-  </div>
-  <div id="stats-overlay" class="info-overlay">
-    <div class="info-modal">
-      <div class="info-modal-header">
-        <h2>[&gt;&gt;] Statistics</h2>
-        <button id="btn-stats-close" class="info-close-btn" aria-label="Close stats">&times;</button>
-      </div>
-      <div class="info-modal-body">
-        <div class="stats-tabs" role="tablist">
-          <button type="button" class="stats-tab active" data-tab="mastery" role="tab" aria-selected="true">Mastery Breakdown</button>
-          <button type="button" class="stats-tab" data-tab="progression" role="tab" aria-selected="false">Progression</button>
-          <button type="button" class="stats-tab" data-tab="endospent" role="tab" aria-selected="false">Endo</button>
-        </div>
-        <div id="stats-panel-mastery" class="stats-panel active" role="tabpanel">
-          <div id="mastery-breakdown" class="mastery-breakdown"></div>
-        </div>
-        <div id="stats-panel-progression" class="stats-panel" role="tabpanel">
-          <table id="stats-table" class="stats-table"></table>
-        </div>
-        <div id="stats-panel-endospent" class="stats-panel" role="tabpanel">
-          <table id="endo-spent" class="stats-table"></table>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div id="options-overlay" class="info-overlay">
-    <div class="info-modal">
-      <div class="info-modal-header">
-        <h2>[&#9881;] Options</h2>
-        <button id="btn-options-close" class="info-close-btn" aria-label="Close options">&times;</button>
-      </div>
-      <div class="info-modal-body">
-        <section>
-          <h3>Settings</h3>
-          <label class="option-row">
-            <input type="checkbox" id="opt-include-options-in-export" />
-            <span>Save options when exporting</span>
-          </label>
-        </section>
-        <section>
+	<noscript>
+		<div style="padding:2rem;max-width:640px;margin:0 auto;text-align:center;">
+			<h2>JavaScript required</h2>
+			<p>Warframe Completion Tracker requires JavaScript to work. Please enable JavaScript in your browser to use this tool.</p>
+		</div>
+	</noscript>
+	<div class="layout">
+		<nav id="sidebar" class="sidebar">
+			<div id="sidebar-groups"></div>
+		</nav>
+		<div id="sidebar-overlay" class="sidebar-overlay"></div>
+		<div class="content-column">
+			<header>
+				<div class="header-top">
+					<button id="btn-sidebar-toggle" class="sidebar-toggle-btn" aria-label="Open menu">&#9776;</button>
+					<h1>Warframe Completion Tracker</h1>
+					<div class="btn-group">
+						<button id="btn-update-toggle"	class="info-toggle-btn hidden" aria-label="Open update" >[&#x2B07;]</button>
+						<button id="btn-sync-toggle"		class="info-toggle-btn" aria-label="Open sync"	 >[&#9823;] SYNC</button>
+						<button id="btn-stats-toggle"	 class="info-toggle-btn" aria-label="Open stats"	>[&gt;&gt;] STATS</button>
+						<button id="btn-info-toggle"		class="info-toggle-btn" aria-label="Open info"	 >[?] INFO</button>
+						<button id="btn-options-toggle" class="info-toggle-btn" aria-label="Open options">[&#9881;] OPTIONS</button>
+					</div>
+				</div>
+				<div id="mastery-bar" class="mastery-bar">
+					<div class="mastery-progress-wrap">
+						<div class="mastery-progress-track"><div id="mastery-progress-fill" class="mastery-progress-fill"></div></div>
+						<div class="mastery-container">
+							<div id="mastery-rank-label" class="mastery-rank-label"></div>
+							<div id="mastery-progress-text" class="mastery-progress-text"></div>
+							<div id="mastery-total-text" class="mastery-total-text"></div>
+						</div>
+					</div>
+				</div>
+			</header>
+			<main id="app" class="main-content">
+				<div>
+					<h2>Track your Warframe progress</h2>
+					<p>Warframe Completion Tracker helps you keep track of everything you've collected and everything left to unlock in Warframe: Warframes, Primary Weapons, Secondary Weapons, Melee Weapons, Companions, Archwings, Mods, Arcanes, Honorifics, Mastery Rank progress and more.</p>
+					<ul>
+						<li>Warframes &amp; Prime variants</li>
+						<li>Primary, Secondary &amp; Melee weapons</li>
+						<li>Companions &amp; Archwings</li>
+						<li>Mods &amp; Arcanes</li>
+						<li>Mastery Rank tracking</li>
+					</ul>
+					<p>All progress is saved locally in your browser, with optional export/import and cross-device sync.</p>
+				</div>
+			</main>
+		</div>
+	</div>
+	<div id="sync-overlay" class="info-overlay">
+		<div class="info-modal">
+			<div class="info-modal-header">
+				<h2>[&#9823;] Sync</h2>
+				<button id="btn-sync-close" class="info-close-btn" aria-label="Close sync">&times;</button>
+			</div>
+			<div class="info-modal-body">
+				<section>
+					<h3>Explanations</h3>
+					<p>You can synchronise your progression across multiple browsers and devices on the GitHub url (does not work without web server / http server).</p>
+					<p>If you try to sync data from a higher version to an older one, it will locally strip non-existing items.</p>
+					<p>It works by using Google Firebase and a unique ID that can be generated below.</p>
+				</section>
+				<section>
+					<h3>Usage</h3>
+					<p>By pressing "CREATE", a random secret key will be generated, <b>do not lose it</b> (it'll be included in the export file).</p>
+					<p>If you already have a secret key, you can paste it and then SYNC, this allow you to download or upload your save.</p>
+					<p><b>Keep this secret, do not share, do not show it. Anyone with this key will be able to modify your save.</b></p>
+					<p>Your secret key (mostly hiden): <input id="sync-key" class="sync-key" placeholder="64 characters key" maxlength="64" /></p>
+					<div class="sync-actions" style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
+						<button id="btn-sync-action" class="toolbar-btn-main" aria-label="Sync Action">CREATE</button>
+						<button id="btn-sync-push" class="toolbar-btn-main hidden" aria-label="Push Update">UPLOAD</button>
+						<button id="btn-sync-pull" class="toolbar-btn-main hidden" aria-label="Pull Update">DOWNLOAD</button>
+						<button id="btn-sync-disconnect" class="toolbar-btn-main hidden" aria-label="Disconnect Sync">DISCONNECT</button>
+						<button id="btn-sync-delete" class="delete-data-btn hidden" aria-label="Delete Sync">DELETE KEY AND REMOVE DATA</button>
+					</div>
+				</section>
+			</div>
+		</div>
+	</div>
+	<div id="info-overlay" class="info-overlay">
+		<div class="info-modal">
+			<div class="info-modal-header">
+				<h2>[?] Info</h2>
+				<button id="btn-info-close" class="info-close-btn" aria-label="Close info">&times;</button>
+			</div>
+			<div class="info-modal-body">
+				<section>
+					<h3><p><a id="info-open-welcome" href="#">Reopen the welcome guide</a></p></h3>
+					<h3>Changelog</h3>
+					<p id="update-available-notice" class="update-available-notice hidden"></p>
+					<ul id="info-changelog-list"></ul>
+				</section>
+				<section>
+					<h3>Project</h3>
+					<p>Please remember, data may be incorrect or not up to date. <a href="https://github.com/evilflora/wct/issues" target="_blank" rel="noopener noreferrer">Open a case here (GitHub)</a></p>
+					<p><a id="info-project-link-live" href="#" target="_blank" rel="noopener noreferrer">Live version on GitHub</a></p>
+					<p><a id="info-project-link-src" href="#" target="_blank" rel="noopener noreferrer">Source code on GitHub</a></p>
+				</section>
+				<section>
+					<h3>Credits &amp; Privacy</h3>
+					<p>Made by @evilflora</p>
+					<p>Item data provided by <a href="https://github.com/WFCD/warframe-items" target="_blank" rel="noopener noreferrer">WFCD (Warframe Community Developers)</a> and <a href="https://wiki.warframe.com" target="_blank" rel="noopener noreferrer">Wiki Warframe</a>.</p>
+					<p>All data stays in your browser's local storage. Don't forget to save your data using the "Export" button.</p>
+					<p>Neither I nor this site is affiliated with "Digital Extremes" or "Warframe".</p>
+				</section>
+			</div>
+		</div>
+	</div>
+	<div id="stats-overlay" class="info-overlay">
+		<div class="info-modal">
+			<div class="info-modal-header">
+				<h2>[&gt;&gt;] Statistics</h2>
+				<button id="btn-stats-close" class="info-close-btn" aria-label="Close stats">&times;</button>
+			</div>
+			<div class="info-modal-body">
+				<div class="stats-tabs" role="tablist">
+					<button type="button" class="stats-tab active" data-tab="mastery" role="tab" aria-selected="true">Mastery Breakdown</button>
+					<button type="button" class="stats-tab" data-tab="progression" role="tab" aria-selected="false">Progression</button>
+					<button type="button" class="stats-tab" data-tab="endospent" role="tab" aria-selected="false">Endo</button>
+				</div>
+				<div id="stats-panel-mastery" class="stats-panel active" role="tabpanel">
+					<div id="mastery-breakdown" class="mastery-breakdown"></div>
+				</div>
+				<div id="stats-panel-progression" class="stats-panel" role="tabpanel">
+					<table id="stats-table" class="stats-table"></table>
+				</div>
+				<div id="stats-panel-endospent" class="stats-panel" role="tabpanel">
+					<table id="endo-spent" class="stats-table"></table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="options-overlay" class="info-overlay">
+		<div class="info-modal">
+			<div class="info-modal-header">
+				<h2>[&#9881;] Options</h2>
+				<button id="btn-options-close" class="info-close-btn" aria-label="Close options">&times;</button>
+			</div>
+			<div class="info-modal-body">
+				<section>
+					<h3>Settings</h3>
+					<label class="option-row">
+						<input type="checkbox" id="opt-include-options-in-export" />
+						<span>Save options when exporting</span>
+					</label>
+				</section>
+				<section>
 					<label class="option-row">
 						<input type="checkbox" id="opt-include-founder-pack-exclusive" />
 						<span>Add Founder Exclusive items</span>
 					</label>
-          <button type="button" id="opt-show-founder-items" class="item-info-btn">Show item list</button>
-        </section>
-        <section>
+					<button type="button" id="opt-show-founder-items" class="item-info-btn">Show item list</button>
+				</section>
+				<section>
 					<label class="option-row">
 						<input type="checkbox" id="opt-include-pvp-mods" />
 						<span>Add Conclave items</span>
 					</label>
-          <button type="button" id="opt-show-conclave-items" class="item-info-btn">Show item list</button>
-        </section>
-        <section>
-          <h3>Data Management</h3>
-          <div class="toolbar">
-            <button id="btn-export" class="toolbar-btn-main">
-              <span class="btn-icon">&#8595;</span> Export
-            </button>
+					<button type="button" id="opt-show-conclave-items" class="item-info-btn">Show item list</button>
+				</section>
+				<section>
+					<h3>Data Management</h3>
+					<div class="toolbar">
+						<button id="btn-export" class="toolbar-btn-main">
+							<span class="btn-icon">&#8595;</span> Export
+						</button>
 
-            <button id="btn-import" class="toolbar-btn-main">
-              <span class="btn-icon">&#8593;</span> Import
-            </button>
+						<button id="btn-import" class="toolbar-btn-main">
+							<span class="btn-icon">&#8593;</span> Import
+						</button>
 
-            <input type="file" id="import-file-input" accept="application/json" hidden />
-          </div>
-        </section>
-        <section>
-          <h3>Theme</h3>
-          <div class="theme-swatches">
-            <label class="theme-swatch" data-var="--bg">
-              <input type="color" />
-              <span class="theme-swatch-label">Background</span>
-            </label>
-            <label class="theme-swatch" data-var="--panel">
-              <input type="color" />
-              <span class="theme-swatch-label">Panel</span>
-            </label>
-            <label class="theme-swatch" data-var="--panel-hover">
-              <input type="color" />
-              <span class="theme-swatch-label">Panel Hover</span>
-            </label>
-            <label class="theme-swatch" data-var="--border">
-              <input type="color" />
-              <span class="theme-swatch-label">Border</span>
-            </label>
-            <label class="theme-swatch" data-var="--text">
-              <input type="color" />
-              <span class="theme-swatch-label">Text</span>
-            </label>
-            <label class="theme-swatch" data-var="--item-owned">
-              <input type="color" />
-              <span class="theme-swatch-label">Item Owned</span>
-            </label>
-            <label class="theme-swatch" data-var="--item-owned-hover">
-              <input type="color" />
-              <span class="theme-swatch-label">Item Owned Hover</span>
-            </label>
-            <label class="theme-swatch" data-var="--accent-color">
-              <input type="color" />
-              <span class="theme-swatch-label">Accent</span>
-            </label>
-          </div>
-          <button type="button" id="btn-theme-reset" class="theme-reset-btn">Reset to default</button>
-        </section>
-        <section>
-          <h3>Danger Zone</h3>
-          <p>Permanently erase all saved progress from this browser (after multiple confirmations). Does not delete SYNC informations. Auto-cancel after a few seconds. Export a backup first if unsure.</p>
-          <button id="btn-delete-data" class="delete-data-btn" data-default-label="DELETE DATA">DELETE DATA</button>
-        </section>
-      </div>
-    </div>
-  </div>
+						<input type="file" id="import-file-input" accept="application/json" hidden />
+					</div>
+				</section>
+				<section>
+					<h3>Theme</h3>
+					<div class="theme-swatches">
+						<label class="theme-swatch" data-var="--bg">
+							<input type="color" />
+							<span class="theme-swatch-label">Background</span>
+						</label>
+						<label class="theme-swatch" data-var="--panel">
+							<input type="color" />
+							<span class="theme-swatch-label">Panel</span>
+						</label>
+						<label class="theme-swatch" data-var="--panel-hover">
+							<input type="color" />
+							<span class="theme-swatch-label">Panel Hover</span>
+						</label>
+						<label class="theme-swatch" data-var="--border">
+							<input type="color" />
+							<span class="theme-swatch-label">Border</span>
+						</label>
+						<label class="theme-swatch" data-var="--text">
+							<input type="color" />
+							<span class="theme-swatch-label">Text</span>
+						</label>
+						<label class="theme-swatch" data-var="--item-owned">
+							<input type="color" />
+							<span class="theme-swatch-label">Item Owned</span>
+						</label>
+						<label class="theme-swatch" data-var="--item-owned-hover">
+							<input type="color" />
+							<span class="theme-swatch-label">Item Owned Hover</span>
+						</label>
+						<label class="theme-swatch" data-var="--accent-color">
+							<input type="color" />
+							<span class="theme-swatch-label">Accent</span>
+						</label>
+					</div>
+					<button type="button" id="btn-theme-reset" class="theme-reset-btn">Reset to default</button>
+				</section>
+				<section>
+					<h3>Danger Zone</h3>
+					<p>Permanently erase all saved progress from this browser (after multiple confirmations). Does not delete SYNC informations. Auto-cancel after a few seconds. Export a backup first if unsure.</p>
+					<button id="btn-delete-data" class="delete-data-btn" data-default-label="DELETE DATA">DELETE DATA</button>
+				</section>
+			</div>
+		</div>
+	</div>
+<div id="welcome-overlay" class="info-overlay">
+	<div class="info-modal">
+		<div class="info-modal-header">
+			<h2>Welcome to Warframe Completion Tracker</h2>
+			<button id="btn-welcome-close" class="info-close-btn" aria-label="Close welcome">&times;</button>
+		</div>
+		<div class="info-modal-body">
+			<section>
+				<h3>What is this?</h3>
+				<p>This tool lets you track (almost) everything you've obtained in Warframe: Warframes, weapons, mods, companions, arcanes, honorias, ... that were freely accessible through login or gameplay.</p>
+				<p>So, no Twitch rewards, no redeem codes, no console exclusives, no Platinum-only market items, and no rewards from the Warframe website.</p>
+				<p>Please remember, data may be incorrect or not up to date. <a href="https://github.com/evilflora/wct/issues" target="_blank" rel="noopener noreferrer">Discussion area on GitHub.</a></p>
+			</section>
+			<section>
+				<h3>How it works</h3>
+				<p>Click on any item to mark it as owned. Your progress is saved automatically in this browser's local storage, nothing is sent anywhere unless you use SYNC.</p>
+				<p style="color:red">Do not clear the cache of the browser, or you will lose everything (unless you exported it or synced it).</p>
+			</section>
+			<section>
+				<h3>Main features</h3>
+				<p><b>[&#9823;] SYNC</b> synchronise your progress across devices using a secret key.</p>
+				<p><b>[&gt;&gt;] STATS</b> detailed breakdown of your Mastery, progression and Endo spent.</p>
+				<p><b>[?] INFO</b> changelog, credits and project links (this guide is reachable from there).</p>
+				<p><b>[&#9881;] OPTIONS</b> export/import your data, customise the theme, or add Founder/Conclave exclusive items.</p>
+			</section>
+		</div>
+	</div>
+</div>
 	<div id="item-list-overlay" class="info-overlay">
 		<div class="info-modal">
 			<div class="info-modal-header">
@@ -273,19 +302,19 @@
 		</div>
 	</div>
 	<button id="btn-scroll-top" class="scroll-top-btn" aria-label="Scroll to top">&#8593;</button>
-  <script src="js/constants.js"></script>
-  <script src="js/toast.js"></script>
-  <script src="js/version.js"></script>
-  <script src="js/update-check.js"></script>
-  <script src="js/data/data_generated.js"></script>
-  <script src="js/storage.js"></script>
-  <script src="js/options.js"></script>
-  <script src="js/theme.js"></script>
-  <script src="js/mastery.js"></script>
-  <script src="js/ui-state.js"></script>
-  <script src="js/export-import.js"></script>
-  <script src="js/render.js"></script>
-  <script src="js/main.js"></script>
-  <script>if (window.location.protocol !== "file:") { import('./js/sync.js').then((module) => {}).catch((err) => { console.error("Sync can only be loaded on real web server." + err); }); }</script>
+	<script src="js/constants.js"></script>
+	<script src="js/toast.js"></script>
+	<script src="js/version.js"></script>
+	<script src="js/update-check.js"></script>
+	<script src="js/data/data_generated.js"></script>
+	<script src="js/storage.js"></script>
+	<script src="js/options.js"></script>
+	<script src="js/theme.js"></script>
+	<script src="js/mastery.js"></script>
+	<script src="js/ui-state.js"></script>
+	<script src="js/export-import.js"></script>
+	<script src="js/render.js"></script>
+	<script src="js/main.js"></script>
+	<script>if (window.location.protocol !== "file:") { import('./js/sync.js').then((module) => {}).catch((err) => { console.error("Sync can only be loaded on real web server." + err); }); }</script>
 </body>
 </html>
