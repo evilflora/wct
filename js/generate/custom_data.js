@@ -2223,7 +2223,6 @@ CUSTOM_ENTRIES = [
 	{ uniqueName: "/Lotus/Types/Enemies/Resources/RubedoFormation"                          , name: "Rubedo Formation"                         , category: "Object", type: "Resources" }      ,
 	{ uniqueName: "/Lotus/Types/Enemies/Resources/SporeCulture"                             , name: "Spore Culture"                            , category: "Object", type: "Resources" }      ,
 	{ uniqueName: "/Lotus/Types/Enemies/AyatanTreasure/AyatanAmberStar"                     , name: "Ayatan Amber Star"                        , category: "Object", type: "Ayatan Treasure" }, 
-	{ uniqueName: "/Lotus/Types/Enemies/AyatanTreasure/AyatanAnasaSculpture"                , name: "Ayatan Anasa Sculpture"                   , category: "Object", type: "Ayatan Treasure" }, 
 	{ uniqueName: "/Lotus/Types/Enemies/AyatanTreasure/AyatanAyrSculpture"                  , name: "Ayatan Ayr Sculpture"                     , category: "Object", type: "Ayatan Treasure" }, 
 	{ uniqueName: "/Lotus/Types/Enemies/AyatanTreasure/AyatanCyanStar"                      , name: "Ayatan Cyan Star"                         , category: "Object", type: "Ayatan Treasure" }, 
 	{ uniqueName: "/Lotus/Types/Enemies/AyatanTreasure/AyatanOrtaSculpture"                 , name: "Ayatan Orta Sculpture"                    , category: "Object", type: "Ayatan Treasure" }, 
