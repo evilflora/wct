@@ -111,11 +111,17 @@
 					<p><b>Keep this secret, do not share, do not show it. Anyone with this key will be able to modify your save.</b></p>
 					<p>Your secret key (mostly hiden): <input id="sync-key" class="sync-key" placeholder="64 characters key" maxlength="64" /></p>
 					<div class="sync-actions" style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
-						<button id="btn-sync-action" class="toolbar-btn-main" aria-label="Sync Action">CREATE</button>
-						<button id="btn-sync-push" class="toolbar-btn-main hidden" aria-label="Push Update">UPLOAD</button>
-						<button id="btn-sync-pull" class="toolbar-btn-main hidden" aria-label="Pull Update">DOWNLOAD</button>
-						<button id="btn-sync-disconnect" class="toolbar-btn-main hidden" aria-label="Disconnect Sync">DISCONNECT</button>
-						<button id="btn-sync-delete" class="delete-data-btn hidden" aria-label="Delete Sync">DELETE KEY AND REMOVE DATA</button>
+						<div class="sync-row">
+							<button id="btn-sync-action" class="toolbar-btn-main" aria-label="Sync Action">CREATE</button>
+						</div>
+						<div class="sync-row">
+							<button id="btn-sync-push" class="toolbar-btn-main hidden" aria-label="Push Update"><span class="btn-icon">&#8593;</span>UPLOAD</button>
+							<button id="btn-sync-pull" class="toolbar-btn-main hidden" aria-label="Pull Update"><span class="btn-icon">&#8595;</span> DOWNLOAD</button>
+						</div>
+						<div class="sync-row">
+							<button id="btn-sync-disconnect" class="toolbar-btn-main hidden" aria-label="Disconnect Sync">DISCONNECT</button>
+							<button id="btn-sync-delete" class="delete-data-btn hidden" aria-label="Delete Sync">DELETE KEY AND REMOVE DATA</button>
+						</div>
 					</div>
 				</section>
 			</div>

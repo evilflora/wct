@@ -904,6 +904,10 @@ input[type="checkbox"]:checked::before {
   text-shadow: none;
 }
 
+.sync-row {
+  width: 100%;
+}
+
 .theme-swatches {
   display: flex;
   flex-wrap: wrap;

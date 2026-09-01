@@ -2384,4 +2384,8 @@ CUSTOM_ENTRIES = [
 	{ uniqueName: "/Lotus/Types/Enemies/Miscellaneous/VolatileOrokinContainer"              , name: "Volatile Orokin Container"                , category: "Object", type: "Miscellaneous" }  ,
 	{ uniqueName: "/Lotus/Types/Enemies/Miscellaneous/WarframeCryopod"                      , name: "Warframe Cryopod"                         , category: "Object", type: "Miscellaneous" }  ,
 	{ uniqueName: "/Lotus/Types/Enemies/Miscellaneous/Yogwun"                               , name: "Yogwun"                                   , category: "Object", type: "Miscellaneous" }  ,
+	// Missing Kaneshell Atomicycle Skin
+	{ uniqueName: "/Lotus/Upgrades/Skins/Operator/BodySuits/DrifterNightwave1999Hood"       , name: "Kaneshell Atomicycle Jacket Hood"         , category: "Skins", type: null }  ,
+	{ uniqueName: "/Lotus/Upgrades/Skins/Operator/BodySuits/OperatorNightwave1999Hood"      , name: "Kaneshell Atomicycle Jacket Hood"         , category: "Skins", type: null }  ,
+
 ];
