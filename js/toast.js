@@ -1,3 +1,5 @@
+/* This file use "Auto-Minify" in "Visual Studio Code" to create it's compressed version on save */
+
 window.WF = window.WF || {};
 
 WF.toast = (function () {

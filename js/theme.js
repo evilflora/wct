@@ -1,3 +1,5 @@
+/* This file use "Auto-Minify" in "Visual Studio Code" to create it's compressed version on save */
+
 WF.theme = (function () {
   const DEFAULTS = {
     "--bg": "#060000",

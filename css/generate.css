@@ -1,25 +1,40 @@
+/* This file use "Auto-Minify" in "Visual Studio Code" to create it's compressed version on save */
+
 .generate-panel {
-  max-width: 720px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-height: calc(100vh - 100px);
+  overflow: hidden;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.panel-col-left,
+.panel-col-right {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.panel-col-right {
+  min-height: 0;
 }
 
 header p a {
-  color: var(--accent-cyan);
+  color: var(--accent-color);
   text-decoration: none;
   border-bottom: 1px solid rgba(111, 217, 232, 0.4);
   transition: border-color 0.15s, color 0.15s;
 }
 
 header p a:hover {
-  color: var(--accent-orange);
-  border-bottom-color: var(--accent-orange);
-}
-
-@media (max-width: 640px) {
-  .output-area { min-height: 220px; font-size: 12px; }
-  .output-actions { flex-direction: column; }
-  .output-actions .toolbar-btn { width: 100%; }
-  .generator-buttons { flex-direction: column; }
-  .generator-btn { width: 100%; }
+  color: var(--accent-color);
+  border-bottom-color: var(--accent-color);
 }
 
 .file-label {
@@ -42,15 +57,16 @@ header p a:hover {
 .output-actions {
   display: flex;
   gap: 8px;
+  margin-top: 8px;
 }
 
 .file-status {
   font-size: 13px;
-  color: var(--accent-cyan);
+  color: var(--accent-color);
   margin: 0 0 24px;
 }
 
-.file-status.error { color: var(--accent-orange); }
+.file-status.error { color: var(--accent-red); }
 
 .step-label {
   font-size: 13px;
@@ -70,8 +86,8 @@ header p a:hover {
 
 .generator-btn {
   background: transparent;
-  border: 1px solid var(--accent-cyan);
-  color: var(--accent-cyan);
+  border: 1px solid var(--accent-color);
+  color: var(--accent-color);
   font-family: var(--font-ui);
   font-weight: 700;
   text-transform: uppercase;
@@ -82,19 +98,21 @@ header p a:hover {
   transition: background 0.15s, color 0.15s;
 }
 
-.generator-btn:hover { background: var(--accent-cyan); color: var(--bg); }
+.generator-btn:hover,
+.generator-btn.active { background: var(--accent-color); color: var(--bg); }
 
 .output-area {
   width: 100%;
-  min-height: 320px;
+  flex: 1;
+  min-height: 250px;
   background: var(--panel);
   border: 1px solid var(--border);
   color: var(--text);
   font-family: "Consolas", "Courier New", monospace;
   font-size: 13px;
   padding: 12px;
-  resize: vertical;
-  margin-bottom: 12px;
+  resize: none;
+  box-sizing: border-box;
 }
 
 .toolbar-btn {
@@ -111,4 +129,27 @@ header p a:hover {
   transition: border-color 0.15s, color 0.15s;
 }
 
-.toolbar-btn:hover { border-color: var(--accent-orange); color: var(--accent-orange); }
+.toolbar-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
+
+@media (max-width: 768px) {
+  .generate-panel {
+    grid-template-columns: 1fr;
+    max-height: none;
+    overflow-y: auto;
+  }
+  .panel-col-left,
+  .panel-col-right {
+    overflow-y: visible;
+  }
+  .output-area {
+    min-height: 220px;
+    font-size: 12px;
+  }
+  .output-actions {
+    flex-direction: column;
+  }
+  .output-actions .toolbar-btn,
+  .generator-btn {
+    width: 100%;
+  }
+}

@@ -1,72 +1,106 @@
+/* This file use "Auto-Minify" in "Visual Studio Code" to create it's compressed version on save */
+
 WF.updateCheck = (function () {
-  const TOAST_DURATION_MS = 3000;
-  const TOAST_UPDATE_MS = 3000;
-  const LAST_SEEN_KEY = "wf_checklist_last_seen_version";
-  const FILE_NAME = "version.js";
-    
-  const updateToggle = document.getElementById("btn-update-toggle");
-  updateToggle.addEventListener("click", showUpdateAvailable);
+	const LAST_SEEN_KEY = "wf_checklist_last_seen_version";
+	const FILE_NAME = "version.js";
+	const CHECK_INTERVAL_MS = 60000;
 
-  function isLocalCopy() {
-    return window.location.protocol === "file:";
-  }
+	let checkIntervalId = null;
+	let currentRemoteVersion = null;
 
-  function updateMessage() {
-    return isLocalCopy()
-      ? `A new version is available, download it from <a id="info-project-link" href="${WF.PROJECT_URL}" target="_blank" rel="noopener noreferrer">GitHub</a>.`
-      : `A new version is available, refresh this page (Ctrl+F5) to get it.`;
-  }
-  
-  function showUpdateAvailable()
-  {
-    WF.toast.show(updateMessage(), { timeoutMs: TOAST_UPDATE_MS, type: "info" });
-  }
+	const updateToggle = document.getElementById("btn-update-toggle");
+	if (updateToggle) {
+		updateToggle.addEventListener("click", () => showUpdateAvailable(3000));
+	}
 
-  function versionFileUrl() {
-    const rawBase = WF.PROJECT_URL.replace("github.com", "raw.githubusercontent.com");
-    return `${rawBase}js/${FILE_NAME}`;
-  }
+	function isLocalCopy() {
+		return window.location.protocol === "file:";
+	}
 
-  function showChangelogNotice() {
-    const notice = document.getElementById("update-available-notice");
-    if (!notice) return;
-    notice.innerHTML = updateMessage();
-    notice.classList.remove("hidden");
-    updateToggle.classList.remove("hidden");
-  }
+	function updateMessage() {
+		return isLocalCopy()
+			? `A new version is available, download it from <a id="info-project-link" href="${WF.PROJECT_URL}" target="_blank" rel="noopener noreferrer">GitHub</a>.`
+			: `A new version is available, refresh this page (Ctrl+F5) to get it.`;
+	}
 
-  async function check() {
-    const localVersion = Number(WF.WCT_VERSION);
-    if (!localVersion || Number.isNaN(localVersion)) return;
+	function markVersionAsSeen() {
+		if (currentRemoteVersion) {
+			localStorage.getItem && localStorage.setItem(LAST_SEEN_KEY, String(currentRemoteVersion));
+			stopPeriodicCheck();
+		}
+	}
 
-    let remoteVersion;
+	function showUpdateAvailable(duration) {
+		WF.toast.show(updateMessage(), {
+			timeoutMs: duration,
+			type: "info",
+			onClose: markVersionAsSeen
+		});
+	}
 
-    try {
-      const response = await fetch(versionFileUrl());
-      if (!response.ok) return;
+	function versionFileUrl() {
+		const rawBase = WF.PROJECT_URL.replace("github.com", "raw.githubusercontent.com");
+		return `${rawBase}js/${FILE_NAME}`;
+	}
 
-      const text = await response.text();
-      const match = text.match(/WF\.WCT_VERSION\s*=\s*(\d+)/);
-      if (!match) return;
+	function showChangelogNotice() {
+		const notice = document.getElementById("update-available-notice");
+		if (notice) {
+			notice.innerHTML = updateMessage();
+			notice.classList.remove("hidden");
+		}
+		if (updateToggle) {
+			updateToggle.classList.remove("hidden");
+		}
+	}
 
-      remoteVersion = Number(match[1]);
-      if (Number.isNaN(remoteVersion)) return;
-    } catch (err) {
-      return;
-    }
+	function stopPeriodicCheck() {
+		if (checkIntervalId) {
+			clearInterval(checkIntervalId);
+			checkIntervalId = null;
+		}
+	}
 
-    if (remoteVersion <= localVersion) return;
+	async function check() {
+		const localVersion = Number(WF.WCT_VERSION);
+		if (!localVersion || Number.isNaN(localVersion)) return;
 
-    showChangelogNotice();
+		try {
+			const response = await fetch(versionFileUrl());
+			if (!response.ok) return;
 
-    const lastSeenVersion = Number(localStorage.getItem(LAST_SEEN_KEY));
-    if (!Number.isNaN(lastSeenVersion) && lastSeenVersion >= remoteVersion) return;
+			const text = await response.text();
+			const match = text.match(/WF\.WCT_VERSION\s*=\s*(\d+)/);
+			if (!match) return;
 
-    WF.toast.show(updateMessage(), { timeoutMs: TOAST_DURATION_MS, type: "info" });
-    localStorage.setItem(LAST_SEEN_KEY, String(remoteVersion));
-  }
+			const remoteVersion = Number(match[1]);
+			if (Number.isNaN(remoteVersion) || remoteVersion <= localVersion) return;
 
-  return { check };
+			currentRemoteVersion = remoteVersion;
+
+			const lastSeenVersion = Number(localStorage.getItem(LAST_SEEN_KEY));
+			if (!Number.isNaN(lastSeenVersion) && lastSeenVersion >= remoteVersion) {
+				stopPeriodicCheck();
+				return;
+			}
+
+			showChangelogNotice();
+			showUpdateAvailable(0);
+		} catch (err) {
+			console.log(`Error while fetching remote version.`);
+		}
+	}
+
+	function init() {
+		check();
+
+		const lastSeenVersion = Number(localStorage.getItem(LAST_SEEN_KEY));
+		if (Number.isNaN(lastSeenVersion) || !currentRemoteVersion || lastSeenVersion < currentRemoteVersion) {
+			checkIntervalId = setInterval(check, CHECK_INTERVAL_MS);
+		}
+	}
+
+	return { check, init };
 })();
 
-document.addEventListener("DOMContentLoaded", WF.updateCheck.check);
+document.addEventListener("DOMContentLoaded", WF.updateCheck.init);

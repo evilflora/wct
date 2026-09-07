@@ -1,3 +1,5 @@
+/* This file use "Auto-Minify" in "Visual Studio Code" to create it's compressed version on save */
+
 const WF = window.WF || {};
 window.WF = WF;
 
@@ -253,6 +255,7 @@ WF.PROJECT_SRC = "https://github.com/evilflora/wct";
 WF.PROJECT_URL = "https://evilflora.github.io/wct/";
  
 WF.CHANGELOG = [
+	{ date: "2026/09/09 00:00:00", version: "43.5.4", text: `Updated how updates are checked and notified.</br>Fixed some CSS alignment.</br>Numbers are now formatted, this should make numbers more readable.</br>Added minification for most of the CSS and JS files; this will reduce load time on GitHub.` },
 	{ date: "2026/09/01 00:00:00", version: "43.5.4", text: `Renamed "Warframe Customization" group to "Character Customization".</br>Added "Operator Cosmetics" and "Drifter Cosmetics" to "Character Customization".</br>Renamed "Skins (WIP)" to "Warframe Cosmetics", "Chest" to "Medals", and "Pet Cosmetics" to "Companion Cosmetics".</br>Added "Sentinel Cosmetics" and "Other Skins" categories.</br>Moved "Emotes" to "Character Customization" and "Glyphs" to "Profile".</br>Added missing "Kaneshell Atomicycle Jacket Hood" Skin for Operator & Drifter.</br>Cleaned up a lot of platinum only Skins and added missing items.` },
 	{ date: "2026/08/30 00:00:00", version: "43.5.4", text: `Fixed some "Mods" categorized as "Focus Scholl".</br>Removed a few "setmod" mods and also removed "Ayatan Anasa Sculpture" from the "Objects" category (it cannot be found and therefore cannot be scanned).</br>Added "Squad Regen" to "Focus School" and removed "Guardian Blast" (from the old focus school)` },
 	{ date: "2026/08/29 00:00:00", version: "43.5.4", text: `Added the Welcome Screen.</br> Added two new categories; Noggle Statue and Material Structure; also, Glyphs are no longer WIP.</br> Old non-existing keys will be removed from your save.` },

@@ -1,3 +1,5 @@
+/* This file use "Auto-Minify" in "Visual Studio Code" to create it's compressed version on save */
+
 WF.options = (function () {
   const STORAGE_KEY = "wf_checklist_options";
   const DEFAULTS = {

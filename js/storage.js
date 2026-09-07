@@ -1,3 +1,5 @@
+/* This file use "Auto-Minify" in "Visual Studio Code" to create it's compressed version on save */
+
 WF.storage = (function () {
   const STORAGE_KEY = "wf_checklist_progress";
   const VERSION_KEY = "wf_checklist_current_version";

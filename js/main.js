@@ -1,3 +1,5 @@
+/* This file use "Auto-Minify" in "Visual Studio Code" to create it's compressed version on save */
+
 document.addEventListener("DOMContentLoaded", function () {
 	WF.theme.init();
 	
@@ -473,12 +475,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		const globalTr = document.createElement("tr");
 		globalTr.className = "global-progression";
-		globalTr.innerHTML = `<td><strong>Global progression</strong></td><td>${totalOwned}/${totalAll}</td><td>${globalPercent}%</td>`;
+		globalTr.innerHTML = `<td><strong>Global progression</strong></td><td>${totalOwned.toLocaleString()}/${totalAll.toLocaleString()}</td><td>${globalPercent}%</td>`;
 		fragment.appendChild(globalTr);
 
 		rows.forEach(({ label, stats }) => {
 			const tr = document.createElement("tr");
-			tr.innerHTML = `<td>${label}</td><td>${stats.owned}/${stats.total}</td><td>${stats.percent}%</td>`;
+			tr.innerHTML = `<td>${label}</td><td>${stats.owned.toLocaleString()}/${stats.total.toLocaleString()}</td><td>${stats.percent}%</td>`;
 			fragment.appendChild(tr);
 		});
 
@@ -497,7 +499,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			group.forEach((row) => {
 				const item = document.createElement("div");
 				item.className = "breakdown-item";
-				item.innerHTML = `<span class="breakdown-value">${row.xp}</span><span class="breakdown-label">${row.label}</span>`;
+				item.innerHTML = `<span class="breakdown-value">${row.xp.toLocaleString()}</span><span class="breakdown-label">${row.label}</span>`;
 				fragment.appendChild(item);
 			});
 
@@ -554,13 +556,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		const totalTr = document.createElement("tr");
 		totalTr.className = "global-progression";
-		totalTr.innerHTML = `<td><strong>Total</strong></td><td>${grand.itemsOwned}</td><td>${grand.itemsTotal}</td><td>${grand.endoSpent}</td><td>${grand.endoTotal}</td>`;
+		totalTr.innerHTML = `<td><strong>Total</strong></td><td>${grand.itemsOwned.toLocaleString()}</td><td>${grand.itemsTotal.toLocaleString()}</td><td>${grand.endoSpent.toLocaleString()}</td><td>${grand.endoTotal.toLocaleString()}</td>`;
 		fragment.appendChild(totalTr);
 
 		Object.keys(WF.ENDO).forEach((rarity) => {
 			const r = totalsByRarity[rarity];
 			const tr = document.createElement("tr");
-			tr.innerHTML = `<td>${capitalizeFirstLetter(rarity)}</td><td>${r.itemsOwned}</td><td>${r.itemsTotal}</td><td>${r.endoSpent}</td><td>${r.endoTotal}</td>`;
+			tr.innerHTML = `<td>${capitalizeFirstLetter(rarity)}</td><td>${r.itemsOwned.toLocaleString()}</td><td>${r.itemsTotal.toLocaleString()}</td><td>${r.endoSpent.toLocaleString()}</td><td>${r.endoTotal.toLocaleString()}</td>`;
 			fragment.appendChild(tr);
 		});
 
