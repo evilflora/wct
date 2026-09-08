@@ -26,7 +26,6 @@ WF.updateCheck = (function () {
 	function markVersionAsSeen() {
 		if (currentRemoteVersion) {
 			localStorage.getItem && localStorage.setItem(LAST_SEEN_KEY, String(currentRemoteVersion));
-			stopPeriodicCheck();
 		}
 	}
 
@@ -36,6 +35,7 @@ WF.updateCheck = (function () {
 			type: "info",
 			onClose: markVersionAsSeen
 		});
+		stopPeriodicCheck();
 	}
 
 	function versionFileUrl() {
