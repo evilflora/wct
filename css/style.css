@@ -250,8 +250,8 @@ input[type="checkbox"]:checked::before {
 .category-help:hover .category-help-tooltip,
 .category-help.open .category-help-tooltip { display: block; }
 
-.item-infos { margin-left: auto; cursor: help; }
-.item-info { display: inline-block; position: relative; margin-left: 4px; }
+.item-infos { margin-left: auto; padding: 0 4px 0 4px; cursor: help; display: inline-flex; height: 100%;}
+.item-info { display: flex; height: 100%; padding: 0 4px 0 4px; align-items: center;}
 .item-info-text { font-size: 11px; }
 
 .item-info-btn {
@@ -351,7 +351,6 @@ input[type="checkbox"]:checked::before {
 	display: flex;
 	align-items: center;
 	background: var(--panel);
-	padding: 10px 12px 10px 9px;
 	border-left: 3px solid transparent;
 	cursor: pointer;
 	content-visibility: auto;
@@ -392,6 +391,8 @@ input[type="checkbox"]:checked::before {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	display: block;
+	padding: 10px 12px 10px 9px;
+	width: 100%;
 }
 
 .item-name-inner { display: inline; }
@@ -1113,5 +1114,4 @@ input[type="checkbox"]:checked::before {
 	.scroll-top-btn { bottom: 16px; right: 16px; width: 40px; height: 40px; }
 
 	.item-list { grid-template-columns: 1fr; }
-	.item-row { padding: 12px 12px 12px 9px; }
 }

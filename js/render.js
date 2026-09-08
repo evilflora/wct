@@ -496,7 +496,7 @@ WF.render = (function () {
 
     const btn = document.createElement("button");
     btn.className = "bulk-toggle-btn";
-    btn.textContent = allOwned ? "Deselect all visible" : "Select all visible";
+    btn.textContent = allOwned ? "Uncheck all visible" : "Check all visible";
     btn.disabled = visibleItems.length === 0;
     btn.addEventListener("click", () => {
       WF.storage.setOwnedBulk(visibleItems.map((item) => item.item_name), !allOwned);
@@ -658,6 +658,23 @@ WF.render = (function () {
   function initDelegatedEvents(root) {
     if (root.dataset.wfDelegated === "1") return;
     root.dataset.wfDelegated = "1";
+
+    root.addEventListener("click", (event) => {
+      const row = event.target.closest(".item-row");
+      if (!row) return;
+
+      const itemNameEl = event.target.closest(".item-name");
+      
+      if (itemNameEl) {
+        const checkbox = row.querySelector(".item-checkbox-hidden");
+        if (checkbox) {
+          checkbox.checked = !checkbox.checked;
+          checkbox.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      }
+
+      event.preventDefault();
+    });
 
     root.addEventListener("change", (event) => {
       const checkbox = event.target.closest(".item-checkbox-hidden");
