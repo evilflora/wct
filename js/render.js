@@ -892,10 +892,13 @@ WF.render = (function () {
     categories.forEach((category) => {
       const items = byCategory.get(category).sort((a, b) => naturalCompare(a.display_name.en, b.display_name.en));
       
-      const header = document.createElement("div");
-      header.className = "nav-group-label";
-      header.textContent = `${categoryLabel(category)} (${items.length})`;;
-      fragment.appendChild(header);
+      if (categories.length > 1)
+      {
+        const header = document.createElement("div");
+        header.className = "nav-group-label";
+        header.textContent = `${categoryLabel(category)} (${items.length})`;;
+        fragment.appendChild(header);
+      }
 
       const list = document.createElement("div");
       list.className = "item-list";
@@ -913,6 +916,19 @@ WF.render = (function () {
         name.appendChild(nameInner);
 
         row.appendChild(name);
+
+        const normalizedItem = { ...item, masteryXp: item.mastery_xp || null }; // même normalisation que buildItemList, pour que les badges lisent le bon champ
+        const activeBadges = ITEM_BADGES.filter((badge) => normalizedItem[badge.key]);
+
+        if (activeBadges.length > 0) {
+          const divInfos = document.createElement("div");
+          divInfos.className = "item-infos";
+          activeBadges.forEach((badge) => {
+            divInfos.append(createInfoBadge(badge.text, badge.tooltip(normalizedItem)));
+          });
+          row.appendChild(divInfos);
+        }
+
         list.appendChild(row);
       });
 

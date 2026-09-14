@@ -1,4 +1,4 @@
-// Generated with "generate.html" on 2026-09-07 01:18:07 ET in 118.00ms - 20025 items source, 10289 lines created.
+// Generated with "generate.html" on 2026-09-11 01:34:41 ET in 110.10ms - 20025 items source, 10290 lines created.
 // Dont change this by hand, use my "generated.html" and download "all.json" from WFCD, or for custom data, use "js/generade/custom_data.js".
 // If you don't know what you're doing, PLEASE do nothing.
 WF.data = WF.data || [];
@@ -5450,6 +5450,7 @@ WF.data.push(
 	{ item_name: "/Lotus/Upgrades/Skins/Sigils/SyndicateSigilPerrinSequenceE", display_name: { en: "Synergy Sigil" }, category: "sigil", type: "null" },
 	{ item_name: "/Lotus/Upgrades/Skins/Sigils/EventSigilCaviaTagfer", display_name: { en: "Tagfer Sigil" }, category: "sigil", type: "null" },
 	{ item_name: "/Lotus/Upgrades/Skins/Sigils/Tennogen10YearSigil", display_name: { en: "Tennogen Decennial Sigil" }, category: "sigil", type: "null", hidden: "true" },
+	{ item_name: "/Lotus/Upgrades/Skins/Sigils/DawnsEarlyLightSigil", display_name: { en: "Teralyst Prominence Sigil" }, category: "sigil", type: "null" },
 	{ item_name: "/Lotus/Upgrades/Skins/Sigils/TeralystSigil", display_name: { en: "Teralyst Sigil" }, category: "sigil", type: "null" },
 	{ item_name: "/Lotus/Upgrades/Skins/Sigils/SyndicateSigilPerrinSequenceH", display_name: { en: "Tessellations Sigil" }, category: "sigil", type: "null" },
 	{ item_name: "/Lotus/Upgrades/Skins/Sigils/EventSigilIndex", display_name: { en: "The Index Sigil" }, category: "sigil", type: "null" },
@@ -8120,7 +8121,7 @@ WF.data.push(
 	{ item_name: "/Lotus/Types/Items/Titles/KillPhoridTitle", display_name: { en: "Plague Doctor" }, category: "honoria", type: "Suffix" },
 	{ item_name: "/Lotus/Types/Items/Titles/HunhowHonoria/TitleNidus", display_name: { en: "Plague-bearer" }, category: "honoria", type: "Prefix" },
 	{ item_name: "/Lotus/Types/Items/Titles/DateLettieTitle", display_name: { en: "Pleasure and Pain" }, category: "honoria", type: "Suffix" },
-	{ item_name: "/Lotus/Types/Items/Titles/DuviriQueenQuestTitle", display_name: { en: "Queen of Duviri" }, category: "honoria", type: "Prefix" },
+	{ item_name: "/Lotus/Types/Items/Titles/DuviriQueenQuestTitle", display_name: { en: "Queen of Duviri" }, category: "honoria", type: "Suffix" },
 	{ item_name: "/Lotus/Types/Items/Titles/PoENightTitle", display_name: { en: "Restless" }, category: "honoria", type: "Suffix" },
 	{ item_name: "/Lotus/Types/Items/Titles/MinVelTogetherTitle", display_name: { en: "Rusalka's Hope" }, category: "honoria", type: "Prefix" },
 	{ item_name: "/Lotus/Types/Items/Titles/MR25Title", display_name: { en: "Sage" }, category: "honoria", type: "Suffix" },

@@ -488,6 +488,13 @@ document.addEventListener("DOMContentLoaded", function () {
 		table.append(thead, tbody);
 	};
 
+	function openBreakdownItemList(groupIndex, rowIndex, label) {
+		const matching = WF.mastery.getGroupRowItems(groupIndex, rowIndex).filter((item) => WF.mastery.itemMasteryXp(item) > 0);
+		itemListTitle.textContent = `${label} (${matching.length})`;
+		WF.render.renderFlagList(itemListBody, matching);
+		toggleOverlay(itemListOverlay, true);
+	}
+
 	function renderMasteryBreakdown() {
 		const container = getEl("mastery-breakdown");
 		container.textContent = "";
@@ -496,10 +503,18 @@ document.addEventListener("DOMContentLoaded", function () {
 		const fragment = document.createDocumentFragment();
 
 		groups.forEach((group, groupIndex) => {
-			group.forEach((row) => {
+			group.forEach((row, rowIndex) => {
 				const item = document.createElement("div");
 				item.className = "breakdown-item";
 				item.innerHTML = `<span class="breakdown-value">${row.xp.toLocaleString()}</span><span class="breakdown-label">${row.label}</span>`;
+
+				const showBtn = document.createElement("button");
+				showBtn.type = "button";
+				showBtn.className = "item-info-btn";
+				showBtn.textContent = "Show item list"; // même libellé que #opt-show-conclave-items pour rester cohérent
+				showBtn.addEventListener("click", () => openBreakdownItemList(groupIndex, rowIndex, row.label));
+				item.appendChild(showBtn);
+
 				fragment.appendChild(item);
 			});
 

@@ -192,7 +192,7 @@ CUSTOM_ENTRIES = [
 	{ uniqueName: "/Lotus/Types/Items/Titles/KillPhoridTitle"                        , name: "Plague Doctor"                   , category: "Honoria", type: "Suffix" },
 	{ uniqueName: "/Lotus/Types/Items/Titles/HunhowHonoria/TitleNidus"               , name: "Plague-bearer"                   , category: "Honoria", type: "Prefix" },
 	{ uniqueName: "/Lotus/Types/Items/Titles/DateLettieTitle"                        , name: "Pleasure and Pain"               , category: "Honoria", type: "Suffix" },
-	{ uniqueName: "/Lotus/Types/Items/Titles/DuviriQueenQuestTitle"                  , name: "Queen of Duviri"                 , category: "Honoria", type: "Prefix" },
+	{ uniqueName: "/Lotus/Types/Items/Titles/DuviriQueenQuestTitle"                  , name: "Queen of Duviri"                 , category: "Honoria", type: "Suffix" },
 	{ uniqueName: "/Lotus/Types/Items/Titles/PoENightTitle"                          , name: "Restless"                        , category: "Honoria", type: "Suffix" },
 	{ uniqueName: "/Lotus/Types/Items/Titles/MinVelTogetherTitle"                    , name: "Rusalka's Hope"                  , category: "Honoria", type: "Prefix" },
 	{ uniqueName: "/Lotus/Types/Items/Titles/MR25Title"                              , name: "Sage"                            , category: "Honoria", type: "Suffix" },

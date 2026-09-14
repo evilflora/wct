@@ -255,6 +255,7 @@ WF.PROJECT_SRC = "https://github.com/evilflora/wct";
 WF.PROJECT_URL = "https://evilflora.github.io/wct/";
  
 WF.CHANGELOG = [
+	{ date: "2026/09/14 00:00:00", version: "43.5.4", text: `Added item list to mastery breakdown for each category.</br>Added item badges to mastery breakdown and options with items list.</br>Added missing sigil "Teralyst Prominence Sigil".`},
 	{ date: "2026/09/08 00:00:00", version: "43.5.4", text: `Fixed infinite update notification.</br>Item badges are easier to show on mobile (X, H, V).` },
 	{ date: "2026/09/07 00:00:00", version: "43.5.4", text: `Updated how updates are checked and notified.</br>Fixed some CSS alignment.</br>Numbers are now formatted, this should make numbers more readable.</br>Added minification for most of the CSS and JS files; this will reduce load time on GitHub.` },
 	{ date: "2026/09/01 00:00:00", version: "43.5.4", text: `Renamed "Warframe Customization" group to "Character Customization".</br>Added "Operator Cosmetics" and "Drifter Cosmetics" to "Character Customization".</br>Renamed "Skins (WIP)" to "Warframe Cosmetics", "Chest" to "Medals", and "Pet Cosmetics" to "Companion Cosmetics".</br>Added "Sentinel Cosmetics" and "Other Skins" categories.</br>Moved "Emotes" to "Character Customization" and "Glyphs" to "Profile".</br>Added missing "Kaneshell Atomicycle Jacket Hood" Skin for Operator & Drifter.</br>Cleaned up a lot of platinum only Skins and added missing items.` },

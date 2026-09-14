@@ -116,5 +116,12 @@ WF.mastery = (function () {
 		);
 	}
 
-	return { xpRequiredForRank, computeTotalXp, rankForXp, rankLabel, getInfo, render, itemMasteryXp, getBreakdown };
+	function getGroupRowItems(groupIndex, rowIndex) {
+		const includeFounder = WF.options.load().includeFounderItems;
+		const row = MASTERY_BREAKDOWN_GROUPS[groupIndex] && MASTERY_BREAKDOWN_GROUPS[groupIndex][rowIndex];
+		if (!row) return [];
+		return WF.data.filter((item) => (includeFounder || !item.founder) && row.match(item));
+	}
+
+	return { xpRequiredForRank, computeTotalXp, rankForXp, rankLabel, getInfo, render, itemMasteryXp, getBreakdown, getGroupRowItems };
 })();

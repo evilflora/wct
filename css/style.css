@@ -256,14 +256,12 @@ input[type="checkbox"]:checked::before {
 
 .item-info-btn {
 	display: inline-flex;
-	align-items: center;
-	justify-content: center;
 	border: 1px solid var(--border);
-	background: transparent;
-	color: var(--text);
 	font-size: 0.75rem;
 	cursor: pointer;
 	padding: 4px;
+	float:right;
+
 }
 
 .item-info-btn:hover {
@@ -741,7 +739,7 @@ input[type="checkbox"]:checked::before {
 .mastery-breakdown {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: 2px;
 }
 
 .breakdown-item {
@@ -749,6 +747,8 @@ input[type="checkbox"]:checked::before {
 	align-items: baseline;
 	gap: 10px;
 }
+
+.breakdown-item .item-info-btn { margin-left: auto; }
 
 .breakdown-value {
 	font-size: 14px;
@@ -857,7 +857,7 @@ input[type="checkbox"]:checked::before {
 	overflow: hidden;
 }
 
-.info-modal-body section { margin-bottom: 24px; }
+.info-modal-body section { margin-bottom: 16px; }
 
 .info-modal-body section:first-child {
 	display: flex;
