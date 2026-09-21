@@ -3,13 +3,15 @@
 document.addEventListener("DOMContentLoaded", function () {
 	WF.theme.init();
 	
-	const SCROLL_SHOW_THRESHOLD = 400;
 	const WELCOME_SEEN_KEY = "wf_checklist_welcome_seen";
 	
 	const CONFIRM_STEPS = ["CLICK 4 MORE TIME", "CLICK 3 MORE TIME", "CLICK 2 MORE TIME", "CLICK 1 MORE TIME", "PROCEED TO DELETE"];
 	const DELETE_CONFIRM_TIMEOUT_MS = 2000;
 
 	const getEl = (id) => document.getElementById(id);
+
+	const NUMBER_FORMAT = new Intl.NumberFormat();
+	const formatNumber = (value) => NUMBER_FORMAT.format(Number(value) || 0);
 
 	const sidebar									= getEl("sidebar");
 	const sidebarOverlay					= getEl("sidebar-overlay");
@@ -23,10 +25,10 @@ document.addEventListener("DOMContentLoaded", function () {
 	const infoOverlay							= getEl("info-overlay");
 	const statsOverlay						= getEl("stats-overlay");
 	const optionsOverlay					= getEl("options-overlay");
-	const scrollTopBtn						= getEl("btn-scroll-top");
 	const deleteBtn								= getEl("btn-delete-data");
 	const changelogList						= getEl("info-changelog-list");
 	const includeOptionsCheckbox	= getEl("opt-include-options-in-export");
+	const includeSyncKeyCheckbox	= getEl("opt-include-synckey-in-export");
 	const includeFounderCheckbox	= getEl("opt-include-founder-pack-exclusive");
 	const includePvpItemsCheckbox	= getEl("opt-include-pvp-mods");
 	const importFileInput					= getEl("import-file-input");
@@ -40,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	tooltip.className = "global-tooltip";
 	document.body.appendChild(tooltip);
 
-	document.addEventListener("mouseover", (event) => { // yay js, because i can't figure a way in css wtih content-visibility
+	document.addEventListener("mouseover", (event) => {
 		const el = event.target.closest("[data-tooltip]");
 		if (!el) return;
 
@@ -68,50 +70,48 @@ document.addEventListener("DOMContentLoaded", function () {
 		importFileInput.click();
 	});
 
-	importFileInput.addEventListener("change", function (event) {
+	importFileInput.addEventListener("change", async function (event) {
 		const file = event.target.files[0];
 		if (!file) return;
 
-		WF.exportImport.importFromFile(file, function (success) {
-			if (success) {
-				WF.render.renderAll();
-				WF.theme.init();
-			} else {
-				alert("Invalid file, import canceled.");
-			}
+		try {
+			await WF.exportImport.importFromFile(file);
+			WF.render.renderAll();
+			WF.theme.init();
+			WF.toast.show("Import successful.", { type: "success" });
+		} catch (err) {
+			console.error("Import failed.", err);
+			WF.toast.show("Invalid file, import canceled.", { type: "error" });
+		} finally {
 			event.target.value = "";
-		});
+		}
 	});
 
-	window.addEventListener("scroll", () => {
-		scrollTopBtn.classList.toggle("visible", window.scrollY > SCROLL_SHOW_THRESHOLD);
-	});
-
-	scrollTopBtn.addEventListener("click", () => {
-		window.scrollTo({ top: 0, behavior: "smooth" });
-	});
-	
 	function initWelcome() {
 		if (localStorage.getItem(WELCOME_SEEN_KEY)) return;
 		openWelcome();
 	}
 
+	const sidebarToggleBtn = getEl("btn-sidebar-toggle");
+
 	function openSidebar() {
 		sidebar.classList.add("open");
+		sidebarToggleBtn.setAttribute("aria-expanded", "true");
 		toggleOverlay(sidebarOverlay, true);
 	}
 
 	function closeSidebar() {
 		sidebar.classList.remove("open");
+		sidebarToggleBtn.setAttribute("aria-expanded", "false");
 		toggleOverlay(sidebarOverlay, false);
 	}
 
-	getEl("btn-sidebar-toggle").addEventListener("click", openSidebar);
+	sidebarToggleBtn.addEventListener("click", openSidebar);
 	sidebarOverlay.addEventListener("click", closeSidebar);
 	
-	async function generateRandomHash() {
+	function generateRandomHash() {
 		const bytes = crypto.getRandomValues(new Uint8Array(32));
-		return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+		return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
 	}
 	
 	function checkRealServer()
@@ -171,8 +171,34 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	});
 
-	syncActionBtn.addEventListener("click", async () => {
-		if (checkRealServer() == false) return;
+	async function withBusyButton(button, task) {
+		if (button.disabled) return;
+		button.disabled = true;
+		button.setAttribute("aria-busy", "true");
+		try { await task(); }
+		finally { button.disabled = false; button.removeAttribute("aria-busy"); }
+	}
+
+	async function requireSync() {
+		const sync = await (WF.syncReady || Promise.resolve(WF.sync || null));
+		if (!sync) WF.toast.show(`Sync module unavailable (offline, blocked CDN).`, { type: "error", key: "wf-sync-unavailable" });
+		return sync;
+	}
+
+	function reportSyncError(error, fallbackMessage, actionLabel) {
+		if (error.message === "CLIENT_RATE_LIMITED" || error.message === "RATE_LIMITED") {
+			WF.toast.show(`You are being rate limited, maximum 1 ${actionLabel} per 10 seconds.`, { timeoutMs: 3000, type: "info" });
+			return;
+		}
+		if (error.message === "PAYLOAD_TOO_LARGE") {
+			WF.toast.show(`Your save is too large to be synced (250 KB limit).`, { type: "error" });
+			return;
+		}
+		WF.toast.show(fallbackMessage, { type: "error" });
+	}
+
+	syncActionBtn.addEventListener("click", () => withBusyButton(syncActionBtn, async () => {
+		if (!checkRealServer()) return;
 		const inputVal = syncKey.value.trim();
 
 		if (inputVal.length === 64) {
@@ -180,69 +206,77 @@ document.addEventListener("DOMContentLoaded", function () {
 			WF.options.save({ ...options, syncKey: inputVal });
 			updateSyncUIState();
 			WF.toast.show(`Successfully connected. Use DOWNLOAD or UPLOAD to transfer data.`, { type: "success" });
-		} else {
-			const newHash = await generateRandomHash();
-			if (WF.sync) {
+			return;
+		}
+
+		const sync = await requireSync();
+		if (!sync) return;
+
+		const newHash = generateRandomHash();
+		try {
+			await sync.pushData(newHash, { force: true });
+			WF.options.save({ ...WF.options.load(), syncKey: newHash });
+			syncKey.value = newHash;
+			WF.toast.show(`Successfully connected.`, { type: "success" });
+		} catch (err) {
+			syncKey.value = "";
+			reportSyncError(err, `Failed to connect. Please try again.`, "CREATE");
+		}
+		updateSyncUIState();
+	}));
+
+	syncPullBtn.addEventListener("click", () => withBusyButton(syncPullBtn, async () => {
+		if (!checkRealServer()) return;
+		const options = WF.options.load();
+		if (!options.syncKey) return;
+
+		const sync = await requireSync();
+		if (!sync) return;
+
+		try {
+			const remoteObj = await sync.pullData(options.syncKey);
+			if (remoteObj) {
+				applyRemoteData(remoteObj);
+				WF.toast.show(`Successfully downloaded cloud data.`, { type: "success" });
+			} else {
+				WF.toast.show(`No remote data found.`, { type: "error" });
+			}
+		} catch (err) {
+			reportSyncError(err, `Failed to download cloud data.`, "DOWNLOAD");
+		}
+	}));
+
+	syncPushBtn.addEventListener("click", () => withBusyButton(syncPushBtn, async () => {
+		if (!checkRealServer()) return;
+		const options = WF.options.load();
+		if (!options.syncKey) return;
+
+		const sync = await requireSync();
+		if (!sync) return;
+
+		try {
+			await sync.pushData(options.syncKey);
+			WF.toast.show(`Data successfully sent.`, { type: "success" });
+		} catch (err) {
+			if (err.message === "REMOTE_AHEAD") {
+				WF.toast.show(`Cloud data is newer than this device. DOWNLOAD first, or confirm to overwrite it.`, { timeoutMs: 0, type: "error", key: "wf-sync-conflict" });
+				if (!confirm("The cloud save was modified on another device after your last sync.\n\nOverwrite it with THIS device's data? The other device's changes will be lost.")) return;
 				try {
-					await WF.sync.pushData(newHash);
-
-					const options = WF.options.load();
-					WF.options.save({ ...options, syncKey: newHash });
-					syncKey.value = newHash;
-
-					WF.toast.show(`Successfully connected.`, { type: "success" });
-				} catch (e) {
-					syncKey.value = "";
-					WF.toast.show(`Failed to connect. Please try again.`, { type: "error" });
+					await sync.pushData(options.syncKey, { force: true });
+					WF.toast.show(`Cloud data overwritten.`, { type: "success" });
+				} catch (forcedErr) {
+					reportSyncError(forcedErr, `Failed to send data.`, "UPLOAD");
 				}
+				return;
 			}
-			updateSyncUIState();
+			reportSyncError(err, `Failed to send data.`, "UPLOAD");
 		}
-	});
-
-	syncPullBtn.addEventListener("click", async () => {
-		if (checkRealServer() == false) return;
-		const options = WF.options.load();
-		if (options.syncKey && WF.sync) {
-			try {
-				const remoteObj = await WF.sync.pullData(options.syncKey);
-				if (remoteObj) {
-					applyRemoteData(remoteObj);
-					WF.toast.show(`Successfully downloaded cloud data.`, { type: "success" });
-				} else {
-					WF.toast.show(`No remote data found.`, { type: "error" });
-				}
-			} catch (e) {
-				if (e.message === "CLIENT_RATE_LIMITED")
-						WF.toast.show(`You are being rate limited, maximum 1 DOWNLOAD per 10 seconds.`, { timeoutMs: 3000, type: "info" });
-				else
-					WF.toast.show(`Failed to download cloud data.`, { type: "error" });
-			}
-		}
-	});
-
-	syncPushBtn.addEventListener("click", async () => {
-		if (checkRealServer() == false) return;
-		const options = WF.options.load();
-		if (options.syncKey && WF.sync) {
-			try {
-				await WF.sync.pushData(options.syncKey);
-				WF.toast.show(`Data successfully sent.`, { type: "success" });
-			} catch (e) {
-				if (e.message === "CLIENT_RATE_LIMITED" || e.message === "RATE_LIMITED")
-					WF.toast.show(`You are being rate limited, maximum 1 UPLOAD per 10 seconds.`, { timeoutMs: 3000, type: "info" });
-				else
-					WF.toast.show(`Failed to send data.`, { type: "error" });
-			}
-		}
-	});
+	}));
 
 	syncDisconnectBtn.addEventListener("click", () => {
-		const options = WF.options.load();
-		
 		if (!confirm("Are you sure you want to disconnect? The key will be lost if it is not manually saved.")) return;
 
-		const updatedOptions = { ...options };
+		const updatedOptions = { ...WF.options.load() };
 		delete updatedOptions.syncKey;
 		WF.options.save(updatedOptions);
 
@@ -251,29 +285,38 @@ document.addEventListener("DOMContentLoaded", function () {
 		WF.toast.show(`Disconnected. Local data preserved.`, { type: "success" });
 	});
 
-	syncDeleteBtn.addEventListener("click", async () => {
-		if (checkRealServer() == false) return;
+	syncDeleteBtn.addEventListener("click", () => withBusyButton(syncDeleteBtn, async () => {
+		if (!checkRealServer()) return;
 		const options = WF.options.load();
 		const currentKey = options.syncKey;
 
 		if (!currentKey) return;
 		if (!confirm("Are you sure you want to remove this key and delete all cloud data?")) return;
 
+		const sync = await requireSync();
+		if (!sync) return;
+
 		try {
-			if (WF.sync) {
-				await WF.sync.deleteRemoteData(currentKey);
-			}
-			
-			const updatedOptions = { ...options };
+			await sync.deleteRemoteData(currentKey);
+
+			const updatedOptions = { ...WF.options.load() };
 			delete updatedOptions.syncKey;
 			WF.options.save(updatedOptions);
 
 			syncKey.value = "";
 			updateSyncUIState();
 			WF.toast.show(`Key removed and cloud data deleted.`, { type: "success" });
-		} catch (e) {
-			WF.toast.show(`Error deleting key and cloud data.`, { type: "error" });
+		} catch (err) {
+			reportSyncError(err, `Error deleting key and cloud data.`, "DELETE");
 		}
+	}));
+
+	const syncKeyRevealBtn = getEl("btn-sync-key-reveal");
+	syncKeyRevealBtn.addEventListener("click", () => {
+		const isRevealed = syncKey.type === "text";
+		syncKey.type = isRevealed ? "password" : "text";
+		syncKeyRevealBtn.setAttribute("aria-pressed", String(!isRevealed));
+		syncKeyRevealBtn.textContent = isRevealed ? "Reveal" : "Hide";
 	});
 
 	function openSync() {
@@ -283,6 +326,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	function closeSync() {
 		toggleOverlay(syncOverlay, false);
+		syncKey.type = "password";
+		syncKeyRevealBtn.setAttribute("aria-pressed", "false");
+		syncKeyRevealBtn.textContent = "Reveal";
 	}
 		
 	getEl("btn-sync-toggle").addEventListener("click", openSync);
@@ -298,7 +344,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	function closeInfo() {
 		toggleOverlay(infoOverlay, false);
-		resetDeleteButton();
 	}
 
 	function openWelcome() {
@@ -307,7 +352,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	function closeWelcome() {
 		toggleOverlay(welcomeOverlay, false);
-		localStorage.setItem(WELCOME_SEEN_KEY, true); 
+		localStorage.setItem(WELCOME_SEEN_KEY, "1");
 	}
 
 	getEl("btn-welcome-close").addEventListener("click", closeWelcome);
@@ -336,18 +381,16 @@ document.addEventListener("DOMContentLoaded", function () {
 	getEl("btn-info-close").addEventListener("click", closeInfo);
 
 	deleteBtn.addEventListener("click", () => {
-		deleteClickCount++;
-		deleteBtn.classList.add("confirming");
 		clearTimeout(deleteResetTimer);
+		deleteClickCount++;
 
-		if (deleteClickCount <= CONFIRM_STEPS.length) {
-			deleteBtn.textContent = CONFIRM_STEPS[CONFIRM_STEPS.length - 1];
-		} else if (deleteClickCount > CONFIRM_STEPS.length) {
+		if (deleteClickCount > CONFIRM_STEPS.length) {
 			WF.storage.clearAll();
 			location.reload();
 			return;
 		}
 
+		deleteBtn.classList.add("confirming");
 		deleteBtn.textContent = CONFIRM_STEPS[deleteClickCount - 1];
 		deleteResetTimer = setTimeout(resetDeleteButton, DELETE_CONFIRM_TIMEOUT_MS);
 	});
@@ -373,7 +416,10 @@ document.addEventListener("DOMContentLoaded", function () {
 		changelogList.textContent = "";
 
 		if (!WF.CHANGELOG || WF.CHANGELOG.length === 0) {
-			changelogList.innerHTML = '<li class="info-empty">No changelog entries yet.</li>';
+			const emptyLi = document.createElement("li");
+			emptyLi.className = "info-empty";
+			emptyLi.textContent = "No changelog entries yet.";
+			changelogList.appendChild(emptyLi);
 			return;
 		}
 
@@ -394,7 +440,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 			const body = document.createElement("p");
 			body.className = "changelog-entry-text";
-			body.innerHTML = entry.text;
+			String(entry.text).split(/<\/?br\s*\/?>/i).forEach((chunk, chunkIndex) => {
+				if (chunkIndex > 0) body.appendChild(document.createElement("br"));
+				body.appendChild(document.createTextNode(chunk));
+			});
 
 			li.append(header, body);
 			fragment.appendChild(li);
@@ -450,11 +499,40 @@ document.addEventListener("DOMContentLoaded", function () {
 		if (targetPanel) targetPanel.classList.add("active");
 	});
 
+	function buildTableHead(labels) {
+		const thead = document.createElement("thead");
+		const tr = document.createElement("tr");
+		labels.forEach((label) => {
+			const th = document.createElement("th");
+			th.scope = "col";
+			th.textContent = label;
+			tr.appendChild(th);
+		});
+		thead.appendChild(tr);
+		return thead;
+	}
+
+	function appendTableRow(fragment, cells, className) {
+		const tr = document.createElement("tr");
+		if (className) tr.className = className;
+		cells.forEach((cell) => {
+			const td = document.createElement("td");
+			if (cell && typeof cell === "object" && cell.strong) {
+				const strong = document.createElement("strong");
+				strong.textContent = cell.text;
+				td.appendChild(strong);
+			} else {
+				td.textContent = cell;
+			}
+			tr.appendChild(td);
+		});
+		fragment.appendChild(tr);
+	}
+
 	function renderStatsTable() {
 		const table = getEl("stats-table");
 		table.textContent = "";
-		const thead = document.createElement("thead");
-		thead.innerHTML = "<tr><th>Category</th><th>Progress</th><th>%</th></tr>";
+		const thead = buildTableHead(["Category", "Progress", "%"]);
 		const tbody = document.createElement("tbody");
 		const fragment = document.createDocumentFragment();
 		const rows = [];
@@ -473,15 +551,10 @@ document.addEventListener("DOMContentLoaded", function () {
 		const totalAll = rows.reduce((sum, r) => sum + r.stats.total, 0);
 		const globalPercent = totalAll > 0 ? Math.round((totalOwned / totalAll) * 100) : 0;
 
-		const globalTr = document.createElement("tr");
-		globalTr.className = "global-progression";
-		globalTr.innerHTML = `<td><strong>Global progression</strong></td><td>${totalOwned.toLocaleString()}/${totalAll.toLocaleString()}</td><td>${globalPercent}%</td>`;
-		fragment.appendChild(globalTr);
+		appendTableRow(fragment, [{ text: "Global progression", strong: true }, `${formatNumber(totalOwned)}/${formatNumber(totalAll)}`, `${globalPercent}%`], "global-progression");
 
 		rows.forEach(({ label, stats }) => {
-			const tr = document.createElement("tr");
-			tr.innerHTML = `<td>${label}</td><td>${stats.owned.toLocaleString()}/${stats.total.toLocaleString()}</td><td>${stats.percent}%</td>`;
-			fragment.appendChild(tr);
+			appendTableRow(fragment, [label, `${formatNumber(stats.owned)}/${formatNumber(stats.total)}`, `${stats.percent}%`]);
 		});
 
 		tbody.appendChild(fragment);
@@ -506,12 +579,18 @@ document.addEventListener("DOMContentLoaded", function () {
 			group.forEach((row, rowIndex) => {
 				const item = document.createElement("div");
 				item.className = "breakdown-item";
-				item.innerHTML = `<span class="breakdown-value">${row.xp.toLocaleString()}</span><span class="breakdown-label">${row.label}</span>`;
+				const valueEl = document.createElement("span");
+				valueEl.className = "breakdown-value";
+				valueEl.textContent = formatNumber(row.xp);
+				const labelEl = document.createElement("span");
+				labelEl.className = "breakdown-label";
+				labelEl.textContent = row.label;
+				item.append(valueEl, labelEl);
 
 				const showBtn = document.createElement("button");
 				showBtn.type = "button";
 				showBtn.className = "item-info-btn";
-				showBtn.textContent = "Show item list"; // même libellé que #opt-show-conclave-items pour rester cohérent
+				showBtn.textContent = "Show item list";
 				showBtn.addEventListener("click", () => openBreakdownItemList(groupIndex, rowIndex, row.label));
 				item.appendChild(showBtn);
 
@@ -536,8 +615,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		const table = getEl("endo-spent");
 		table.textContent = "";
 
-		const thead = document.createElement("thead");
-		thead.innerHTML = "<tr><th>Rarity</th><th>Mods Owned</th><th>Mods Total</th><th>Endo Spent</th><th>Endo Total</th></tr>";
+		const thead = buildTableHead(["Rarity", "Mods Owned", "Mods Total", "Endo Spent", "Endo Total"]);
 		const tbody = document.createElement("tbody");
 		const fragment = document.createDocumentFragment();
 
@@ -569,16 +647,11 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
 		}
 
-		const totalTr = document.createElement("tr");
-		totalTr.className = "global-progression";
-		totalTr.innerHTML = `<td><strong>Total</strong></td><td>${grand.itemsOwned.toLocaleString()}</td><td>${grand.itemsTotal.toLocaleString()}</td><td>${grand.endoSpent.toLocaleString()}</td><td>${grand.endoTotal.toLocaleString()}</td>`;
-		fragment.appendChild(totalTr);
+		appendTableRow(fragment, [{ text: "Total", strong: true }, formatNumber(grand.itemsOwned), formatNumber(grand.itemsTotal), formatNumber(grand.endoSpent), formatNumber(grand.endoTotal)], "global-progression");
 
 		Object.keys(WF.ENDO).forEach((rarity) => {
 			const r = totalsByRarity[rarity];
-			const tr = document.createElement("tr");
-			tr.innerHTML = `<td>${capitalizeFirstLetter(rarity)}</td><td>${r.itemsOwned.toLocaleString()}</td><td>${r.itemsTotal.toLocaleString()}</td><td>${r.endoSpent.toLocaleString()}</td><td>${r.endoTotal.toLocaleString()}</td>`;
-			fragment.appendChild(tr);
+			appendTableRow(fragment, [capitalizeFirstLetter(rarity), formatNumber(r.itemsOwned), formatNumber(r.itemsTotal), formatNumber(r.endoSpent), formatNumber(r.endoTotal)]);
 		});
 
 		tbody.appendChild(fragment);
@@ -588,6 +661,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	function openOptions() {
 		const options = WF.options.load();
 		includeOptionsCheckbox.checked = options.includeOptionsInExport;
+		includeSyncKeyCheckbox.checked = options.includeSyncKeyInExport;
 		includeFounderCheckbox.checked = options.includeFounderItems;
 		includePvpItemsCheckbox.checked = options.includePvpItems;
 		themeSwatches.forEach((swatch) => {
@@ -599,6 +673,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	function closeOptions() {
 		toggleOverlay(optionsOverlay, false);
+		resetDeleteButton();
 	}
 
 	getEl("btn-options-toggle").addEventListener("click", openOptions);
@@ -643,6 +718,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	includeOptionsCheckbox.addEventListener("change", () => {
 		WF.options.save({ ...WF.options.load(), includeOptionsInExport: includeOptionsCheckbox.checked });
+		if(!includeOptionsCheckbox.checked) {
+			includeSyncKeyCheckbox.checked = false;
+			WF.toast.show(`Include SYNC secret key is now disabled.`, { type: "info", timeoutMs: 5000 });
+		}
+	});
+
+	includeSyncKeyCheckbox.addEventListener("change", () => {
+		if (includeOptionsCheckbox.checked) {
+			WF.options.save({ ...WF.options.load(), includeSyncKeyInExport: includeSyncKeyCheckbox.checked });
+			if (includeSyncKeyCheckbox.checked) WF.toast.show("Your export file will now contain your secret sync key. Keep it private.", { type: "info", timeoutMs: 5000 });
+		} else {
+			includeSyncKeyCheckbox.checked = false;
+			WF.toast.show(`To export your SYNC key you need to enable "Save options when exporting" first.`, { type: "info", timeoutMs: 5000 });
+		}
+
 	});
 
 	includeFounderCheckbox.addEventListener("change", () => {

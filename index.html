@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8" />
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file: 'unsafe-inline' https://www.gstatic.com; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data:; connect-src 'self' file: https://www.gstatic.com https://firestore.googleapis.com https://*.googleapis.com https://evilflora.github.io/wct/js/version.js; font-src 'self' file:; base-uri 'none'; form-action 'none'" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 	<title>Warframe Completion Tracker</title>
 	<meta name="description" content="Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more." />
@@ -16,6 +17,7 @@
 	<meta property="og:locale" content="en_US" />
 	<link rel="stylesheet" href="css/min/style.min.css" />
 	<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+	<script src="js/min/constants.min.js"></script>
 	<script type="application/ld+json">
 	{
 		"@context": "https://schema.org",
@@ -28,13 +30,18 @@
 	}
 	</script>
 	<script>
-		(function () {
+		(function () { // this is loaded and executed before theme.js is even loaded
 			try {
-				const options = JSON.parse(localStorage.getItem("wf_checklist_options") || "{}");
-				const colors = options.themeColors || {};
-				Object.keys(colors).forEach((cssVar) => document.documentElement.style.setProperty(cssVar, colors[cssVar]));
+				var options = JSON.parse(localStorage.getItem("wf_checklist_options") || "{}");
+				var colors = options.themeColors || {};
+				Object.keys(WF.THEME_DEFAULTS).forEach(function (cssVar) {
+					var value = colors[cssVar] || WF.THEME_DEFAULTS[cssVar];
+					if (typeof value === "string" && WF.HEX_COLOR.test(value)) {
+						document.documentElement.style.setProperty(cssVar, value);
+					}
+				});
 			} catch (err) {
-				// I don't care
+				console.debug("Theme skipped: ", err);
 			}
 		})();
 	</script>
@@ -54,7 +61,7 @@
 		<div class="content-column">
 			<header>
 				<div class="header-top">
-					<button id="btn-sidebar-toggle" class="sidebar-toggle-btn" aria-label="Open menu">&#9776;</button>
+					<button id="btn-sidebar-toggle" class="sidebar-toggle-btn" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">&#9776;</button>
 					<h1>Warframe Completion Tracker</h1>
 					<div class="btn-group">
 						<button id="btn-update-toggle"	class="info-toggle-btn hidden" aria-label="Open update" >[&#x2B07;]</button>
@@ -109,7 +116,13 @@
 					<p>By pressing "CREATE", a random secret key will be generated, <b>do not lose it</b> (it'll be included in the export file).</p>
 					<p>If you already have a secret key, you can paste it and then SYNC, this allow you to download or upload your save.</p>
 					<p><b>Keep this secret, do not share, do not show it. Anyone with this key will be able to modify your save.</b></p>
-					<p>Your secret key (mostly hiden): <input id="sync-key" class="sync-key" placeholder="64 characters key" maxlength="64" /></p>
+					<p class="sync-key-row">
+						<label for="sync-key">Your secret key:</label>
+						<form>
+							<input id="sync-key" class="sync-key" type="password" placeholder="64 characters key" maxlength="64" minlength="64" pattern="[0-9a-f]{64}" autocomplete="off" spellcheck="false" autocapitalize="off" />
+							<button type="button" id="btn-sync-key-reveal" class="item-info-btn" aria-pressed="false" aria-label="Reveal secret key">Reveal</button>
+						</form>
+					</p>
 					<div class="sync-actions" style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
 						<div class="sync-row">
 							<button id="btn-sync-action" class="toolbar-btn-main" aria-label="Sync Action">CREATE</button>
@@ -135,7 +148,7 @@
 			</div>
 			<div class="info-modal-body">
 				<section>
-					<h3><p><a id="info-open-welcome" href="#">Reopen the welcome guide</a></p></h3>
+					<p><a id="info-open-welcome" href="#">Reopen the welcome guide</a></p>
 					<h3>Changelog</h3>
 					<p id="update-available-notice" class="update-available-notice hidden"></p>
 					<ul id="info-changelog-list"></ul>
@@ -164,17 +177,17 @@
 			</div>
 			<div class="info-modal-body">
 				<div class="stats-tabs" role="tablist">
-					<button type="button" class="stats-tab active" data-tab="mastery" role="tab" aria-selected="true">Mastery Breakdown</button>
-					<button type="button" class="stats-tab" data-tab="progression" role="tab" aria-selected="false">Progression</button>
-					<button type="button" class="stats-tab" data-tab="endospent" role="tab" aria-selected="false">Endo</button>
+					<button type="button" id="stats-tab-mastery" class="stats-tab active" data-tab="mastery" role="tab" aria-selected="true" aria-controls="stats-panel-mastery">Mastery Breakdown</button>
+					<button type="button" id="stats-tab-progression" class="stats-tab" data-tab="progression" role="tab" aria-selected="false" aria-controls="stats-panel-progression">Progression</button>
+					<button type="button" id="stats-tab-endospent" class="stats-tab" data-tab="endospent" role="tab" aria-selected="false" aria-controls="stats-panel-endospent">Endo</button>
 				</div>
-				<div id="stats-panel-mastery" class="stats-panel active" role="tabpanel">
+				<div id="stats-panel-mastery" class="stats-panel active" role="tabpanel" aria-labelledby="stats-tab-mastery" tabindex="0">
 					<div id="mastery-breakdown" class="mastery-breakdown"></div>
 				</div>
-				<div id="stats-panel-progression" class="stats-panel" role="tabpanel">
+				<div id="stats-panel-progression" class="stats-panel" role="tabpanel" aria-labelledby="stats-tab-progression" tabindex="0">
 					<table id="stats-table" class="stats-table"></table>
 				</div>
-				<div id="stats-panel-endospent" class="stats-panel" role="tabpanel">
+				<div id="stats-panel-endospent" class="stats-panel" role="tabpanel" aria-labelledby="stats-tab-endospent" tabindex="0">
 					<table id="endo-spent" class="stats-table"></table>
 				</div>
 			</div>
@@ -187,11 +200,17 @@
 				<button id="btn-options-close" class="info-close-btn" aria-label="Close options">&times;</button>
 			</div>
 			<div class="info-modal-body">
+				<h3>Settings</h3>
 				<section>
-					<h3>Settings</h3>
 					<label class="option-row">
 						<input type="checkbox" id="opt-include-options-in-export" />
 						<span>Save options when exporting</span>
+					</label>
+				</section>
+				<section>
+					<label class="option-row">
+						<input type="checkbox" id="opt-include-synckey-in-export" />
+						<span>Include the SYNC secret key in the export file</span>
 					</label>
 				</section>
 				<section>
@@ -307,8 +326,6 @@
 			</div>
 		</div>
 	</div>
-	<button id="btn-scroll-top" class="scroll-top-btn" aria-label="Scroll to top">&#8593;</button>
-	<script src="js/min/constants.min.js"></script>
 	<script src="js/min/toast.min.js"></script>
 	<script src="js/version.js"></script>
 	<script src="js/min/update-check.min.js"></script>
@@ -321,6 +338,11 @@
 	<script src="js/min/export-import.min.js"></script>
 	<script src="js/min/render.min.js"></script>
 	<script src="js/min/main.min.js"></script>
-	<script>if (window.location.protocol !== "file:") { import('./js/sync.js').then((module) => {}).catch((err) => { console.error("Sync can only be loaded on real web server." + err); }); }</script>
+	<script type="module">
+		window.WF = window.WF || {};
+		WF.syncReady = (window.location.protocol === "file:")
+			? Promise.resolve(null)
+			: import("./js/min/sync.min.js").then(() => window.WF.sync || null).catch((err) => { console.warn("Sync module could not be loaded.", err); return null; });
+	</script>
 </body>
 </html>

@@ -3,17 +3,22 @@
 WF.uiState = (function () {
   const STORAGE_KEY = "wf_checklist_ui_state";
 
+  let _cache = null;
+
   function load() {
+    if (_cache) return _cache;
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : {};
+      _cache = raw ? JSON.parse(raw) : {};
     } catch (err) {
       console.error("Unreadable or corrupted localStorage UI state, reset.", err);
-      return {};
+      _cache = {};
     }
+    return _cache;
   }
 
   function save(state) {
+    _cache = state;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (err) {

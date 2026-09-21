@@ -1,21 +1,21 @@
 /* This file use "Auto-Minify" in "Visual Studio Code" to create it's compressed version on save */
 
 WF.theme = (function () {
-  const DEFAULTS = {
-    "--bg": "#060000",
-    "--panel": "#0f151b",
-    "--panel-hover": "#161f27",
-    "--border": "#23303a",
-    "--text": "#e6ecf1",
-    "--item-owned": "#1a140c",
-    "--item-owned-hover": "#413110",
-    "--accent-color": "#bea966",
-  };
+  const CSS_VARS = Object.keys(WF.THEME_DEFAULTS);
 
-  const CSS_VARS = Object.keys(DEFAULTS);
+  function sanitizeColors(rawColors) {
+    const safe = {};
+    if (!rawColors || typeof rawColors !== "object") return safe;
+    CSS_VARS.forEach((cssVar) => {
+      const value = rawColors[cssVar];
+      if (typeof value === "string" && WF.HEX_COLOR.test(value)) safe[cssVar] = value;
+    });
+    return safe;
+  }
 
   function apply(colors) {
-    CSS_VARS.forEach((cssVar) => document.documentElement.style.setProperty(cssVar, colors[cssVar] || DEFAULTS[cssVar]));
+    const safeColors = sanitizeColors(colors);
+    CSS_VARS.forEach((cssVar) => document.documentElement.style.setProperty(cssVar, safeColors[cssVar] || WF.THEME_DEFAULTS[cssVar]));
   }
 
   function init() {
@@ -23,6 +23,7 @@ WF.theme = (function () {
   }
 
   function setColor(cssVar, hexValue) {
+    if (!CSS_VARS.includes(cssVar) || !HEX_COLOR.test(hexValue)) return;
     const options = WF.options.load();
     const themeColors = { ...(options.themeColors || {}), [cssVar]: hexValue };
     WF.options.save({ ...options, themeColors });
@@ -35,9 +36,9 @@ WF.theme = (function () {
   }
 
   function getColor(cssVar) {
-    const themeColors = WF.options.load().themeColors || {};
-    return themeColors[cssVar] || DEFAULTS[cssVar];
+    const themeColors = sanitizeColors(WF.options.load().themeColors);
+    return themeColors[cssVar] || WF.THEME_DEFAULTS[cssVar];
   }
 
-  return { CSS_VARS, DEFAULTS, apply, init, setColor, reset, getColor };
+  return { CSS_VARS, apply, init, setColor, reset, getColor, sanitizeColors };
 })();

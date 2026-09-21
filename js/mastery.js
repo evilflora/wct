@@ -34,9 +34,15 @@ const MASTERY_BREAKDOWN_GROUPS = [
 ];
 
 WF.mastery = (function () {
+	const NUMBER_FORMAT = new Intl.NumberFormat();
+
+	function formatNumber(value) {
+		return NUMBER_FORMAT.format(Number(value) || 0);
+	}
+
 	function itemMasteryXp(item) {
-	return +item.mastery_xp || 0;
-}
+		return Number(item.mastery_xp) || 0;
+	}
 	function xpRequiredForRank(rank) {
 		if (rank <= 30) return WF.MASTERY.XP_PER_RANK * rank * rank;
 		return WF.MASTERY.LEGENDARY_BASE_XP + ((rank - 30) * WF.MASTERY.LEGENDARY_XP_PER_RANK);
@@ -91,9 +97,9 @@ WF.mastery = (function () {
 
 		if (labelEl) labelEl.textContent = info.label;
 		if (progressTextEl) {
-			progressTextEl.textContent = `Next rank in ${(info.xpToNextRank - info.xpInCurrentRank).toLocaleString()} (${info.xpInCurrentRank.toLocaleString()} / ${info.xpToNextRank.toLocaleString()})`;
+			progressTextEl.textContent = `Next rank in ${formatNumber(info.xpToNextRank - info.xpInCurrentRank)} (${formatNumber(info.xpInCurrentRank)} / ${formatNumber(info.xpToNextRank)})`;
 		}
-		if (totalTextEl) totalTextEl.textContent = `Total : ${info.totalXp.toLocaleString()}`;
+		if (totalTextEl) totalTextEl.textContent = `Total : ${formatNumber(info.totalXp)}`;
 	}
 
 	function getBreakdown(progress) {

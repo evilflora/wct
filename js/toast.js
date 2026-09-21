@@ -3,11 +3,12 @@
 window.WF = window.WF || {};
 
 WF.toast = (function () {
-  const MAX_VISIBLE_TOASTS = 3; 
+  const MAX_VISIBLE_TOASTS = 3;
   const DEFAULT_TIMEOUT_MS = 3000;
   const FADE_OUT_MS = 300;
 
   const queue = [];
+  const activeKeys = new Set();
   let visibleCount = 0;
   let container = null;
 
@@ -16,6 +17,8 @@ WF.toast = (function () {
     container = document.createElement("div");
     container.id = "wf-toast-container";
     container.className = "wf-toast-container";
+    container.setAttribute("role", "status");
+    container.setAttribute("aria-live", "polite");
     document.body.appendChild(container);
     return container;
   }
@@ -27,14 +30,34 @@ WF.toast = (function () {
     setTimeout(() => {
       toastEl.remove();
       visibleCount--;
+      if (toastEl._key) activeKeys.delete(toastEl._key);
+      if (typeof toastEl._onClose === "function") toastEl._onClose();
       processQueue();
     }, FADE_OUT_MS);
+  }
+
+  function buildBody(toastEl, item) {
+    toastEl.appendChild(document.createTextNode(item.message));
+
+    if (!item.link || !item.link.href) return;
+
+    toastEl.appendChild(document.createTextNode(" "));
+    const anchor = document.createElement("a");
+    anchor.href = item.link.href;
+    anchor.textContent = item.link.text || item.link.href;
+    anchor.target = "_blank";
+    anchor.rel = "noopener noreferrer";
+    anchor.addEventListener("click", (event) => event.stopPropagation());
+    toastEl.appendChild(anchor);
   }
 
   function renderToast(item) {
     const toastEl = document.createElement("div");
     toastEl.className = `wf-toast wf-toast-${item.type}`;
-    toastEl.innerHTML = item.message;
+    toastEl._onClose = item.onClose;
+    toastEl._key = item.key;
+
+    buildBody(toastEl, item);
 
     if (item.timeoutMs === 0) {
       toastEl.classList.add("wf-toast-clickable");
@@ -45,7 +68,7 @@ WF.toast = (function () {
     }
 
     ensureContainer().appendChild(toastEl);
-    requestAnimationFrame(() => toastEl.classList.add("visible")); 
+    requestAnimationFrame(() => toastEl.classList.add("visible"));
     visibleCount++;
   }
 
@@ -56,13 +79,22 @@ WF.toast = (function () {
   }
 
   function show(message, options = {}) {
+    const key = options.key;
+    if (key && activeKeys.has(key)) return false;
+    if (key) activeKeys.add(key);
+
     queue.push({
       message,
+      key,
+      link: options.link || null,
       timeoutMs: options.timeoutMs === undefined ? DEFAULT_TIMEOUT_MS : options.timeoutMs,
-      type: options.type || "info"
+      type: options.type || "info",
+      onClose: options.onClose
     });
+
     processQueue();
+    return true;
   }
 
-  return { show };
+  return { show, isActive: (key) => activeKeys.has(key) };
 })();

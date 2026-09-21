@@ -7,9 +7,13 @@ WF.render = (function () {
 
   const ITEM_BADGES = [
     { key: "vaulted",   text: "V", tooltip: (item) => `Vaulted since ${item.vaulted.toLocaleString()}` },
-    { key: "masteryXp", text: "X", tooltip: (item) => `${item.masteryXp.toLocaleString()} Mastery XP` },
+    { key: "masteryXp", text: "X", tooltip: (item) => `${formatNumber(item.masteryXp)} Mastery XP` },
     { key: "hidden",    text: "H", tooltip: ()     => `Hidden until owned or discovered` },
   ];
+
+  const COLLATOR = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+  const NUMBER_FORMAT = new Intl.NumberFormat();
+  const formatNumber = (value) => NUMBER_FORMAT.format(Number(value) || 0);
 
   const SEARCH_DEBOUNCE_MS = 200;
   const SIDEBAR_SEARCH_MAX_LENGTH = 64;
@@ -31,6 +35,7 @@ WF.render = (function () {
 
   const lowerCache = new Map();
   function lower(str) {
+    if (str == null) return "";
     let cached = lowerCache.get(str);
     if (cached === undefined) {
       cached = str.toLowerCase();
@@ -39,26 +44,45 @@ WF.render = (function () {
     return cached;
   }
 
-  function matchesCategory(item, category) {
-    return lower(item.category) === lower(category);
-  }
-
   function categoryLabel(category) {
     return (WF.CATEGORY[category] && WF.CATEGORY[category].label) || category;
   }
 
+  let dataIndex = null;
+
+  function getDataIndex(includeFounder, includePvpItems) {
+    if (dataIndex && dataIndex.includeFounder === includeFounder && dataIndex.includePvpItems === includePvpItems) return dataIndex;
+
+    const byCategory = new Map();
+    for (let i = 0; i < WF.data.length; i++) {
+      const item = WF.data[i];
+      if (!includeFounder && item.founder) continue;
+      if (!includePvpItems && item.conclave) continue;
+      const key = lower(item.category);
+      let bucket = byCategory.get(key);
+      if (bucket === undefined) { bucket = []; byCategory.set(key, bucket); }
+      bucket.push(item);
+    }
+
+    dataIndex = { includeFounder, includePvpItems, byCategory };
+    return dataIndex;
+  }
+
+  function itemsOfCategory(category, includeFounder, includePvpItems) {
+    return getDataIndex(includeFounder, includePvpItems).byCategory.get(lower(category)) || [];
+  }
+
   function availableCategories(includeFounder, includePvpItems) {
-    return Object.keys(WF.CATEGORY).filter((category) =>
-      WF.data.some((item) => matchesCategory(item, category) && (includeFounder || !item.founder) && (includePvpItems || !item.conclave))
-    );
+    const { byCategory } = getDataIndex(includeFounder, includePvpItems);
+    return Object.keys(WF.CATEGORY).filter((category) => byCategory.has(lower(category)));
   }
 
   function matchesFilterValue(itemValue, targetValue) {
     targetValue = lower(targetValue);
 
     if (targetValue === todo) {
-      if (Array.isArray(itemValue)) return itemValue.length === 0;
-      return itemValue === null || itemValue === undefined || lower(itemValue) === "null";
+      if (Array.isArray(itemValue)) return itemValue.length === 0 || itemValue.every((value) => value == null);
+      return itemValue == null || lower(itemValue) === "null";
     }
 
     if (Array.isArray(itemValue)) return itemValue.some((value) => lower(value) === targetValue);
@@ -88,14 +112,14 @@ WF.render = (function () {
       category: activeCategory,
       includeFounder,
       includePvpItems,
-      typeBase: WF.data.filter((item) => matchesCategory(item, activeCategory) && (includeFounder || !item.founder) && (includePvpItems || !item.conclave)),
+      typeBase: itemsOfCategory(activeCategory, includeFounder, includePvpItems),
       filters: WF.FILTERS[activeCategory] || [],
     };
     return cache;
   }
 
   function buildSidebarItem(container, category, progress, includeFounder, includePvpItems) {
-    const typeItems = WF.data.filter((item) => matchesCategory(item, category) && (includeFounder || !item.founder) && (includePvpItems || !item.conclave));
+    const typeItems = itemsOfCategory(category, includeFounder, includePvpItems);
     const percent = computePercent(typeItems, progress);
 
     const btn = document.createElement("button");
@@ -171,8 +195,14 @@ WF.render = (function () {
     if (matches.length === 0) {
       const empty = document.createElement("div");
       empty.className = "sidebar-search-empty";
-      empty.innerHTML = `No results (<a href="${WF.PROJECT_SRC}/issues" target="_blank" rel="noopener noreferrer">item missing ?</a>)`;
-      empty.querySelector("a").addEventListener("mousedown", (event) => event.preventDefault());
+      empty.appendChild(document.createTextNode("No results ("));
+      const issueLink = document.createElement("a");
+      issueLink.href = `${WF.PROJECT_SRC}/issues`;
+      issueLink.textContent = "item missing ?";
+      issueLink.target = "_blank";
+      issueLink.rel = "noopener noreferrer";
+      issueLink.addEventListener("mousedown", (event) => event.preventDefault());
+      empty.append(issueLink, document.createTextNode(")"));
       resultsEl.appendChild(empty);
       return;
     }
@@ -442,10 +472,19 @@ WF.render = (function () {
 
     const wrap = document.createElement("div");
     wrap.className = "progress-wrap";
-    wrap.innerHTML = `
-      <div class="progress-label">${owned} / ${total} (${percent}%)</div>
-      <div class="progress-track"><div class="progress-fill" style="width:${percent}%"></div></div>
-    `;
+
+    const label = document.createElement("div");
+    label.className = "progress-label";
+    label.textContent = `${formatNumber(owned)} / ${formatNumber(total)} (${percent}%)`;
+
+    const track = document.createElement("div");
+    track.className = "progress-track";
+    const fill = document.createElement("div");
+    fill.className = "progress-fill";
+    fill.style.width = `${percent}%`;
+    track.appendChild(fill);
+
+    wrap.append(label, track);
     container.appendChild(wrap);
   }
 
@@ -463,7 +502,7 @@ WF.render = (function () {
 
     const label = document.querySelector(".progress-label");
     const fill = document.querySelector(".progress-fill");
-    if (label) label.textContent = `${owned} / ${total} (${percent}%)`;
+    if (label) label.textContent = `${formatNumber(owned)} / ${formatNumber(total)} (${percent}%)`;
     if (fill) fill.style.width = `${percent}%`;
 
     const { typeBase } = getTypeBaseAndFilters(includeFounder, includePvpItems);
@@ -544,7 +583,7 @@ WF.render = (function () {
   }
 
   function naturalCompare(a, b) {
-    return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+    return COLLATOR.compare(a, b);
   }
 
   function buildSearchCluster(container) {
@@ -608,48 +647,56 @@ WF.render = (function () {
     return div;
   }
 
-  function buildItemList(container, items, progress) {
-    const list = document.createElement("div");
-    list.className = "item-list";
+  function appendBadges(row, item) {
+    const normalizedItem = { ...item, masteryXp: Number(item.mastery_xp) || null };
+    const activeBadges = ITEM_BADGES.filter((badge) => normalizedItem[badge.key]);
+    if (activeBadges.length === 0) return;
 
-    const sortedItems = [...items].sort((a, b) => naturalCompare(a.display_name.en, b.display_name.en));
-    const fragment = document.createDocumentFragment();
+    const divInfos = document.createElement("div");
+    divInfos.className = "item-infos";
+    activeBadges.forEach((badge) => divInfos.append(createInfoBadge(badge.text, badge.tooltip(normalizedItem))));
+    row.appendChild(divInfos);
+  }
 
-    sortedItems.forEach((item) => {
-      const owned = !!progress[item.item_name];
-      const row = document.createElement("label");
-      row.className = "item-row" + (owned ? " owned" : "");
+  function createItemRow(item, progress, { interactive = true } = {}) {
+    const owned = !!progress[item.item_name];
+    const row = document.createElement(interactive ? "label" : "div");
+    row.className = "item-row" + (owned ? " owned" : "") + (interactive ? "" : " item-row--static");
 
+    if (interactive) {
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.className = "item-checkbox-hidden";
       checkbox.checked = owned;
       checkbox.dataset.itemName = item.item_name;
+      row.appendChild(checkbox);
+    }
 
-      const name = document.createElement("span");
-      name.className = "item-name";
+    const name = document.createElement("span");
+    name.className = "item-name";
+    const nameInner = document.createElement("span");
+    nameInner.className = "item-name-inner";
+    nameInner.textContent = item.display_name.en;
+    name.appendChild(nameInner);
+    row.appendChild(name);
 
-      const nameInner = document.createElement("span");
-      nameInner.className = "item-name-inner";
-      nameInner.textContent = item.display_name.en;
-      name.appendChild(nameInner);
+    appendBadges(row, item);
+    return row;
+  }
 
-      row.append(checkbox, name);
+  function sortByDisplayName(items) {
+    return items
+      .map((item) => ({ item, sortKey: item.display_name.en }))
+      .sort((a, b) => COLLATOR.compare(a.sortKey, b.sortKey))
+      .map((entry) => entry.item);
+  }
 
-      const normalizedItem = { ...item, masteryXp: item.mastery_xp || null };
-      const activeBadges = ITEM_BADGES.filter((badge) => normalizedItem[badge.key]);
+  function buildItemList(container, items, progress) {
+    const list = document.createElement("div");
+    list.className = "item-list";
 
-      if (activeBadges.length > 0) {
-        const divInfos = document.createElement("div");
-        divInfos.className = "item-infos";
-        activeBadges.forEach((badge) => {
-          divInfos.append(createInfoBadge(badge.text, badge.tooltip(normalizedItem)));
-        });
-        row.appendChild(divInfos);
-      }
-
-      fragment.appendChild(row);
-    });
+    const fragment = document.createDocumentFragment();
+    sortByDisplayName([...items]).forEach((item) => fragment.appendChild(createItemRow(item, progress)));
 
     list.appendChild(fragment);
     container.appendChild(list);
@@ -721,7 +768,12 @@ WF.render = (function () {
 
   function ensureLayout(root) {
     if (root.dataset.wfReady === "1") return;
-    root.innerHTML = '<div id="wf-filters-zone"></div><div id="wf-dynamic-zone"></div>';
+    root.textContent = "";
+    const filtersZone = document.createElement("div");
+    filtersZone.id = "wf-filters-zone";
+    const dynamicZone = document.createElement("div");
+    dynamicZone.id = "wf-dynamic-zone";
+    root.append(filtersZone, dynamicZone);
     root.dataset.wfReady = "1";
     bindFilterWheelScroll();
   }
@@ -826,7 +878,11 @@ WF.render = (function () {
     const types = availableCategories(includeFounder, includePvpItems);
 
     if (types.length === 0) {
-      root.innerHTML = '<p class="empty-state">No data loaded.</p>';
+      root.textContent = "";
+      const emptyState = document.createElement("p");
+      emptyState.className = "empty-state";
+      emptyState.textContent = "No data loaded.";
+      root.appendChild(emptyState);
       root.dataset.wfReady = "";
       return;
     }
@@ -868,7 +924,7 @@ WF.render = (function () {
     const progress = WF.storage.load();
     const includeFounder = WF.options.load().includeFounderItems;
     const includePvpItems = WF.options.load().includePvpItems;
-    const items = WF.data.filter((item) => matchesCategory(item, category) && (includeFounder || !item.founder) && (includePvpItems || !item.conclave));
+    const items = itemsOfCategory(category, includeFounder, includePvpItems);
     let owned = 0;
     for (let i = 0; i < items.length; i++) {
       if (progress[items[i].item_name]) owned++;
@@ -890,7 +946,7 @@ WF.render = (function () {
 
     const fragment = document.createDocumentFragment();
     categories.forEach((category) => {
-      const items = byCategory.get(category).sort((a, b) => naturalCompare(a.display_name.en, b.display_name.en));
+      const items = sortByDisplayName(byCategory.get(category));
       
       if (categories.length > 1)
       {
@@ -903,34 +959,7 @@ WF.render = (function () {
       const list = document.createElement("div");
       list.className = "item-list";
 
-      items.forEach((item) => {
-        const owned = !!progress[item.item_name];
-        const row = document.createElement("div");
-        row.className = "item-row" + (owned ? " owned" : "");
-
-        const name = document.createElement("span");
-        name.className = "item-name";
-        const nameInner = document.createElement("span");
-        nameInner.className = "item-name-inner";
-        nameInner.textContent = item.display_name.en;
-        name.appendChild(nameInner);
-
-        row.appendChild(name);
-
-        const normalizedItem = { ...item, masteryXp: item.mastery_xp || null }; // même normalisation que buildItemList, pour que les badges lisent le bon champ
-        const activeBadges = ITEM_BADGES.filter((badge) => normalizedItem[badge.key]);
-
-        if (activeBadges.length > 0) {
-          const divInfos = document.createElement("div");
-          divInfos.className = "item-infos";
-          activeBadges.forEach((badge) => {
-            divInfos.append(createInfoBadge(badge.text, badge.tooltip(normalizedItem)));
-          });
-          row.appendChild(divInfos);
-        }
-
-        list.appendChild(row);
-      });
+      items.forEach((item) => list.appendChild(createItemRow(item, progress, { interactive: false })));
 
       fragment.appendChild(list);
     });

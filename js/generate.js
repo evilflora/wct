@@ -37,19 +37,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  fileInput.addEventListener("change", function (event) {
+  fileInput.addEventListener("change", async function (event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      try {
-        setLoadedData(JSON.parse(e.target.result), file.name);
-      } catch (err) {
-        setLoadError(`Invalid JSON in ${file.name}`);
-      }
-    };
-    reader.readAsText(file);
+    try {
+      const text = await file.text();
+      setLoadedData(JSON.parse(text), file.name);
+    } catch (err) {
+      console.error("Raw file could not be read.", err);
+      setLoadError(`Invalid or unreadable JSON in ${file.name}`);
+    } finally {
+      event.target.value = "";
+    }
   });
 
   document.getElementById("btn-clear-output").addEventListener("click", () => {
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
         await navigator.clipboard.writeText(output.value);
         return;
       } catch (err) {
-        // I don't care
+        console.debug("Clipboard API unavailable, falling back.", err);
       }
     }
 

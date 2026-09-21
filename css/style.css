@@ -11,6 +11,17 @@
 	--item-owned-hover: #413110;
 	--accent-red: #e8384f;
 	--font-ui: "Bahnschrift", "Segoe UI Semibold", "Arial Narrow", sans-serif;
+
+	--scrim-modal: rgb(0 0 0 / 0.65);
+	--scrim-sidebar: rgb(0 0 0 / 0.55);
+
+	--z-base: 1;
+	--z-sticky: 20;
+	--z-sidebar-scrim: 55;
+	--z-sidebar: 60;
+	--z-modal: 80;
+	--z-tooltip: 200;
+	--z-toast: 1000;
 }
 
 * { box-sizing: border-box; }
@@ -25,9 +36,9 @@ body {
 	font-family: var(--font-ui);
 }
 
-body:has(input[type="color"]:focus) *,
-body:has(input[type="color"]:active) * {
-	transition: none !important;
+.theme-swatches:has(input[type="color"]:focus) *,
+.theme-swatches:has(input[type="color"]:active) * {
+	transition: none;
 }
 
 button, input {
@@ -243,7 +254,7 @@ input[type="checkbox"]:checked::before {
 	font-size: 12px;
 	line-height: 1.4;
 	padding: 10px 12px;
-	z-index: 20;
+	z-index: var(--z-sticky);
 	pointer-events: none;
 }
 
@@ -283,7 +294,7 @@ input[type="checkbox"]:checked::before {
 	font-size: 12px;
 	white-space: nowrap;
 	pointer-events: none;
-	z-index: 1000;
+	z-index: var(--z-toast);
 	opacity: 0;
 	visibility: hidden;
 	transition: opacity 0.1s;
@@ -291,25 +302,6 @@ input[type="checkbox"]:checked::before {
 
 .global-tooltip.visible { opacity: 1; visibility: visible; }
 
-.scroll-top-btn {
-	position: fixed;
-	bottom: 24px;
-	right: 24px;
-	width: 44px;
-	height: 44px;
-	display: none; 
-	align-items: center;
-	justify-content: center;
-	background: var(--panel);
-	border: 1px solid var(--accent-color);
-	color: var(--accent-color);
-	font-size: 18px;
-	z-index: 50;
-	transition: background 0.15s, color 0.15s;
-}
-
-.scroll-top-btn.visible { display: flex; }
-.scroll-top-btn:hover { background: var(--accent-color); color: var(--bg); }
 
 .progress-label {
 	font-size: 12px;
@@ -352,7 +344,12 @@ input[type="checkbox"]:checked::before {
 	border-left: 3px solid transparent;
 	cursor: pointer;
 	content-visibility: auto;
+	contain-intrinsic-size: auto 40px;
 }
+
+.item-row--static { cursor: default; }
+.item-row--static:hover { background: var(--panel); }
+.item-row--static.owned:hover { background: var(--item-owned); }
 
 .item-row:hover {
 	background: var(--panel-hover);
@@ -548,7 +545,7 @@ input[type="checkbox"]:checked::before {
 	background: var(--panel);
 	border: 1px solid var(--border);
 	overflow-y: auto;
-	z-index: 200;
+	z-index: var(--z-tooltip);
 	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
 }
 
@@ -619,7 +616,7 @@ input[type="checkbox"]:checked::before {
 	position: sticky;
 	top: 0;
 	background: var(--panel);
-	z-index: 1;
+	z-index: var(--z-base);
 }
 
 .nav-item {
@@ -804,8 +801,8 @@ input[type="checkbox"]:checked::before {
 	display: none;
 	position: fixed;
 	inset: 0;
-	background: rgba(0, 0, 0, 0.65);
-	z-index: 80; 
+	background: var(--scrim-modal);
+	z-index: var(--z-modal);
 	align-items: self-start;
 	justify-content: center;
 	padding: 24px;
@@ -896,16 +893,9 @@ input[type="checkbox"]:checked::before {
 }
 
 #sync-key {
-	color: transparent;
-	text-shadow: 0 0 5px rgb(255 255 255);
 	background: none;
 	border: 0;
 	padding: 4px;
-}
-
-#sync-key:hover {
-	color: var(--text);
-	text-shadow: none;
 }
 
 .sync-row {
@@ -1022,7 +1012,7 @@ input[type="checkbox"]:checked::before {
 	flex-direction: column;
 	align-items: center;
 	gap: 8px;
-	z-index: 1000;
+	z-index: var(--z-toast);
 	width: max-content;
 	max-width: calc(100vw - 32px);
 }
@@ -1075,7 +1065,7 @@ input[type="checkbox"]:checked::before {
 		max-height: 100vh;
 		max-height: 100dvh;
 		overflow: hidden;
-		z-index: 60;
+		z-index: var(--z-sidebar);
 		transform: translateX(-100%);
 		transition: transform 0.2s ease;
 	}
@@ -1086,8 +1076,8 @@ input[type="checkbox"]:checked::before {
 		display: block;
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.55);
-		z-index: 55;
+		background: var(--scrim-sidebar);
+		z-index: var(--z-sidebar-scrim);
 	}
 
 	.main-content { padding: 16px 16px 0; }
@@ -1111,7 +1101,17 @@ input[type="checkbox"]:checked::before {
 	.search-wrap { flex: 1; min-width: 0; }
 	.category-help-tooltip { width: min(240px, 70vw); }
 
-	.scroll-top-btn { bottom: 16px; right: 16px; width: 40px; height: 40px; }
-
 	.item-list { grid-template-columns: 1fr; }
+}
+.sync-key-row {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.sync-key-row label {
+	font-size: 12px;
+	letter-spacing: 0.5px;
+	text-transform: uppercase;
 }
