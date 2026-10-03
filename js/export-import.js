@@ -46,17 +46,23 @@ WF.exportImport = (function () {
     const text = await file.text();
     const payload = JSON.parse(text);
 
-    if (!isValidPayload(payload)) throw new Error("Invalid payload format");
+    if (!isValidPayload(payload)) {
+      const errorLabel = "Invalid payload format";
+      WF.logs.AddLog(errorLabel)
+      throw new Error(errorLabel);
+    }
 
     if (payload.schema_version >= WF.SCHEMA_VERSION) {
-      WF.toast.show(`Imported file come from a higher version and is not compatible with this version, please update.`, { type: "error", timeoutMs: 5000 });
-      console.warn(`Imported file schema version (${payload.schema_version}) differs from expected (${WF.SCHEMA_VERSION}).`);
+      const errorLabel = `Imported file schema version (${payload.schema_version}) differs from expected (${WF.SCHEMA_VERSION}).`;
+      WF.toast.show(errorLabel, { type: "error", timeoutMs: 5000 });
+      WF.logs.AddLog(errorLabel);
     }
 
     WF.storage.save(payload.progress);
 
     if (payload.options && typeof payload.options === "object") {
       WF.options.save({ ...WF.options.load(), ...payload.options });
+      WF.logs.AddLog("Options replaced during import process.");
     }
   }
 

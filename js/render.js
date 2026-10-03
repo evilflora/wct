@@ -539,6 +539,7 @@ WF.render = (function () {
     btn.disabled = visibleItems.length === 0;
     btn.addEventListener("click", () => {
       WF.storage.setOwnedBulk(visibleItems.map((item) => item.item_name), !allOwned);
+      WF.logs.AddLog(`Bulk checked status for ${visibleItems.length} items in ${WF.CATEGORY[activeCategory].label} is now ${!allOwned}.`)
       renderAll();
     });
     container.appendChild(btn);
@@ -727,16 +728,18 @@ WF.render = (function () {
       const checkbox = event.target.closest(".item-checkbox-hidden");
       if (!checkbox) return;
 
-      const itemName = checkbox.dataset.itemName;
+      const uniqueName = checkbox.dataset.itemName;
       const isChecked = checkbox.checked;
       const row = checkbox.closest(".item-row");
 
-      WF.storage.setOwned(itemName, isChecked);
+      WF.storage.setOwned(uniqueName, isChecked);
 
       if (hideChecked && isChecked) {
         if (row) row.remove();
       } else if (row) {
         row.classList.toggle("owned", isChecked);
+        const item = WF.data.find((item) => item.item_name.includes(uniqueName));
+        WF.logs.AddLog(`"${item.display_name.en}" checked status is now ${isChecked}.`)
       }
 
       updateUIFast(lastRenderedPool);

@@ -879,6 +879,53 @@ input[type="checkbox"]:checked::before {
 	margin: 0 0 8px;
 }
 
+.logs-body {
+  overflow-y: auto;
+}
+
+.logs-body {
+  overflow-y: auto;
+}
+
+.logs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.logs-table th {
+  text-align: left;
+  color: var(--accent-color);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logs-table td {
+  padding: 6px 2px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  text-align: left;
+}
+
+.logs-table th:nth-child(1),
+.logs-table td:nth-child(1),
+.logs-table th:nth-child(2),
+.logs-table td:nth-child(2) {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.logs-table th:last-child,
+.logs-table td:last-child {
+  width: auto;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-all;
+}
+
 #info-changelog-list {
 	list-style: none;
 	margin: 0;
@@ -934,18 +981,6 @@ input[type="checkbox"]:checked::before {
 	text-transform: uppercase;
 	letter-spacing: 0.5px;
 }
-
-.theme-reset-btn {
-	border: 1px solid var(--border);
-	font-weight: 600;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
-	font-size: 12px;
-	padding: 7px 14px;
-	transition: border-color 0.15s, color 0.15s;
-}
-
-.theme-reset-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
 
 .delete-data-btn {
 	border: 1px solid var(--accent-red);

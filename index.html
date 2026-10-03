@@ -18,6 +18,7 @@
 	<link rel="stylesheet" href="css/min/style.min.css" />
 	<link rel="icon" type="image/x-icon" href="img/favicon.ico">
 	<script src="js/min/constants.min.js"></script>
+	<script src="js/min/logs.min.js"></script>
 	<script type="application/ld+json">
 	{
 		"@context": "https://schema.org",
@@ -243,41 +244,13 @@
 				</section>
 				<section>
 					<h3>Theme</h3>
-					<div class="theme-swatches">
-						<label class="theme-swatch" data-var="--bg">
-							<input type="color" />
-							<span class="theme-swatch-label">Background</span>
-						</label>
-						<label class="theme-swatch" data-var="--panel">
-							<input type="color" />
-							<span class="theme-swatch-label">Panel</span>
-						</label>
-						<label class="theme-swatch" data-var="--panel-hover">
-							<input type="color" />
-							<span class="theme-swatch-label">Panel Hover</span>
-						</label>
-						<label class="theme-swatch" data-var="--border">
-							<input type="color" />
-							<span class="theme-swatch-label">Border</span>
-						</label>
-						<label class="theme-swatch" data-var="--text">
-							<input type="color" />
-							<span class="theme-swatch-label">Text</span>
-						</label>
-						<label class="theme-swatch" data-var="--item-owned">
-							<input type="color" />
-							<span class="theme-swatch-label">Item Owned</span>
-						</label>
-						<label class="theme-swatch" data-var="--item-owned-hover">
-							<input type="color" />
-							<span class="theme-swatch-label">Item Owned Hover</span>
-						</label>
-						<label class="theme-swatch" data-var="--accent-color">
-							<input type="color" />
-							<span class="theme-swatch-label">Accent</span>
-						</label>
-					</div>
-					<button type="button" id="btn-theme-reset" class="theme-reset-btn">Reset to default</button>
+					<div class="theme-swatches"></div>
+					<button type="button" id="btn-theme-reset" class="toolbar-btn-main">Reset to default</button>
+				</section>
+				<section>
+					<h3>Logs / History</h3>
+					<p>Allow you to see your last actions, notifications (errors, warnings and success) and some background/hidden informations.</p>
+					<button id="btn-logs-open" class="toolbar-btn-main" data-default-label="SHOW LOGS">SHOW LOGS</button>
 				</section>
 				<section>
 					<h3>Danger Zone</h3>
@@ -287,34 +260,45 @@
 			</div>
 		</div>
 	</div>
-<div id="welcome-overlay" class="info-overlay">
-	<div class="info-modal">
-		<div class="info-modal-header">
-			<h2>Welcome to Warframe Completion Tracker</h2>
-			<button id="btn-welcome-close" class="info-close-btn" aria-label="Close welcome">&times;</button>
-		</div>
-		<div class="info-modal-body">
-			<section>
-				<h3>What is this?</h3>
-				<p>This tool lets you track (almost) everything you've obtained in Warframe: Warframes, weapons, mods, companions, arcanes, honorias, ... that were freely accessible through login or gameplay.</p>
-				<p>So, no Twitch rewards, no redeem codes, no console exclusives, no Platinum-only market items, and no rewards from the Warframe website.</p>
-				<p>Please remember, data may be incorrect or not up to date. <a href="https://github.com/evilflora/wct/issues" target="_blank" rel="noopener noreferrer">Discussion area on GitHub.</a></p>
-			</section>
-			<section>
-				<h3>How it works</h3>
-				<p>Click on any item to mark it as owned. Your progress is saved automatically in this browser's local storage, nothing is sent anywhere unless you use SYNC.</p>
-				<p style="color:red">Do not clear the cache of the browser, or you will lose everything (unless you exported it or synced it).</p>
-			</section>
-			<section>
-				<h3>Main features</h3>
-				<p><b>[&#9823;] SYNC</b> synchronise your progress across devices using a secret key.</p>
-				<p><b>[&gt;&gt;] STATS</b> detailed breakdown of your Mastery, progression and Endo spent.</p>
-				<p><b>[?] INFO</b> changelog, credits and project links (this guide is reachable from there).</p>
-				<p><b>[&#9881;] OPTIONS</b> export/import your data, customise the theme, or add Founder/Conclave exclusive items.</p>
-			</section>
+	<div id="welcome-overlay" class="info-overlay">
+		<div class="info-modal">
+			<div class="info-modal-header">
+				<h2>Welcome to Warframe Completion Tracker</h2>
+				<button id="btn-welcome-close" class="info-close-btn" aria-label="Close welcome">&times;</button>
+			</div>
+			<div class="info-modal-body">
+				<section>
+					<h3>What is this?</h3>
+					<p>This tool lets you track (almost) everything you've obtained in Warframe: Warframes, weapons, mods, companions, arcanes, honorias, ... that were freely accessible through login or gameplay.</p>
+					<p>So, no Twitch rewards, no redeem codes, no console exclusives, no Platinum-only market items, and no rewards from the Warframe website.</p>
+					<p>Please remember, data may be incorrect or not up to date. <a href="https://github.com/evilflora/wct/issues" target="_blank" rel="noopener noreferrer">Discussion area on GitHub.</a></p>
+				</section>
+				<section>
+					<h3>How it works</h3>
+					<p>Click on any item to mark it as owned. Your progress is saved automatically in this browser's local storage, nothing is sent anywhere unless you use SYNC.</p>
+					<p style="color:red">Do not clear the cache of the browser, or you will lose everything (unless you exported it or synced it).</p>
+				</section>
+				<section>
+					<h3>Main features</h3>
+					<p><b>[&#9823;] SYNC</b> synchronise your progress across devices using a secret key.</p>
+					<p><b>[&gt;&gt;] STATS</b> detailed breakdown of your Mastery, progression and Endo spent.</p>
+					<p><b>[?] INFO</b> changelog, credits and project links (this guide is reachable from there).</p>
+					<p><b>[&#9881;] OPTIONS</b> export/import your data, customise the theme, or add Founder/Conclave exclusive items.</p>
+				</section>
+			</div>
 		</div>
 	</div>
-</div>
+	<div id="logs-overlay" class="info-overlay">
+		<div class="info-modal">
+			<div class="info-modal-header">
+				<h2>Logs / History</h2>
+				<button id="btn-logs-close" class="info-close-btn" aria-label="Close list">&times;</button>
+			</div>
+			<div class="info-modal-body">
+				
+			</div>
+		</div>
+	</div>
 	<div id="item-list-overlay" class="info-overlay">
 		<div class="info-modal">
 			<div class="info-modal-header">

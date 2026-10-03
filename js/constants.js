@@ -6,14 +6,14 @@ window.WF = WF;
 WF.SCHEMA_VERSION = 1;
 
 WF.THEME_DEFAULTS = {
-	"--bg": "#060000",
-	"--panel": "#0f151b",
-	"--panel-hover": "#161f27",
-	"--border": "#23303a",
-	"--text": "#e6ecf1",
-	"--item-owned": "#1a140c",
-	"--item-owned-hover": "#413110",
-	"--accent-color": "#bea966",
+	"--bg":								{ color: "#060000", label: "Background" },
+	"--panel":						{ color: "#0f151b", label: "Panel" },
+	"--panel-hover":			{ color: "#161f27", label: "Panel Hover" },
+	"--border":						{ color: "#23303a", label: "Border"},
+	"--text":							{ color: "#e6ecf1", label: "Text" },
+	"--item-owned":				{ color: "#1a140c", label: "Item Owned" },
+	"--item-owned-hover":	{ color: "#413110", label: "Item Owned Hover" },
+	"--accent-color":			{ color: "#bea966", label: "Accent" },
 };
 WF.HEX_COLOR  = /^#[0-9a-f]{6}$/i;
 
@@ -121,9 +121,9 @@ WF.TYPES = {
 	ship_decoration:				{ zariman: "Zariman" },
 	signa:									{ event: "Event", nightwave: "Nightwave", baro: "Baro Ki'Teer", hunhow: "Hunhow" },
 	skin_type:							{ skin: "Skin", helmet: "Helmet", animation: "Animation", wing: "Wings", mask: "Mask", tail: "Tail", plate: "Plates", guard: "Guard", armor: "Armor", holster: "Holster", sleeve: "Sleeves", legging: "Leggings", hood: "Hood", ink: "Ink", oculus: "Oculus", pauldron: "Pauldrons", suit: "Suit", greaves: "Greaves" },
-	skin_other:							{ livery: "Livery" },
-	somachord:							{ baro: "Baro Ki'Teer", aoi: "Aoi", fragment: "Fragment", hunhow: "Hunhow", aspirant: "Aspirant Zorba", varzia: "Varzia", awakening: "Awakening Quest", teshin: "Teshin", koumei: "Koumei's Shrine" },
-	trophy:									{ mastery: "Mastery", planet: "Planets", fish: "Fish" },
+	skin_other:							{ livery: "Livery", landing: "Landing Craft" },
+	somachord:							{ baro: "Baro Ki'Teer", aoi: "Aoi", fragment: "Fragment", hunhow: "Hunhow", aspirant: "Aspirant Zorba", varzia: "Varzia", awakening: "Awakening Quest", teshin: "Teshin", koumei: "Koumei's Shrine",  melica: "Melica"},
+	trophy:									{ mastery: "Mastery", planet: "Planets", fish: "Fish", zariman: "Zariman" },
 	trophy_fish:						{ poe: "Plain Of Eidolon", ov: "Orb Vallis", cd: "Cambion Drift" },
 	vehicle:								{ archwing: "archwing", necramech: "necramech", plexus: "plexus", kdrive: "k-drive" },
 	weapon:									{ primary: "primary", secondary: "secondary", melee: "melee" },
@@ -266,6 +266,7 @@ WF.PROJECT_SRC = "https://github.com/evilflora/wct";
 WF.PROJECT_URL = "https://evilflora.github.io/wct/";
  
 WF.CHANGELOG = [
+	{ date: "2026/10/03 00:00:00", version: "44.0.3", text: `Added logs/history (in OPTIONS).<br>Items that were handmade (e.g. some fish trophies) are now replaced by official WFCD data. Your saved progress is migrated automatically, so nothing is lost.<br>WFCD no longer provides all.json: the data generator now downloads each required file, merges them, then generates the data.<br>Added new items for Iceblade of Narin` },
 	{ date: "2026/09/21 00:00:00", version: "43.5.4", text: `New password-style field for the sync key, making it hidden by default instead of plain text.<br>New option to include a secret key when exporting your data.<br>Sync logic (upload/download/connection) was reworked, so behavior around syncing may feel different.<br>The app will now notify you if the sync data on the server is newer than what's on your device.<br>The delete data button now removes data one step earlier, so deletion may feel more immediate/aggressive than before.<br>Buttons are now disabled while an action is processing, preventing accidental double-clicks.<br>Numbers are now displayed with correct formatting across several screens (main data, mastery).<br>Theme color keys and values are now validated, so invalid custom colors get filtered out instead of silently breaking the theme.<br>Orphaned data items are now kept/pruned instead of being deleted outright, reducing risk of unexpected data loss.`},
 	{ date: "2026/09/14 00:00:00", version: "43.5.4", text: `Added item list to mastery breakdown for each category.</br>Added item badges to mastery breakdown and options with items list.</br>Added missing sigil "Teralyst Prominence Sigil".`},
 	{ date: "2026/09/08 00:00:00", version: "43.5.4", text: `Fixed infinite update notification.</br>Item badges are easier to show on mobile (X, H, V).` },

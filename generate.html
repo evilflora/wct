@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-	<meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file: 'unsafe-inline' https://www.gstatic.com; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data:; connect-src 'self' file: https://www.gstatic.com https://firestore.googleapis.com https://*.googleapis.com https://evilflora.github.io/wct/js/version.js; font-src 'self' file:; base-uri 'none'; form-action 'none'" />
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file: 'unsafe-inline' https://www.gstatic.com; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data:; connect-src 'self' file: https://www.gstatic.com https://firestore.googleapis.com https://*.googleapis.com https://evilflora.github.io/wct/js/version.js https://api.github.com https://raw.githubusercontent.com; font-src 'self' file:; base-uri 'none'; form-action 'none'" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Data Generator</title>
 	<link rel="stylesheet" href="css/min/style.min.css" />
@@ -17,35 +17,39 @@
   <main id="app">
     <div class="generate-panel">
       <div class="panel-col-left">
-        <p class="step-label">1. README</p>
-        <div class="info-modal-body">
-          <section>
-            <p>If you don't know what you're doing, PLEASE do nothing.</p>
-            <p>Download the newest version from GitHub if you're afraid of doing something wrong, do nothing.</p>
-          </section>
-          <section>
-            <p>You can update data yourself by following these steps:</p>
-            <p>a. Download <a href="https://github.com/WFCD/warframe-items/blob/master/data/json/All.json" target="_blank" rel="noopener noreferrer">All.json from GitHub (by WFCD)</a></p>
-            <p>b. Select the downloaded file in section <b>2.</b>, the status message will be shown below the file input</p>
-            <p>c. Result will be shown in <b>3.</b>, if no error is indicated, you can now copy the <b>whole</b> result and replace the content of the file js/data/data_generated.js</p>
-          </section>
-        </div>
-
-        <p class="step-label">2. Select the raw JSON file</p>
-        <label class="file-label" for="raw-file-input">
-          <input type="file" id="raw-file-input" accept="application/json" />
-        </label>
-
-        <p id="file-status" class="file-status">No file loaded.</p>
+        <section class="info-generate">
+          <h3>1. README</h3>
+          <p>If you don't know what you're doing, PLEASE do nothing.</p>
+          <p>Download the newest version from GitHub (so you need to have an internet connection). If you're afraid of doing something wrong, do nothing.</p>
+          <p>You can update data yourself by following these steps:</p>
+          <li>
+          <ul><p>a. Click <b>Fetch and generate</b> in section <b>2.</b>: most JSON file of <a href="https://github.com/WFCD/warframe-items/tree/master/data/json" target="_blank" rel="noopener noreferrer">WFCD/warframe-items - data/json</a> is downloaded in your browser and merged (excluded files are skipped)</p></ul>
+          <ul><p>b. Result will be shown in <b>3.</b>, if no error is indicated, you can now copy the <b>whole</b> result and replace the content of the file js/data/data_generated.js</p></ul>
+          </li>
+          
+          <p>Data is community-maintained by WFCD, not an official Digital Extremes export.</p>
+        </section>
+        <section class="info-generate">
+          <h3>2. Generate</h3>
+          <div class="generator-buttons">
+            <button id="btn-generate" class="generator-btn" type="button">Fetch and generate</button>
+          </div>
+          <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+          <p id="file-status" class="file-status" role="status" aria-live="polite"></p>
+        </section>
       </div>
 
       <div class="panel-col-right">
-        <p class="step-label">3. Result (paste into js/data/data_generated.js)</p>
-        <textarea id="output-area" class="output-area" readonly placeholder="Generated code will appear here..."></textarea>
-        <div class="output-actions">
-          <button id="btn-clear-output" class="toolbar-btn">Clear result</button>
-          <button id="btn-copy-output" class="toolbar-btn">Copy</button>
-        </div>
+        <section class="info-generate">
+          <h3>3. Result (paste into js/data/data_generated.js)</h3>
+          <textarea id="output-area" class="output-area" readonly placeholder="Generated code will appear here..."></textarea>
+          <div class="output-actions">
+            <button id="btn-clear-output" class="toolbar-btn" type="button">Clear result</button>
+            <button id="btn-copy-output" class="toolbar-btn" type="button">Copy</button>
+            <button id="btn-download-raw" class="toolbar-btn" type="button" disabled>Download raw</button>
+            <button id="btn-download-result" class="toolbar-btn" type="button" disabled>Download result</button>
+          </div>
+        </section>
       </div>
     </div>
   </main>

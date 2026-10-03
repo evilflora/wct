@@ -15,7 +15,12 @@ WF.theme = (function () {
 
   function apply(colors) {
     const safeColors = sanitizeColors(colors);
-    CSS_VARS.forEach((cssVar) => document.documentElement.style.setProperty(cssVar, safeColors[cssVar] || WF.THEME_DEFAULTS[cssVar]));
+    CSS_VARS.forEach((cssVar) => {
+      document.documentElement.style.setProperty(
+        cssVar, 
+        safeColors[cssVar] || WF.THEME_DEFAULTS[cssVar].color
+      );
+    });
   }
 
   function init() {
@@ -23,7 +28,7 @@ WF.theme = (function () {
   }
 
   function setColor(cssVar, hexValue) {
-    if (!CSS_VARS.includes(cssVar) || !HEX_COLOR.test(hexValue)) return;
+    if (!CSS_VARS.includes(cssVar) || !WF.HEX_COLOR.test(hexValue)) return;
     const options = WF.options.load();
     const themeColors = { ...(options.themeColors || {}), [cssVar]: hexValue };
     WF.options.save({ ...options, themeColors });
@@ -37,7 +42,7 @@ WF.theme = (function () {
 
   function getColor(cssVar) {
     const themeColors = sanitizeColors(WF.options.load().themeColors);
-    return themeColors[cssVar] || WF.THEME_DEFAULTS[cssVar];
+    return themeColors[cssVar] || WF.THEME_DEFAULTS[cssVar].color;
   }
 
   return { CSS_VARS, apply, init, setColor, reset, getColor, sanitizeColors };

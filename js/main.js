@@ -2,6 +2,7 @@
 
 document.addEventListener("DOMContentLoaded", function () {
 	WF.theme.init();
+	WF.logs.AddLog("Application started");
 	
 	const WELCOME_SEEN_KEY = "wf_checklist_welcome_seen";
 	
@@ -15,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	const sidebar									= getEl("sidebar");
 	const sidebarOverlay					= getEl("sidebar-overlay");
+	const sidebarToggleBtn        = getEl("btn-sidebar-toggle");
 	const syncOverlay							= getEl("sync-overlay");
 	const syncKey									= getEl("sync-key");
 	const syncActionBtn						= getEl("btn-sync-action");
@@ -32,8 +34,12 @@ document.addEventListener("DOMContentLoaded", function () {
 	const includeFounderCheckbox	= getEl("opt-include-founder-pack-exclusive");
 	const includePvpItemsCheckbox	= getEl("opt-include-pvp-mods");
 	const importFileInput					= getEl("import-file-input");
-	const themeSwatches						= document.querySelectorAll(".theme-swatch");
 	const welcomeOverlay					= getEl("welcome-overlay");
+	const syncKeyRevealBtn				= getEl("btn-sync-key-reveal");
+	const itemListOverlay					= getEl("item-list-overlay");
+	const itemListTitle						= getEl("item-list-title");
+	const itemListBody						= getEl("item-list-body");
+	const logsOverlay             = getEl("logs-overlay");
 
 	const toggleOverlay = (overlay, show) => overlay.classList.toggle("visible", show);
 	
@@ -91,8 +97,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		if (localStorage.getItem(WELCOME_SEEN_KEY)) return;
 		openWelcome();
 	}
-
-	const sidebarToggleBtn = getEl("btn-sidebar-toggle");
 
 	function openSidebar() {
 		sidebar.classList.add("open");
@@ -194,7 +198,9 @@ document.addEventListener("DOMContentLoaded", function () {
 			WF.toast.show(`Your save is too large to be synced (250 KB limit).`, { type: "error" });
 			return;
 		}
+
 		WF.toast.show(fallbackMessage, { type: "error" });
+		WF.logs.AddLog(fallbackMessage)
 	}
 
 	syncActionBtn.addEventListener("click", () => withBusyButton(syncActionBtn, async () => {
@@ -259,7 +265,6 @@ document.addEventListener("DOMContentLoaded", function () {
 			WF.toast.show(`Data successfully sent.`, { type: "success" });
 		} catch (err) {
 			if (err.message === "REMOTE_AHEAD") {
-				WF.toast.show(`Cloud data is newer than this device. DOWNLOAD first, or confirm to overwrite it.`, { timeoutMs: 0, type: "error", key: "wf-sync-conflict" });
 				if (!confirm("The cloud save was modified on another device after your last sync.\n\nOverwrite it with THIS device's data? The other device's changes will be lost.")) return;
 				try {
 					await sync.pushData(options.syncKey, { force: true });
@@ -274,7 +279,8 @@ document.addEventListener("DOMContentLoaded", function () {
 	}));
 
 	syncDisconnectBtn.addEventListener("click", () => {
-		if (!confirm("Are you sure you want to disconnect? The key will be lost if it is not manually saved.")) return;
+		const msgLabel = "Are you sure you want to disconnect? The key will be lost if it is not manually saved.";
+		if (!confirm(msgLabel)) return;
 
 		const updatedOptions = { ...WF.options.load() };
 		delete updatedOptions.syncKey;
@@ -282,16 +288,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		syncKey.value = "";
 		updateSyncUIState();
-		WF.toast.show(`Disconnected. Local data preserved.`, { type: "success" });
+		msgLabel = "Disconnected, key removed. Local data preserved.";
+		WF.toast.show(msgLabel, { type: "success" });
+		WF.logs.AddLog(msgLabel)
 	});
 
 	syncDeleteBtn.addEventListener("click", () => withBusyButton(syncDeleteBtn, async () => {
 		if (!checkRealServer()) return;
 		const options = WF.options.load();
 		const currentKey = options.syncKey;
+		const msgLabel = "Are you sure you want to remove this key and delete all cloud data?";
 
 		if (!currentKey) return;
-		if (!confirm("Are you sure you want to remove this key and delete all cloud data?")) return;
+		if (!confirm(msgLabel)) return;
 
 		const sync = await requireSync();
 		if (!sync) return;
@@ -305,13 +314,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
 			syncKey.value = "";
 			updateSyncUIState();
-			WF.toast.show(`Key removed and cloud data deleted.`, { type: "success" });
+
+			msgLabel = "Key removed and cloud data deleted.";
+			WF.toast.show(msgLabel, { type: "success" });
+			WF.logs.AddLog(msgLabel)
 		} catch (err) {
-			reportSyncError(err, `Error deleting key and cloud data.`, "DELETE");
+			msgLabel = "Error deleting key and cloud data.";
+			reportSyncError(err, msgLabel, "DELETE");
 		}
 	}));
 
-	const syncKeyRevealBtn = getEl("btn-sync-key-reveal");
 	syncKeyRevealBtn.addEventListener("click", () => {
 		const isRevealed = syncKey.type === "text";
 		syncKey.type = isRevealed ? "password" : "text";
@@ -387,6 +399,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		if (deleteClickCount > CONFIRM_STEPS.length) {
 			WF.storage.clearAll();
 			location.reload();
+			WF.logs.AddLog("All data are deleted.")
 			return;
 		}
 
@@ -406,6 +419,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			closeStats();
 			closeOptions();
 			closeWelcome();
+			closeLogs();
 		}
 	});
 
@@ -506,6 +520,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			const th = document.createElement("th");
 			th.scope = "col";
 			th.textContent = label;
+			th.className = "nav-group-label";
 			tr.appendChild(th);
 		});
 		thead.appendChild(tr);
@@ -561,12 +576,25 @@ document.addEventListener("DOMContentLoaded", function () {
 		table.append(thead, tbody);
 	};
 
-	function openBreakdownItemList(groupIndex, rowIndex, label) {
-		const matching = WF.mastery.getGroupRowItems(groupIndex, rowIndex).filter((item) => WF.mastery.itemMasteryXp(item) > 0);
-		itemListTitle.textContent = `${label} (${matching.length})`;
-		WF.render.renderFlagList(itemListBody, matching);
-		toggleOverlay(itemListOverlay, true);
-	}
+	function openItemListGeneric(title, matching) {
+    itemListTitle.textContent = `${title} (${matching.length})`;
+    toggleOverlay(itemListOverlay, true);
+    WF.render.renderFlagList(itemListBody, matching);
+    
+    requestAnimationFrame(() => {
+      itemListBody.scrollTop = 0;
+    });
+  }
+
+  function openItemList(title, flagField) {
+    const matching = WF.data.filter((item) => item[flagField]);
+    openItemListGeneric(title, matching);
+  }
+
+  function openBreakdownItemList(groupIndex, rowIndex, title) {
+    const matching = WF.mastery.getGroupRowItems(groupIndex, rowIndex).filter((item) => WF.mastery.itemMasteryXp(item) > 0);
+    openItemListGeneric(title, matching);
+  }
 
 	function renderMasteryBreakdown() {
 		const container = getEl("mastery-breakdown");
@@ -658,17 +686,108 @@ document.addEventListener("DOMContentLoaded", function () {
 		table.append(thead, tbody);
 	}
 
+	function renderLogs() {
+		const body = logsOverlay.querySelector(".info-modal-body");
+		body.replaceChildren();
+
+		const logs = WF.logs.GetLogs();
+
+		if (logs.length === 0) {
+			const empty = document.createElement("p");
+			empty.textContent = "No logs.";
+			body.appendChild(empty);
+			return;
+		}
+
+		const container = document.createElement("div");
+		container.className = "logs-body";
+
+		const table = document.createElement("table");
+		table.className = "logs-table";
+
+		const thead = buildTableHead(["Date", "Message"]);
+		const tbody = document.createElement("tbody");
+		const fragment = document.createDocumentFragment();
+
+		for (const log of logs) {
+			appendTableRow(fragment, [
+				new Date(log.Date).toLocaleString(),
+				log.Message
+			]);
+		}
+
+		tbody.appendChild(fragment);
+		table.append(thead, tbody);
+		container.appendChild(table);
+		body.appendChild(container);
+	}
+
+	function openLogs()
+	{
+		renderLogs();
+		toggleOverlay(logsOverlay, true);
+	}
+
+	function closeLogs()
+	{
+		toggleOverlay(logsOverlay, false);
+	}
+
+	getEl("btn-logs-open").addEventListener("click", openLogs);
+	getEl("btn-logs-close").addEventListener("click", closeLogs);
+
+	logsOverlay.addEventListener("click", (event) => {
+		if (event.target === logsOverlay) closeLogs();
+	});
+
 	function openOptions() {
 		const options = WF.options.load();
 		includeOptionsCheckbox.checked = options.includeOptionsInExport;
 		includeSyncKeyCheckbox.checked = options.includeSyncKeyInExport;
 		includeFounderCheckbox.checked = options.includeFounderItems;
 		includePvpItemsCheckbox.checked = options.includePvpItems;
-		themeSwatches.forEach((swatch) => {
-			const input = swatch.querySelector("input[type=color]");
-			if (input) input.value = WF.theme.getColor(swatch.dataset.var);
-		});
+
+		const themeContainer = optionsOverlay.querySelector(".theme-swatches");
+		renderThemeSwatches(themeContainer);
+
 		toggleOverlay(optionsOverlay, true);
+	}
+
+	function renderThemeSwatches(containerEl) {
+		if (!containerEl) return;
+		containerEl.replaceChildren();
+
+		const fragment = document.createDocumentFragment();
+
+		Object.entries(WF.THEME_DEFAULTS).forEach(([cssVar, themeConfig]) => {
+			const currentColor = WF.theme.getColor(cssVar);
+
+			const label = document.createElement("label");
+			label.className = "theme-swatch";
+			label.dataset.var = cssVar;
+
+			const input = document.createElement("input");
+			input.type = "color";
+			input.value = currentColor;
+
+			input.addEventListener("input", (e) => {
+				document.documentElement.style.setProperty(cssVar, e.target.value);
+			});
+			
+			input.addEventListener("change", (e) => {
+				WF.theme.setColor(cssVar, e.target.value);
+				WF.logs.AddLog(`Theme "${themeConfig.label}" changed to ${e.target.value}`);
+			});
+
+			const span = document.createElement("span");
+			span.className = "theme-swatch-label";
+			span.textContent = themeConfig.label;
+
+			label.append(input, span);
+			fragment.appendChild(label);
+		});
+
+		containerEl.appendChild(fragment);
 	}
 
 	function closeOptions() {
@@ -678,17 +797,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	getEl("btn-options-toggle").addEventListener("click", openOptions);
 	getEl("btn-options-close").addEventListener("click", closeOptions);
-	
-	const itemListOverlay = getEl("item-list-overlay");
-	const itemListTitle	 = getEl("item-list-title");
-	const itemListBody		= getEl("item-list-body");
-
-	function openItemList(title, flagField) {
-		const matching = WF.data.filter((item) => item[flagField]);
-		itemListTitle.textContent = `${title} (${matching.length})`;
-		WF.render.renderFlagList(itemListBody, matching);
-		toggleOverlay(itemListOverlay, true);
-	}
 
 	function closeItemList() {
 		toggleOverlay(itemListOverlay, false);
@@ -722,6 +830,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			includeSyncKeyCheckbox.checked = false;
 			WF.toast.show(`Include SYNC secret key is now disabled.`, { type: "info", timeoutMs: 5000 });
 		}
+		WF.logs.AddLog(`Save options when exporting is now ${includeOptionsCheckbox.checked}`);
 	});
 
 	includeSyncKeyCheckbox.addEventListener("change", () => {
@@ -732,47 +841,33 @@ document.addEventListener("DOMContentLoaded", function () {
 			includeSyncKeyCheckbox.checked = false;
 			WF.toast.show(`To export your SYNC key you need to enable "Save options when exporting" first.`, { type: "info", timeoutMs: 5000 });
 		}
-
+		WF.logs.AddLog(`Include the SYNC secret key in the export file is now ${includeSyncKeyCheckbox.checked}`);
 	});
 
 	includeFounderCheckbox.addEventListener("change", () => {
 		WF.options.save({ ...WF.options.load(), includeFounderItems: includeFounderCheckbox.checked });
+		WF.logs.AddLog(`Add Founder Exclusive items is now ${includeFounderCheckbox.checked}`);
 		WF.render.renderAll();
 		WF.mastery.render();
 	});
 	
 	includePvpItemsCheckbox.addEventListener("change", () => {
 		WF.options.save({ ...WF.options.load(), includePvpItems: includePvpItemsCheckbox.checked });
+		WF.logs.AddLog(`Add Conclave items is now ${includePvpItemsCheckbox.checked}`);
 		WF.render.renderAll();
 		WF.mastery.render();
 	});
 
-	themeSwatches.forEach((swatch) => {
-		const colorInput = swatch.querySelector("input[type=color]");
-		if (colorInput) {
-			const varName = swatch.dataset.var;
-
-			colorInput.addEventListener("input", (event) => {
-				document.documentElement.style.setProperty(varName, event.target.value);
-			});
-
-			colorInput.addEventListener("change", (event) => {
-				WF.theme.setColor(varName, event.target.value);
-			});
-		}
-	});
-
 	getEl("btn-theme-reset").addEventListener("click", () => {
 		WF.theme.reset();
-		themeSwatches.forEach((swatch) => {
-			const input = swatch.querySelector("input[type=color]");
-			if (input) input.value = WF.theme.getColor(swatch.dataset.var);
-		});
+		const themeContainer = optionsOverlay.querySelector(".theme-swatches");
+		renderThemeSwatches(themeContainer);
+		WF.logs.AddLog("Theme reset to default values.");
 	});
 
 	window.addEventListener("wf:progress-changed", WF.mastery.render);
-	WF.mastery.render();
 
+	WF.mastery.render();
 	WF.render.renderAll();
 	
 	initWelcome();

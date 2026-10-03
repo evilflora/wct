@@ -63,19 +63,12 @@ header p a:hover {
 .file-status {
   font-size: 13px;
   color: var(--accent-color);
-  margin: 0 0 24px;
+  margin: 8px 0 24px;
+  min-height: 32px;
+  white-space: pre-line;
 }
 
 .file-status.error { color: var(--accent-red); }
-
-.step-label {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  margin: 0 0 10px;
-}
 
 .generator-buttons {
   display: flex;
@@ -130,6 +123,46 @@ header p a:hover {
 }
 
 .toolbar-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
+
+.info-generate h3 {
+	font-size: 12px;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	color: var(--accent-color);
+	margin: 0 0 10px;
+}
+
+.info-generate p {
+	font-size: 13px;
+	line-height: 1.6;
+	margin: 0 0 8px;
+}
+
+.info-generate ul {
+  padding-left: 12px;
+}
+
+.lang-select {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  max-width: 260px;
+}
+
+.lang-select:disabled,
+.generator-btn:disabled,
+.toolbar-btn:disabled { opacity: 0.4; cursor: default; }
+
+.generator-btn:disabled:hover { background: transparent; color: var(--accent-color); }
+.toolbar-btn:disabled:hover { border-color: var(--border); color: var(--text-dim); }
+
+.output-actions { flex-wrap: wrap; }
+
+.progress-track { height: 4px; background: var(--panel); border: 1px solid var(--border); }
+.progress-fill { height: 100%; width: 0%; background: var(--accent-color); transition: width 0.2s ease; }
 
 @media (max-width: 768px) {
   .generate-panel {
