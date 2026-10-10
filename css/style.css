@@ -115,6 +115,14 @@ input[type="checkbox"]:checked::before {
 	background-color: var(--bg);
 }
 
+ul {
+	margin: 0;
+}
+
+.alert {
+	color: var(--accent-red);
+}
+
 #app:not(.main-content) {
 	max-width: 920px;
 	margin: 0 auto;
@@ -421,7 +429,6 @@ input[type="checkbox"]:checked::before {
 	align-items: center;
 	gap: 6px;
 	border: 1px solid var(--accent-color);
-	color: var(--accent-color);
 	font-weight: 700;
 	text-transform: uppercase;
 	letter-spacing: 1px;
@@ -879,6 +886,10 @@ input[type="checkbox"]:checked::before {
 	margin: 0 0 8px;
 }
 
+.info-modal-footer {
+	margin: 0 0 12px 12px;
+}
+
 .logs-body {
   overflow-y: auto;
 }
@@ -939,7 +950,7 @@ input[type="checkbox"]:checked::before {
 	display: none;
 }
 
-#sync-key {
+.sync-key {
 	background: none;
 	border: 0;
 	padding: 4px;
@@ -1021,6 +1032,11 @@ input[type="checkbox"]:checked::before {
 	padding-left: 2px;
 	font-size: 13px;
 	line-height: 1.6;
+}
+
+.changelog-entry-header .item-info-btn {
+	margin-left: auto;
+	margin-right: 4px;
 }
 
 .changelog-entry.expanded .changelog-entry-text { display: block; }

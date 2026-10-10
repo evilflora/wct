@@ -659,8 +659,7 @@ WF.render = (function () {
     row.appendChild(divInfos);
   }
 
-  function createItemRow(item, progress, { interactive = true } = {}) {
-    const owned = !!progress[item.item_name];
+  function createItemRowElement(item, { owned = false, interactive = true } = {}) {
     const row = document.createElement(interactive ? "label" : "div");
     row.className = "item-row" + (owned ? " owned" : "") + (interactive ? "" : " item-row--static");
 
@@ -669,7 +668,7 @@ WF.render = (function () {
       checkbox.type = "checkbox";
       checkbox.className = "item-checkbox-hidden";
       checkbox.checked = owned;
-      checkbox.dataset.itemName = item.item_name;
+      checkbox.dataset.itemName = item.item_name || item.name;
       row.appendChild(checkbox);
     }
 
@@ -677,12 +676,20 @@ WF.render = (function () {
     name.className = "item-name";
     const nameInner = document.createElement("span");
     nameInner.className = "item-name-inner";
-    nameInner.textContent = item.display_name.en;
+    nameInner.textContent = item.display_name?.en || item.displayName || item.name || "";
     name.appendChild(nameInner);
     row.appendChild(name);
 
-    appendBadges(row, item);
+    if (typeof appendBadges === "function") {
+      appendBadges(row, item);
+    }
+
     return row;
+  }
+
+  function createItemRow(item, progress, options = {}) {
+    const owned = !!(progress && item?.item_name && progress[item.item_name]);
+    return createItemRowElement(item, { ...options, owned });
   }
 
   function sortByDisplayName(items) {
@@ -969,6 +976,64 @@ WF.render = (function () {
 
     container.appendChild(fragment);
   }
+  
+  renderTableByName = function(container, itemsData) {
+    container.textContent = "";
 
-  return { renderAll, getCategoryStats, renderFlagList };
+    if (!container || !itemsData) return;
+
+    const fragment = document.createDocumentFragment();
+    const categories = ["new", "removed"];
+
+    categories.forEach((category) => {
+      const rawItems = itemsData[category] || [];
+      if (rawItems.length === 0) return;
+
+      // Normalize incoming string/object array
+      const normalizedItems = rawItems.map((item) => {
+        if (typeof item === "string") {
+          return {
+            name: item,
+            category,
+            display_name: { en: item }
+          };
+        }
+        return {
+          ...item,
+          category,
+          display_name: item.display_name || { en: item.name || "" }
+        };
+      });
+
+      // Sort items
+      let sortedItems = normalizedItems;
+      if (typeof sortByDisplayName === "function") {
+        try {
+          sortedItems = sortByDisplayName(normalizedItems);
+        } catch (err) {
+          sortedItems = normalizedItems.sort((a, b) =>
+            (a.display_name?.en || "").localeCompare(b.display_name?.en || "")
+          );
+        }
+      }
+
+      const header = document.createElement("div");
+      header.className = "nav-group-label";
+      header.textContent = `${typeof categoryLabel === "function" ? categoryLabel(category) : category} (${sortedItems.length})`;
+      fragment.appendChild(header);
+
+      const list = document.createElement("div");
+      list.className = "item-list";
+
+      sortedItems.forEach((item) => {
+        list.appendChild(createItemRowElement(item, { interactive: false }));
+      });
+
+      fragment.appendChild(list);
+    });
+
+    container.appendChild(fragment);
+  };
+
+  return { renderAll, getCategoryStats, renderFlagList, renderTableByName };
 })();

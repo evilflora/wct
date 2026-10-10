@@ -39,7 +39,9 @@ document.addEventListener("DOMContentLoaded", function () {
 	const itemListOverlay					= getEl("item-list-overlay");
 	const itemListTitle						= getEl("item-list-title");
 	const itemListBody						= getEl("item-list-body");
+	const itemListFooter					= getEl("item-list-footer");
 	const logsOverlay             = getEl("logs-overlay");
+	const importApiOverlay        = getEl("import-api-overlay");
 
 	const toggleOverlay = (overlay, show) => overlay.classList.toggle("visible", show);
 	
@@ -74,6 +76,27 @@ document.addEventListener("DOMContentLoaded", function () {
 	getEl("btn-import").addEventListener("click", () => {
 		if (!confirm("This will replace your entire current progress with the imported file. Continue?")) return;
 		importFileInput.click();
+	});
+
+	getEl("btn-import-api").addEventListener("click", () => {
+		openImportApi();
+	});
+
+	function openImportApi()
+	{
+		renderLogs();
+		toggleOverlay(importApiOverlay, true);
+	}
+
+	function closeImportApi()
+	{
+		toggleOverlay(importApiOverlay, false);
+	}
+
+	getEl("btn-import-api-close").addEventListener("click", closeImportApi);
+
+	importApiOverlay.addEventListener("click", (event) => {
+		if (event.target === importApiOverlay) closeImportApi();
 	});
 
 	importFileInput.addEventListener("change", async function (event) {
@@ -198,7 +221,6 @@ document.addEventListener("DOMContentLoaded", function () {
 			WF.toast.show(`Your save is too large to be synced (250 KB limit).`, { type: "error" });
 			return;
 		}
-
 		WF.toast.show(fallbackMessage, { type: "error" });
 		WF.logs.AddLog(fallbackMessage)
 	}
@@ -232,51 +254,83 @@ document.addEventListener("DOMContentLoaded", function () {
 	}));
 
 	syncPullBtn.addEventListener("click", () => withBusyButton(syncPullBtn, async () => {
-		if (!checkRealServer()) return;
-		const options = WF.options.load();
-		if (!options.syncKey) return;
+    if (!checkRealServer()) return;
+    const options = WF.options.load();
+    if (!options.syncKey) return;
 
-		const sync = await requireSync();
-		if (!sync) return;
+    const sync = await requireSync();
+    if (!sync) return;
 
-		try {
-			const remoteObj = await sync.pullData(options.syncKey);
-			if (remoteObj) {
-				applyRemoteData(remoteObj);
-				WF.toast.show(`Successfully downloaded cloud data.`, { type: "success" });
-			} else {
-				WF.toast.show(`No remote data found.`, { type: "error" });
-			}
-		} catch (err) {
-			reportSyncError(err, `Failed to download cloud data.`, "DOWNLOAD");
-		}
-	}));
+    const executePull = async (force = false) => {
+      try {
+        const remoteObj = await sync.pullData(options.syncKey, { force });
+        if (remoteObj) {
+          applyRemoteData(remoteObj);
+          WF.toast.show(`Successfully downloaded cloud data.`, { type: "success" });
+        } else {
+          WF.toast.show(`No remote data found.`, { type: "error" });
+        }
+      } catch (err) {
+        if (err.message === "PAYLOAD_VERSION_HIGHER") {
+          const confirmed = window.confirm(
+            `Cloud version is saved from a higher version number than local; you may lose data if you reupload this edited save.\n\nDo you still want to force download this data?`
+          );
+          if (confirmed) {
+            await executePull(true);
+            return;
+          } else {
+						reportSyncError(err, `Download canceled by the user, cloud version has a higher version number than local.`, "DOWNLOAD");
+						return;
+					}
+        }
+        reportSyncError(err, `Failed to download cloud data.`, "DOWNLOAD");
+      }
+    };
+
+    await executePull(false);
+  }));
 
 	syncPushBtn.addEventListener("click", () => withBusyButton(syncPushBtn, async () => {
-		if (!checkRealServer()) return;
-		const options = WF.options.load();
-		if (!options.syncKey) return;
+    if (!checkRealServer()) return;
+    const options = WF.options.load();
+    if (!options.syncKey) return;
 
-		const sync = await requireSync();
-		if (!sync) return;
+    const sync = await requireSync();
+    if (!sync) return;
 
-		try {
-			await sync.pushData(options.syncKey);
-			WF.toast.show(`Data successfully sent.`, { type: "success" });
-		} catch (err) {
-			if (err.message === "REMOTE_AHEAD") {
-				if (!confirm("The cloud save was modified on another device after your last sync.\n\nOverwrite it with THIS device's data? The other device's changes will be lost.")) return;
-				try {
-					await sync.pushData(options.syncKey, { force: true });
-					WF.toast.show(`Cloud data overwritten.`, { type: "success" });
-				} catch (forcedErr) {
-					reportSyncError(forcedErr, `Failed to send data.`, "UPLOAD");
-				}
-				return;
-			}
-			reportSyncError(err, `Failed to send data.`, "UPLOAD");
-		}
-	}));
+    const executePush = async (force = false) => {
+      try {
+        await sync.pushData(options.syncKey, { force });
+        WF.toast.show(`Data successfully sent.`, { type: "success" });
+      } catch (err) {
+        if (err.message === "PAYLOAD_VERSION_HIGHER") {
+          const confirmed = window.confirm(
+            `Cloud version is saved from a higher version number than local; you may lose data if you reupload this edited save.\n\nDo you still want to force upload and overwrite this data?`
+          );
+          if (confirmed) {
+            await executePush(true);
+            return;
+          } else {
+            reportSyncError(err, `Upload canceled by the user, cloud version has a higher version number than local.`, "UPLOAD");
+            return;
+          }
+        }
+        if (err.message === "REMOTE_AHEAD") {
+          if (!confirm("The cloud save was modified on another device after your last sync.\n\nOverwrite it with THIS device's data? The other device's changes will be lost.")) return;
+          try {
+            await sync.pushData(options.syncKey, { force: true });
+            WF.toast.show(`Cloud data overwritten.`, { type: "success" });
+          } catch (forcedErr) {
+            reportSyncError(forcedErr, `Failed to send data.`, "UPLOAD");
+          }
+          return;
+        }
+        reportSyncError(err, `Failed to send data.`, "UPLOAD");
+      }
+    };
+
+    await executePush(false);
+  }));
 
 	syncDisconnectBtn.addEventListener("click", () => {
 		const msgLabel = "Are you sure you want to disconnect? The key will be lost if it is not manually saved.";
@@ -459,6 +513,20 @@ document.addEventListener("DOMContentLoaded", function () {
 				body.appendChild(document.createTextNode(chunk));
 			});
 
+			if (entry.items && (entry.items.new?.length || entry.items.removed?.length)) {
+				const itemList = document.createElement("button");
+				itemList.type = "button";
+				itemList.className = "item-info-btn";
+				itemList.textContent = "Show item changes";
+
+				itemList.addEventListener("click", (e) => {
+					e.stopPropagation();
+					openNameListGeneric(`Item changes for update ${entry.date}`, entry.items)
+				});
+
+				header.appendChild(itemList);
+			}
+
 			li.append(header, body);
 			fragment.appendChild(li);
 		});
@@ -575,6 +643,16 @@ document.addEventListener("DOMContentLoaded", function () {
 		tbody.appendChild(fragment);
 		table.append(thead, tbody);
 	};
+
+	function openNameListGeneric(title, items) {
+		itemListTitle.textContent = `${title}`;
+		toggleOverlay(itemListOverlay, true);
+		WF.render.renderTableByName(itemListBody, items);
+		
+		requestAnimationFrame(() => {
+			itemListBody.scrollTop = 0;
+		});
+  }
 
 	function openItemListGeneric(title, matching) {
     itemListTitle.textContent = `${title} (${matching.length})`;
@@ -800,6 +878,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	function closeItemList() {
 		toggleOverlay(itemListOverlay, false);
+		itemListFooter.hidden = true; // Merge footer is only meant for the public profile preview
 	}
 
 	getEl("opt-show-founder-items").addEventListener("click", (event) => {
@@ -815,6 +894,33 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	getEl("btn-item-list-close").addEventListener("click", closeItemList);
+
+	// Previews the items a public profile merge would set as owned, reusing the item list overlay
+	window.addEventListener("wf:profile-merge-ready", (event) => {
+		const items = event.detail?.items ?? [];
+		if (items.length === 0) {
+			WF.toast.show("Nothing to merge: no new player items to set as owned.", { type: "info" });
+			return;
+		}
+		closeImportApi();
+		openItemListGeneric("Player items to be owned", items);
+		itemListFooter.hidden = false;
+	});
+
+	getEl("btn-item-list-merge").addEventListener("click", () => {
+		try {
+			const count = WF.exportImport.applyPendingMerge();
+			WF.render.renderAll();
+			WF.mastery.render();
+			WF.toast.show(`Merge successful: ${count} item(s) set as owned.`, { type: "success" });
+		} catch (error) {
+			console.error("Public profile merge failed.", error);
+			WF.logs.AddLog(`Public profile merge failed: ${error.message}`);
+			WF.toast.show("Merge failed.", { type: "error" });
+		} finally {
+			closeItemList();
+		}
+	});
 
 	itemListOverlay.addEventListener("click", (event) => {
 		if (event.target === itemListOverlay) closeItemList();

@@ -14,6 +14,7 @@ const firebaseConfig = {
 const COLLECTION_NAME = "sync_sessions";
 const ERROR_RATE_LIMITED = "CLIENT_RATE_LIMITED";
 const ERROR_REMOTE_AHEAD = "REMOTE_AHEAD";
+const WARNING_PAYLOAD_VERSION = "PAYLOAD_VERSION_HIGHER"
 const SYNC_KEY_PATTERN = /^[a-f0-9]{64}$/;
 const MAX_PAYLOAD_BYTES = 256000;
 const LAST_PUSH_DATE = "wf_checklist_last_push_date";
@@ -43,6 +44,7 @@ function remoteMillis(snapshot) {
 WF.sync = {
   ERROR_RATE_LIMITED,
   ERROR_REMOTE_AHEAD,
+  WARNING_PAYLOAD_VERSION,
 
   getCompressedPayload() {
     const rawData = WF.storage ? WF.storage.loadForSync() : {};
@@ -50,14 +52,27 @@ WF.sync = {
     return LZString.compressToBase64(JSON.stringify({ data: rawData, options }));
   },
 
-  async pushData(syncKey, { force = false } = {}) {
+  async checkRemoteVersion(syncKey) {
+    if (!isValidKey(syncKey)) return null;
+
+    const snapshot = await getDoc(doc(db, COLLECTION_NAME, syncKey));
+    if (!snapshot.exists()) return null;
+
+    const data = snapshot.data();
+    return {
+      schemaVersion: data.schemaVersion || 0,
+      updatedAt: remoteMillis(snapshot)
+    };
+  },
+
+async pushData(syncKey, { force = false } = {}) {
     if (!isValidKey(syncKey)) return false;
 
     const now = Date.now();
     if (now - _lastPushAt < PUSH_COOLDOWN_MS) throw new Error(ERROR_RATE_LIMITED);
 
     try {
-      if (typeof WF.SCHEMA_VERSION === "undefined") throw new Error("SCHEMA_VERSION_MISSING");
+      if (typeof WF.WCT_VERSION === "undefined") throw new Error("SCHEMA_VERSION_MISSING");
 
       const compressedPayload = this.getCompressedPayload();
       if (compressedPayload.length > MAX_PAYLOAD_BYTES) throw new Error("PAYLOAD_TOO_LARGE");
@@ -65,14 +80,14 @@ WF.sync = {
       const docRef = doc(db, COLLECTION_NAME, syncKey);
       
       if (!force) {
-        const snapshot = await getDoc(docRef);
-        const remoteAt = remoteMillis(snapshot);
+        const remoteInfo = await this.checkRemoteVersion(syncKey);
+        const remoteAt = remoteInfo ? remoteInfo.updatedAt : 0;
         if (remoteAt > 0 && remoteAt > _lastKnownRemoteAt) throw new Error(ERROR_REMOTE_AHEAD);
       }
 
       await setDoc(docRef, {
         payload: compressedPayload,
-        schemaVersion: WF.SCHEMA_VERSION,
+        schemaVersion: WF.WCT_VERSION,
         updatedAt: serverTimestamp()
       }, { merge: true });
 
@@ -87,20 +102,26 @@ WF.sync = {
     }
   },
 
-  async pullData(syncKey) {
+  async pullData(syncKey, { force = false } = {}) {
     if (!isValidKey(syncKey)) return null;
 
     const now = Date.now();
     if (now - _lastPullAt < PULL_COOLDOWN_MS) throw new Error(ERROR_RATE_LIMITED);
 
     try {
+      const remoteInfo = await this.checkRemoteVersion(syncKey);
+      if (!remoteInfo) return null;
+
+      if (!force && remoteInfo.schemaVersion > WF.WCT_VERSION) {
+        throw new Error(WARNING_PAYLOAD_VERSION);
+      }
+
       const snapshot = await getDoc(doc(db, COLLECTION_NAME, syncKey));
-      
       _lastPullAt = now;
 
       if (!snapshot.exists()) return null;
 
-      _lastKnownRemoteAt = remoteMillis(snapshot);
+      _lastKnownRemoteAt = remoteInfo.updatedAt;
       localStorage.setItem(LAST_PUSH_DATE, String(_lastKnownRemoteAt));
 
       const compressedPayload = snapshot.data().payload;
@@ -109,9 +130,22 @@ WF.sync = {
       const decompressedString = LZString.decompressFromBase64(compressedPayload);
       if (!decompressedString) return null;
 
-      return JSON.parse(decompressedString);
+      const parsedPayload = JSON.parse(decompressedString);
+
+      if (parsedPayload && parsedPayload.data && typeof WF.storage?.runMigrations === "function") {
+        parsedPayload.data = WF.storage.runMigrations(
+          parsedPayload.data,
+          WF.WCT_VERSION,
+          remoteInfo.schemaVersion
+        );
+        localStorage.setItem("wf_checklist_current_version", String(WF.WCT_VERSION));
+      }
+
+      return parsedPayload;
     } catch (err) {
-      console.error("[Sync] Error pulling data:", err.code, err.message);
+      if (err.message !== WARNING_PAYLOAD_VERSION) {
+        console.error("[Sync] Error pulling data:", err.code, err.message);
+      }
       throw err;
     }
   },

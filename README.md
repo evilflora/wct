@@ -40,7 +40,7 @@ All application data is saved locally within your browser's local storage, unles
 ### STATS
 - **Mastery Breakdown:** Same UI and order as the game for better and faster comparison.
 - **Progress Overview:** A stats panel summarizing completion by category, alongside the Mastery Breakdown.
-### INFO
+### NEWS
 - **Changelog & Updates:**** Track changelogs, project links, credits, and privacy information.
 - **Bulk Selection:** Mass selection tools available for quicker updates.
 ### OPTIONS
