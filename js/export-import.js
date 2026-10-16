@@ -8,6 +8,24 @@ WF.exportImport = (function () {
   const MAX_SKILL_LEVEL = 10;
   const CHALLENGE_PREFIX = "/Lotus/Types/Challenges/";
 
+  const HONORIA_MAP = Object.freeze({
+    FromOnHigh: "FromOnHighTitle",
+    SharpShooter: "SharpShooterTitle",
+    ForgedInFire: "ForgedInFireTitle",
+    Kaboom: "KaboomTitle",
+    KillPhorid: "KillPhoridTitle",
+    TheCameraAdds100Pounds: "TheCameraAdds100Title",
+    SolveCipherUnder5Seconds: "SolveCipherUnder5Title",
+    Rank4C: "MedalRank5Title", // Rank0C does not exist because Honoria is earned through purchase
+    Rank8C: "MedalRank9Title", // Rank1C to Rank19C, easy to compare, Rank2C = 150, Wiki for Insign III say "Kill 150 enemies"
+    Rank12C: "MedalRank13Title",
+    Rank16C: "MedalRank17Title",
+    Rank19C: "MedalRank20Title",
+    Kill100InMission: "Kills100Title",
+    NoWitnesses: "StealthKills100Title",
+    Mercenary2: "Mercenary5InvasionsTitle", // i'm not 100% sure
+  });
+
   const RANK_RULES = Object.freeze([
     { categories: ["weapon", "archweapon"], masteryXp: 3000, minXp: 450000 },
     { categories: ["warframe", "vehicle", "companion"], masteryXp: 6000, minXp: 900000 },
@@ -176,6 +194,38 @@ WF.exportImport = (function () {
     return WF.data.filter((item) => typeof item?.item_name === "string" && wantedNames.has(item.item_name));
   }
 
+  function getLastSegment(itemName) {
+    return itemName.slice(itemName.lastIndexOf("/") + 1);
+  }
+
+  function resolveHonoriaItems(honoriaProgress) {
+    if (!Array.isArray(honoriaProgress)) return [];
+
+    const progressByName = new Map();
+    for (const entry of honoriaProgress) {
+      if (typeof entry?.Name !== "string" || !Number.isFinite(Number(entry.Progress))) continue;
+      progressByName.set(entry.Name, Number(entry.Progress));
+    }
+    if (progressByName.size === 0) return [];
+
+    const mappedHonoriaBySegment = new Map(
+      Object.entries(HONORIA_MAP)
+        .filter(([honoriaName]) => progressByName.has(honoriaName))
+        .map(([honoriaName, segment]) => [segment, honoriaName])
+    );
+
+    return WF.data.filter((item) => {
+      if (item?.category !== "honoria" || typeof item.item_name !== "string") return false;
+
+      const segment = getLastSegment(item.item_name);
+      const honoriaName = [segment, `${segment}Challenge`].find((name) => progressByName.has(name)) ?? mappedHonoriaBySegment.get(segment);
+      if (honoriaName === undefined) return false;
+
+      const unlockAt = Number(item.unlockAt); // Stored as a string in WF.data
+      return Number.isFinite(unlockAt) && progressByName.get(honoriaName) >= unlockAt;
+    });
+  }
+
   function applyPendingMerge() {
     if (!pendingMerge || pendingMerge.items.length === 0) return 0;
 
@@ -206,7 +256,8 @@ WF.exportImport = (function () {
       ...resolveChallengeItems(profile.ChallengeProgress),
       ...resolveWeaponItems(data?.Stats?.Weapons),
       ...resolveMissionItems(profile.Missions),
-    ].filter((item) => !progress[item.item_name]);
+      ...resolveHonoriaItems(profile.ChallengeProgress),
+    ].filter((item, index, all) => !progress[item.item_name] && all.indexOf(item) === index); // Skip owned and duplicates
     pendingMerge = { items };
     window.dispatchEvent(new CustomEvent("wf:profile-merge-ready", { detail: { items } }));
     return profile;

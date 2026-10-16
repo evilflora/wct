@@ -262,8 +262,18 @@ WF.ENDO = { common: 10, uncommon: 20, rare: 30, legendary: 40/*, riven: 50*/ };
 
 WF.PROJECT_SRC = "https://github.com/evilflora/wct";
 WF.PROJECT_URL = "https://evilflora.github.io/wct/";
+WF.PROJECT_REDDIT = "https://www.reddit.com/r/Warframe/comments/1w1xgfw/warframe_completion_tracker_wct/";
  
 WF.CHANGELOG = [
+	{
+		date: "2026/10/16 00:00:00", 
+		version: "44.1.2", 
+		text: `"Import From Warframe" in OPTIONS now support some Honorias.</br>Reports links redirect to REDDIT instead of GITHUB.</br>Added items for Epoche: Operation Taubound.</br>Data migration should be applied on Import and Sync.`,
+		items: {
+			"new": [ "Arturos Vessel Glyph","Contegorus Chest Plate","Contegorus Greaves","Contegorus Pauldrons","Devourer","Dhampyre Syandana","Epoch Operation Vessel Emblem","Eskhatos Ki'Teer Floof","Eskhatos Necramech Skin","Eskhatos Sugatra","Khadati Sumdali","Lua","Naktavyre Chest Armor","Naktavyre Leg Armor","Naktavyre Shoulder Armor","Neolyst Natah Floof","Neolyst Natah Glyph","Taubound Sigil","The Moon Killer","Vacis Amp Skin","Vessel","Zioa Vessel Glyph" ],
+			"removed": [],
+		}
+	},
 	{
 		date: "2026/10/10 00:00:00", 
 		version: "44.1.1", 

@@ -333,14 +333,8 @@ WF.storage = (function () {
     return progressMap;
   }
 
-  // Ne pas oublier d'exposer runMigrations dans le return du IIFE de storage.js :
-  return { load, loadForSync, save, setOwned, setOwnedBulk, clearAll, runMigrations, STORAGE_KEY, ARCHIVE_KEY };
-
   function pruneOrphanKeys(progressMap) {
-    if (!WF.data || typeof WF.WCT_VERSION === "undefined") return progressMap;
-
-    const storedVersion = localStorage.getItem(VERSION_KEY);
-    if (storedVersion === String(WF.WCT_VERSION)) return progressMap;
+    if (!WF.data) return progressMap;
 
     const validKeys = new Set(WF.data.map((item) => item.item_name));
     const orphanKeys = Object.keys(progressMap).filter((key) => !validKeys.has(key));
@@ -358,8 +352,6 @@ WF.storage = (function () {
       console.info(`Archived ${orphanKeys.length} orphan key(s).`, orphanKeys);
     }
 
-    localStorage.setItem(VERSION_KEY, String(WF.WCT_VERSION));
-
     return progressMap;
   }
 
@@ -375,8 +367,18 @@ WF.storage = (function () {
       const parsed = JSON.parse(raw);
       if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) throw new TypeError("Progress is not a plain object.");
 
-      const migrated = runMigrations(parsed, typeof WF.WCT_VERSION !== "undefined" ? WF.WCT_VERSION : null);
+      const targetVersion = typeof WF.WCT_VERSION !== "undefined" ? WF.WCT_VERSION : null;
+      const storedVersion = parseVersion(localStorage.getItem(VERSION_KEY)) ?? 0;
+
+      const migrated = runMigrations(parsed, targetVersion);
       _cache = pruneOrphanKeys(migrated);
+
+      if (targetVersion !== null && targetVersion > storedVersion) {
+        localStorage.setItem(VERSION_KEY, String(targetVersion));
+        const logLabel = `Version updated. Go to NEWS to see the changelog.`;
+        if (WF.logs) WF.logs.AddLog(logLabel);
+        if (WF.toast) WF.toast.show(logLabel, { type: "info", timeoutMs: 0 });
+      }
     } catch (err) {
       console.error("Unreadable or corrupted localStorage progress, reset.", err);
       _cache = {};
@@ -439,5 +441,5 @@ WF.storage = (function () {
     if (WF.mastery) WF.mastery.render();
   });
 
-  return { load, loadForSync, save, setOwned, setOwnedBulk, clearAll, STORAGE_KEY, ARCHIVE_KEY };
+  return { load, loadForSync, save, setOwned, setOwnedBulk, clearAll, runMigrations, STORAGE_KEY, ARCHIVE_KEY };
 })();

@@ -197,7 +197,7 @@ WF.render = (function () {
       empty.className = "sidebar-search-empty";
       empty.appendChild(document.createTextNode("No results ("));
       const issueLink = document.createElement("a");
-      issueLink.href = `${WF.PROJECT_SRC}/issues`;
+      issueLink.href = `${WF.PROJECT_REDDIT}`;
       issueLink.textContent = "item missing ?";
       issueLink.target = "_blank";
       issueLink.rel = "noopener noreferrer";
