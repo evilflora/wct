@@ -133,7 +133,6 @@ WF.exportImport = (function () {
 
     return WF.data.filter((item) => {
       const name = item?.item_name;
-      if (typeof name !== "string") return false;
       const index = name.indexOf("Intrinsic/");
       return index >= 0 && wantedNames.has(name.slice(index));
     });
@@ -151,7 +150,7 @@ WF.exportImport = (function () {
 
     return WF.data.filter((item) => {
       const name = item?.item_name;
-      if (typeof name !== "string" || !name.startsWith(CHALLENGE_PREFIX)) return false;
+      if (!name.startsWith(CHALLENGE_PREFIX)) return false;
 
       const progress = progressByName.get(name.slice(CHALLENGE_PREFIX.length));
       const unlockAt = Number(item.unlockAt); // Stored as a string in WF.data
@@ -177,6 +176,24 @@ WF.exportImport = (function () {
       const masteryXp = Number(item.mastery_xp);
       const rule = RANK_RULES.find((r) => r.categories.includes(item.category) && r.masteryXp === masteryXp);
       return !!rule && xp >= rule.minXp;
+    });
+  }
+
+  function resolveCodexScans(scans) {
+    if (!Array.isArray(scans)) return [];
+    
+    const progressByName = new Map();
+    for (const entry of scans) {
+      if (typeof entry?.type !== "string" || !Number.isFinite(Number(entry.scans))) continue;
+      progressByName.set(entry.type, Number(entry.scans));
+    }
+    if (progressByName.size === 0) return [];
+
+    return WF.data.filter((item) => {
+      const name = item?.item_name;
+      const progress = progressByName.get(name);
+      const unlockAt = Number(item.unlockAt); // Stored as a string in WF.data
+      return progress !== undefined && Number.isFinite(unlockAt) && progress >= unlockAt;
     });
   }
 
@@ -257,6 +274,7 @@ WF.exportImport = (function () {
       ...resolveWeaponItems(data?.Stats?.Weapons),
       ...resolveMissionItems(profile.Missions),
       ...resolveHonoriaItems(profile.ChallengeProgress),
+      ...resolveCodexScans(data?.Stats?.Scans),
     ].filter((item, index, all) => !progress[item.item_name] && all.indexOf(item) === index); // Skip owned and duplicates
     pendingMerge = { items };
     window.dispatchEvent(new CustomEvent("wf:profile-merge-ready", { detail: { items } }));

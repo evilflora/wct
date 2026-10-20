@@ -49,7 +49,7 @@
 </head>
 <body>
 	<noscript>
-		<div style="padding:2rem;max-width:640px;margin:0 auto;text-align:center;">
+		<div class="noscript">
 			<h2>JavaScript required</h2>
 			<p>Warframe Completion Tracker requires JavaScript to work. Please enable JavaScript in your browser to use this tool.</p>
 		</div>
@@ -124,7 +124,7 @@
 							<button type="button" id="btn-sync-key-reveal" class="item-info-btn" aria-pressed="false" aria-label="Reveal secret key">Reveal</button>
 						</form>
 					</p>
-					<div class="sync-actions" style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
+					<div class="sync-actions">
 						<div class="sync-row">
 							<button id="btn-sync-action" class="toolbar-btn-main" aria-label="Sync Action">CREATE</button>
 						</div>
@@ -271,20 +271,22 @@
 				<section>
 					<h3>What is this?</h3>
 					<p>This tool lets you track (almost) everything you've obtained in Warframe: Warframes, weapons, mods, companions, arcanes, honorias, ... that were freely accessible through login or gameplay.</p>
-					<p>So, no Twitch rewards, no redeem codes, no console exclusives, no Platinum-only market items, and no rewards from the Warframe website.</p>
-					<p>Please remember, data may be incorrect or not up to date. <a href="https://github.com/evilflora/wct/issues" target="_blank" rel="noopener noreferrer">Discussion area on GitHub.</a></p>
+					<p>So, no Twitch rewards, no redeem codes, no console exclusives, no Platinum-only market items, and no rewards from the Warframe website (like promo codes, event pages, ...).</p>
+					<p>Please remember, data may be incorrect or not up to date. <a href="https://www.reddit.com/r/Warframe/comments/1w1xgfw/warframe_completion_tracker_wct/" target="_blank" rel="noopener noreferrer">Discussion area on Reddit.</a></p>
+					<p><b>If it's your first time and you've already played a bit, you can import some data from the Warframe API by visiting the OPTIONS and following a few steps.</b></p>
+					<p>This text can be reopened from the NEWS overlay.</p>
 				</section>
 				<section>
 					<h3>How it works</h3>
 					<p>Click on any item to mark it as owned. Your progress is saved automatically in this browser's local storage, nothing is sent anywhere unless you use SYNC.</p>
-					<p style="color:red">Do not clear the cache of the browser, or you will lose everything (unless you exported it or synced it).</p>
+					<p class="alert">Do not clear the browser cache, or you will lose everything (unless you exported or synced it).</p>
 				</section>
 				<section>
 					<h3>Main features</h3>
-					<p><b>[&#9823;] SYNC</b> synchronise your progress across devices using a secret key.</p>
-					<p><b>[&gt;&gt;] STATS</b> detailed breakdown of your Mastery, progression and Endo spent.</p>
-					<p><b>[?] NEWS</b> changelog, credits and project links (this guide is reachable from there).</p>
-					<p><b>[&#9881;] OPTIONS</b> export/import your data, customise the theme, or add Founder/Conclave exclusive items.</p>
+					<p><b>[&#9823;] SYNC</b> synchronizes your progress across devices using a secret key.</p>
+					<p><b>[&gt;&gt;] STATS</b> detailed breakdown of your Mastery, progression, and Endo spent.</p>
+					<p><b>[?] NEWS</b> changelog, credits, and project links (this guide is reachable from there).</p>
+					<p><b>[&#9881;] OPTIONS</b> export/import your data, customize the theme, or add Founder/Conclave exclusive items.</p>
 				</section>
 			</div>
 		</div>
@@ -339,7 +341,7 @@
 						<li><p>save the page content as a <b>.json</b> file</p></li>
 					</ul>
 					<form>
-						<p>Paste the value in <input id="accountid" class="sync-key" placeholder="24 characters key" maxlength="24" minlength="24" pattern="[0-9a-f]{24}" autocomplete="off" spellcheck="false" autocapitalize="off"></p>
+						<p>Paste the value in <input id="accountid" class="sync-key" type="password" placeholder="24 characters key" maxlength="24" minlength="24" pattern="[0-9a-f]{24}" autocomplete="off" spellcheck="false" autocapitalize="off"></p>
 						<button type="button" id="btn-import-api-open" class="toolbar-btn-main" aria-label="Open public profile in a new tab">OPEN</button>
 					</form>
 				</br>
@@ -356,7 +358,7 @@
 	<script src="js/version.js"></script>
 	<script src="js/min/update-check.min.js"></script>
 	<script src="js/data/data_generated.js"></script>
-	<script src="js/min/storage.min.js"></script>
+	<script type="module" src="js/min/storage.min.js"></script>
 	<script src="js/min/options.min.js"></script>
 	<script src="js/min/theme.min.js"></script>
 	<script src="js/min/mastery.min.js"></script>

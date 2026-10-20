@@ -960,6 +960,13 @@ ul {
 	width: 100%;
 }
 
+.sync-actions {
+	margin-top: 12px; 
+	display: flex; 
+	gap: 10px; 
+	flex-wrap: wrap;
+}
+
 .theme-swatches {
 	display: flex;
 	flex-wrap: wrap;
@@ -1165,4 +1172,11 @@ ul {
 	font-size: 12px;
 	letter-spacing: 0.5px;
 	text-transform: uppercase;
+}
+
+.noscript {
+	padding:2rem;
+	max-width:640px;
+	margin:0 auto;
+	text-align:center;
 }

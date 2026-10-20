@@ -266,12 +266,12 @@ WF.PROJECT_REDDIT = "https://www.reddit.com/r/Warframe/comments/1w1xgfw/warframe
  
 WF.CHANGELOG = [
 	{
-		date: "2026/10/16 00:00:00", 
+		date: "2026/10/20 00:00:00", 
 		version: "44.1.2", 
-		text: `"Import From Warframe" in OPTIONS now support some Honorias.</br>Reports links redirect to REDDIT instead of GITHUB.</br>Added items for Epoche: Operation Taubound.</br>Data migration should be applied on Import and Sync.`,
+		text: `"Import From Warframe" in OPTIONS now support some Factions scans and Objects scans.</br>Accountid field is now hidden.</br>Added missing Glypg from Shockwave.`,
 		items: {
-			"new": [ "Arturos Vessel Glyph","Contegorus Chest Plate","Contegorus Greaves","Contegorus Pauldrons","Devourer","Dhampyre Syandana","Epoch Operation Vessel Emblem","Eskhatos Ki'Teer Floof","Eskhatos Necramech Skin","Eskhatos Sugatra","Khadati Sumdali","Lua","Naktavyre Chest Armor","Naktavyre Leg Armor","Naktavyre Shoulder Armor","Neolyst Natah Floof","Neolyst Natah Glyph","Taubound Sigil","The Moon Killer","Vacis Amp Skin","Vessel","Zioa Vessel Glyph" ],
-			"removed": [],
+			"new": [ "Ancient Undying Flyer","Aurax Baculus Eximus","Aurax Culveri Moa Eximus","Aurax Vertec Eximus","Axio Elite Crewman Eximus","Cinderthresh Hyena (Deepmines)","Corpus Power Carrier (Terra)","Dj Shockwave Glyph","Icemire Hyena (Deepmines)","Inusitatus Hoard","Jackal Eximus (Terra)","Karkina","Kavor Defector (Female Black Armor)","Kavor Defector (Female White Armor)","Kavor Defector A (Male Black Armor)","Kavor Defector B (Male White Armor)","Kosma Gokstad Officer Eximus","Kosma Raider Carver Eximus","Kosma Raider Eviscerator Eximus","Kosma Supressor Eximus","Nova Specter","Rabbleback Hyena (Deepmines)","Rolizor Infested Cyst","Scrofa Provisor","Scrofa Provisor Eximus","Senta Turret (Kuva)","Senta Turret (Orb Vallis)","Shield Osprey","Taro Disc Moa Eximus","Taro Nullifier Crewman Eximus","Taro Shockwave Moa Eximus","Taro Stropha Crewman Eximus","Taro Tech Eximus","Vorac Harpi (The New War)","Zealot Proselytizer" ],
+			"removed": [ "Anarch Turret","Ghoul Expired Deserter","Inustitatus Hoard","J3 Jordas Golem","Jackal Eximus","Kavor Defector","Kuva Injector","Nemes Ranger","Nemes Scout","Rozilor Infested Cyst","Security Camera","Senta Turret","Shield Osprey ","Tomb Guardian","Vitriol Necramite","Vorac Harpi" ],
 		}
 	},
 	{
