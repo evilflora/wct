@@ -120,7 +120,7 @@ WF.TYPES = {
 	signa:									{ event: "Event", nightwave: "Nightwave", baro: "Baro Ki'Teer", hunhow: "Hunhow" },
 	skin_type:							{ skin: "Skin", helmet: "Helmet", animation: "Animation", wing: "Wings", mask: "Mask", tail: "Tail", plate: "Plates", guard: "Guard", armor: "Armor", holster: "Holster", sleeve: "Sleeves", legging: "Leggings", hood: "Hood", ink: "Ink", oculus: "Oculus", pauldron: "Pauldrons", suit: "Suit", greaves: "Greaves" },
 	skin_other:							{ livery: "Livery", landing: "Landing Craft" },
-	somachord:							{ baro: "Baro Ki'Teer", aoi: "Aoi", fragment: "Fragment", hunhow: "Hunhow", aspirant: "Aspirant Zorba", varzia: "Varzia", awakening: "Awakening Quest", teshin: "Teshin", koumei: "Koumei's Shrine",  melica: "Melica"},
+	somachord:							{ baro: "Baro Ki'Teer", aoi: "Aoi", fragment: "Fragment", hunhow: "Hunhow", aspirant: "Aspirant Zorba", varzia: "Varzia", awakening: "Awakening Quest", teshin: "Teshin", koumei: "Koumei's Shrine",  melica: "Melica", fables: "Fables & Frontiers"},
 	trophy:									{ mastery: "Mastery", planet: "Planets", fish: "Fish", zariman: "Zariman" },
 	trophy_fish:						{ poe: "Plain Of Eidolon", ov: "Orb Vallis", cd: "Cambion Drift" },
 	vehicle:								{ archwing: "archwing", necramech: "necramech", plexus: "plexus", kdrive: "k-drive" },
@@ -265,6 +265,15 @@ WF.PROJECT_URL = "https://evilflora.github.io/wct/";
 WF.PROJECT_REDDIT = "https://www.reddit.com/r/Warframe/comments/1w1xgfw/warframe_completion_tracker_wct/";
  
 WF.CHANGELOG = [
+	{
+		date: "2026/10/24 00:00:00", 
+		version: "44.1.3", 
+		text: `New items from Evil Baro, new song items, and added back previously removed enemies.</br>Fixed Corufell Prime being flagged as an Arch-Melee weapon.`,
+		items: {
+			"new": [ "A Byte-sized Adventure","Eskhatos Pauldrons","Eskhatos Sekhara","Fortuna Login Music","Nemes Ranger","Nemes Scout","Orm Nemes","Running Late","Sisters of Parvos Login Music","The Seven Crimes of Kullervo Login Music","Watcher's Island" ],
+			"removed": [ "Zephyr Conquera Helmet","Zephyr Conquera Skin" ],
+		}
+	},
 	{
 		date: "2026/10/20 00:00:00", 
 		version: "44.1.2", 

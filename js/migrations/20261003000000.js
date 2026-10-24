@@ -1,3 +1,4 @@
+/* This file use "Auto-Minify" in "Visual Studio Code" to create it's compressed version on save */
 export default [
   ["/Lotus/Types/Items/Fish/Deimos/InfestedCommonDFishItem"      , "/Lotus/Types/Items/ShipDecos/Deimos/FishTrophyInfestedCommonD" ],
   ["/Lotus/Types/Items/Fish/Deimos/HybridRareAFishItem"          , "/Lotus/Types/Items/ShipDecos/Deimos/FishTrophyHybridRareA" ],
@@ -39,5 +40,5 @@ export default [
   ["/Lotus/Types/Items/Fish/Eidolon/DayUncommonFishAItem"        , "/Lotus/Types/Items/ShipDecos/DayUncommonFishATrophy" ],
   ["/Lotus/Types/Items/Fish/Solaris/OrokinCoolRareFishAItem"     , "/Lotus/Types/Items/ShipDecos/Venus/OrokinCoolRareFishATrophy" ],
   ["/Lotus/Types/Items/Fish/Deimos/HybridUncommonBFishItem"      , "/Lotus/Types/Items/ShipDecos/Deimos/FishTrophyHybridUncommonB" ],
-  ["/Lotus/Types/Items/Fish/Eidolon/DayCommonFishCItem"          , "/Lotus/Types/Items/ShipDecos/DayCommonFishCTrophy" ]
+  ["/Lotus/Types/Items/Fish/Eidolon/DayCommonFishCItem"          , "/Lotus/Types/Items/ShipDecos/DayCommonFishCTrophy" ],
 ];

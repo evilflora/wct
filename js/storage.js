@@ -1,8 +1,9 @@
 /* This file use "Auto-Minify" in "Visual Studio Code" to create it's compressed version on save */
 
-import migration20261003 from "../migrations/20261003000000.js"; // because i'm using the Minify storage file i need to go the parent folder
-import migration20261010 from "../migrations/20261010000000.js"; // because i'm using the Minify storage file i need to go the parent folder
-import migration20261020 from "../migrations/20261020000000.js"; // because i'm using the Minify storage file i need to go the parent folder
+import migration20261003 from "../migrations/min/20261003000000.min.js"; // because i'm using the Minify storage file i need to go the parent folder
+import migration20261010 from "../migrations/min/20261010000000.min.js"; // because i'm using the Minify storage file i need to go the parent folder
+import migration20261020 from "../migrations/min/20261020000000.min.js"; // because i'm using the Minify storage file i need to go the parent folder
+import migration20261024 from "../migrations/min/20261024000000.min.js"; // because i'm using the Minify storage file i need to go the parent folder
 
 WF.storage = (function () {
   const STORAGE_KEY = "wf_checklist_progress";
@@ -24,7 +25,8 @@ WF.storage = (function () {
   const MIGRATIONS = [
     { version: 20261003000000, renames: migration20261003 },
     { version: 20261010000000, renames: migration20261010 },
-    { version: 20261020000000, renames: migration20261020 }
+    { version: 20261020000000, renames: migration20261020 },
+    { version: 20261024000000, renames: migration20261024 },
   ];
 
   function parseVersion(value) {

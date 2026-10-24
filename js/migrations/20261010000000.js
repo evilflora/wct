@@ -1,3 +1,4 @@
+/* This file use "Auto-Minify" in "Visual Studio Code" to create it's compressed version on save */
 export default [
   ["/Lotus/Challlenge/AWatchfulEyeAchievement.png"             , "/Lotus/Types/Challenges/Own1Sentinel" ],
   ["/Lotus/Challlenge/AgentAchievement.png"                    , "/Lotus/Types/Challenges/Solve1Cipher" ],

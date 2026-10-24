@@ -1,3 +1,4 @@
+/* This file use "Auto-Minify" in "Visual Studio Code" to create it's compressed version on save */
 export default [
 	["/Lotus/Types/Enemies/Corpus/002ER"                                       , "/Lotus/Types/Enemies/CorpusChampions/TeamD/CCTeamDOspreyAvatar" ]                                            ,
 	["/Lotus/Types/Enemies/Miscellaneous/AbandonedStorageContainer"            , "/Lotus/Types/PickUps/DerelictOrokinLootCrate" ]                                                              ,
