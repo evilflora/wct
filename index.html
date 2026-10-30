@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8" />
-	<meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file: 'unsafe-inline' https://www.gstatic.com; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data:; connect-src 'self' file: https://www.gstatic.com https://firestore.googleapis.com https://*.googleapis.com https://evilflora.github.io/wct/js/version.js; font-src 'self' file:; base-uri 'none'; form-action 'none'" />
+	<meta charset="UTF-8">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file: 'unsafe-inline' https://www.gstatic.com; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data:; connect-src 'self' file: https://www.gstatic.com https://firestore.googleapis.com https://*.googleapis.com https://evilflora.github.io/wct/js/version.js; font-src 'self' file:; base-uri 'none'; form-action 'none'">
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 	<title>Warframe Completion Tracker</title>
-	<meta name="description" content="Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more." />
-	<meta name="robots" content="index, follow" />
-	<link rel="canonical" href="https://evilflora.github.io/wct/" />
+	<meta name="description" content="Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more.">
+	<meta name="robots" content="index, follow">
+	<link rel="canonical" href="https://evilflora.github.io/wct/">
 
-	<meta property="og:type" content="website" />
-	<meta property="og:site_name" content="Warframe Completion Tracker" />
-	<meta property="og:title" content="Warframe Completion Tracker" />
-	<meta property="og:description" content="Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more." />
-	<meta property="og:url" content="https://evilflora.github.io/wct/" />
-	<meta property="og:locale" content="en_US" />
-	<link rel="stylesheet" href="css/min/style.min.css" />
+	<meta property="og:type" content="website">
+	<meta property="og:site_name" content="Warframe Completion Tracker">
+	<meta property="og:title" content="Warframe Completion Tracker">
+	<meta property="og:description" content="Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more.">
+	<meta property="og:url" content="https://evilflora.github.io/wct/">
+	<meta property="og:locale" content="en_US">
+	<link rel="stylesheet" href="css/min/style.min.css">
 	<link rel="icon" type="image/x-icon" href="img/favicon.ico">
 	<script src="js/min/constants.min.js"></script>
 	<script src="js/min/logs.min.js"></script>
@@ -117,13 +117,13 @@
 					<p>By pressing "CREATE", a random secret key will be generated, <b>do not lose it</b> (it'll be included in the export file).</p>
 					<p>If you already have a secret key, you can paste it and then SYNC, this allow you to download or upload your save.</p>
 					<p><b>Keep this secret, do not share, do not show it. Anyone with this key will be able to modify your save.</b></p>
-					<p class="sync-key-row">
+					<div class="sync-key-row">
 						<label for="sync-key">Your secret key:</label>
 						<form>
-							<input id="sync-key" class="sync-key" type="password" placeholder="64 characters key" maxlength="64" minlength="64" pattern="[0-9a-f]{64}" autocomplete="off" spellcheck="false" autocapitalize="off" />
+							<input id="sync-key" class="sync-key" type="password" placeholder="64 characters key" maxlength="64" minlength="64" pattern="[0-9a-f]{64}" autocomplete="off" spellcheck="false" autocapitalize="off">
 							<button type="button" id="btn-sync-key-reveal" class="item-info-btn" aria-pressed="false" aria-label="Reveal secret key">Reveal</button>
 						</form>
-					</p>
+					</div>
 					<div class="sync-actions">
 						<div class="sync-row">
 							<button id="btn-sync-action" class="toolbar-btn-main" aria-label="Sync Action">CREATE</button>
@@ -202,32 +202,32 @@
 			</div>
 			<div class="info-modal-body">
 				<h3>Settings</h3>
-				<section>
+				<div class="option_line">
 					<label class="option-row">
-						<input type="checkbox" id="opt-include-options-in-export" />
+						<input type="checkbox" id="opt-include-options-in-export">
 						<span>Save options when exporting</span>
 					</label>
-				</section>
-				<section>
+				</div>
+				<div class="option_line">
 					<label class="option-row">
-						<input type="checkbox" id="opt-include-synckey-in-export" />
+						<input type="checkbox" id="opt-include-synckey-in-export">
 						<span>Include the SYNC secret key in the export file</span>
 					</label>
-				</section>
-				<section>
+				</div>
+				<div class="option_line">
 					<label class="option-row">
-						<input type="checkbox" id="opt-include-founder-pack-exclusive" />
+						<input type="checkbox" id="opt-include-founder-pack-exclusive">
 						<span>Add Founder Exclusive items</span>
 					</label>
 					<button type="button" id="opt-show-founder-items" class="item-info-btn">Show item list</button>
-				</section>
-				<section>
+				</div>
+				<div class="option_line">
 					<label class="option-row">
-						<input type="checkbox" id="opt-include-pvp-mods" />
+						<input type="checkbox" id="opt-include-pvp-mods">
 						<span>Add Conclave items</span>
 					</label>
 					<button type="button" id="opt-show-conclave-items" class="item-info-btn">Show item list</button>
-				</section>
+				</div>
 				<section>
 					<h3>Data Management</h3>
 					<div class="toolbar">
@@ -240,7 +240,7 @@
 						<button id="btn-import-api" class="toolbar-btn-main">
 							<span class="btn-icon">&#8593;</span> Import from Warframe
 						</button>
-						<input type="file" id="import-file-input" accept="application/json" hidden />
+						<input type="file" id="import-file-input" accept="application/json" hidden>
 					</div>
 				</section>
 				<section>
@@ -323,7 +323,7 @@
 				<button id="btn-import-api-close" class="info-close-btn" aria-label="Close list">&times;</button>
 			</div>
 			<div class="info-modal-body">
-				<section>
+				<div>
 					<p class="alert">Only work for PC users (and may disappear in the near future) :'(</p>
 					<p>You can retreive some informations from your public profile to save time. Unfornulately it is NOT an One step process.</p>
 					<p>The process will be similar as <a href="https://browse.wf/profile" target="_blank">browse.wf/profile</a>, by following the steps below you will be able to download your public data and merge your records.</p>
@@ -344,13 +344,12 @@
 						<p>Paste the value in <input id="accountid" class="sync-key" type="password" placeholder="24 characters key" maxlength="24" minlength="24" pattern="[0-9a-f]{24}" autocomplete="off" spellcheck="false" autocapitalize="off"></p>
 						<button type="button" id="btn-import-api-open" class="toolbar-btn-main" aria-label="Open public profile in a new tab">OPEN</button>
 					</form>
-				</br>
-					<p>Step 3 - select the saved file:</p>
+					<p><br>Step 3 - select the saved file:</p>
 					<form>
 						<p><input id="profile-file" type="file" accept=".json,application/json"></p>
 						<button type="button" id="btn-import-api-read" class="toolbar-btn-main" aria-label="Read profile file">START MERGE</button>
 					</form>
-				</section>
+				</div>
 			</div>
 		</div>
 	</div>

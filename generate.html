@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-	<meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file: 'unsafe-inline' https://www.gstatic.com; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data:; connect-src 'self' file: https://www.gstatic.com https://firestore.googleapis.com https://*.googleapis.com https://evilflora.github.io/wct/js/version.js https://api.github.com https://raw.githubusercontent.com; font-src 'self' file:; base-uri 'none'; form-action 'none'" />
+  <meta charset="UTF-8">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file: 'unsafe-inline' https://www.gstatic.com; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data:; connect-src 'self' file: https://www.gstatic.com https://firestore.googleapis.com https://*.googleapis.com https://evilflora.github.io/wct/js/version.js https://api.github.com https://raw.githubusercontent.com; font-src 'self' file:; base-uri 'none'; form-action 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Data Generator</title>
-	<link rel="stylesheet" href="css/min/style.min.css" />
-  <link rel="stylesheet" href="css/min/generate.min.css" />
+	<link rel="stylesheet" href="css/min/style.min.css">
+  <link rel="stylesheet" href="css/min/generate.min.css">
   <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 </head>
 <body>
@@ -18,19 +18,19 @@
     <div class="generate-panel">
       <div class="panel-col-left">
         <section class="info-generate">
-          <h3>1. README</h3>
+          <h2>1. README</h2>
           <p>If you don't know what you're doing, PLEASE do nothing.</p>
           <p>Download the newest version from GitHub (so you need to have an internet connection). If you're afraid of doing something wrong, do nothing.</p>
           <p>You can update data yourself by following these steps:</p>
-          <li>
-          <ul><p>a. Click <b>Fetch and generate</b> in section <b>2.</b>: most JSON file of <a href="https://github.com/WFCD/warframe-items/tree/master/data/json" target="_blank" rel="noopener noreferrer">WFCD/warframe-items - data/json</a> is downloaded in your browser and merged (excluded files are skipped)</p></ul>
-          <ul><p>b. Result will be shown in <b>3.</b>, if no error is indicated, you can now copy the <b>whole</b> result and replace the content of the file js/data/data_generated.js</p></ul>
-          </li>
+          <ol type="a">
+            <li>Click <b>Fetch and generate</b> in section <b>2.</b>: most JSON file of <a href="https://github.com/WFCD/warframe-items/tree/master/data/json" target="_blank" rel="noopener noreferrer">WFCD/warframe-items - data/json</a> is downloaded in your browser and merged (excluded files are skipped)</li>
+            <li>Result will be shown in <b>3.</b>, if no error is indicated, you can now copy the <b>whole</b> result and replace the content of the file js/data/data_generated.js</li>
+          </ol>
           
           <p>Data is community-maintained by WFCD, not an official Digital Extremes export.</p>
         </section>
         <section class="info-generate">
-          <h3>2. Generate</h3>
+          <h2>2. Generate</h2>
           <div class="generator-buttons">
             <button id="btn-generate" class="generator-btn" type="button">Fetch and generate</button>
           </div>
@@ -41,7 +41,7 @@
 
       <div class="panel-col-right">
         <section class="info-generate">
-          <h3>3. Result (paste into js/data/data_generated.js)</h3>
+          <h2>3. Result (paste into js/data/data_generated.js)</h2>
           <textarea id="output-area" class="output-area" readonly placeholder="Generated code will appear here..."></textarea>
           <div class="output-actions">
             <button id="btn-clear-output" class="toolbar-btn" type="button">Clear result</button>

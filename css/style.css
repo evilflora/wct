@@ -9,7 +9,7 @@
 	--accent-color: #bea966;
 	--item-owned: #1a140c;
 	--item-owned-hover: #413110;
-	--accent-red: #e8384f;
+	--accent-red: #ff5b6b;
 	--font-ui: "Bahnschrift", "Segoe UI Semibold", "Arial Narrow", sans-serif;
 
 	--scrim-modal: rgb(0 0 0 / 0.65);
@@ -381,7 +381,7 @@ ul {
 	margin: -1px;
 	padding: 0;
 	overflow: hidden;
-	clip-path: rect(0 0 0 0);
+	clip-path: inset(50%);
 	white-space: nowrap;
 	border: 0;
 }
@@ -868,6 +868,10 @@ ul {
 	flex-direction: column;
 	flex: 1;
 	min-height: 0;
+}
+
+.option_line {
+	margin-bottom: 12px;
 }
 
 .info-modal-body section:last-child { margin-bottom: 0; }

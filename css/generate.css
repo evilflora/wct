@@ -124,7 +124,7 @@ header p a:hover {
 
 .toolbar-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
 
-.info-generate h3 {
+.info-generate h2 {
 	font-size: 12px;
 	letter-spacing: 1px;
 	text-transform: uppercase;
