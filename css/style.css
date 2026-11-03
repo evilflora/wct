@@ -10,6 +10,7 @@
 	--item-owned: #1a140c;
 	--item-owned-hover: #413110;
 	--accent-red: #ff5b6b;
+	--sidebar-width: 210px;
 	--font-ui: "Bahnschrift", "Segoe UI Semibold", "Arial Narrow", sans-serif;
 
 	--scrim-modal: rgb(0 0 0 / 0.65);
@@ -499,6 +500,10 @@ ul {
 
 .mastery-total-text { margin-left: auto; }
 
+.mastery-rank-label:empty::before,
+.mastery-progress-text:empty::before,
+.mastery-total-text:empty::before { content: "\00a0"; }
+
 .layout { display: flex; align-items: stretch; height: 100vh; height: 100dvh; }
 
 .content-column {
@@ -518,6 +523,7 @@ ul {
 	overflow: hidden;
 	background: var(--panel);
 	border-right: 1px solid var(--border);
+	width: var(--sidebar-width);
 }
 
 #sidebar-search-mount {
@@ -633,6 +639,7 @@ ul {
 	border-left: 3px solid transparent;
 	font-size: 13px;
 	padding: 8px 16px 6px;
+	overflow-wrap: break-word;
 	transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
@@ -1165,17 +1172,25 @@ ul {
 
 	.item-list { grid-template-columns: 1fr; }
 }
-.sync-key-row {
-	display: flex;
+
+.sync-grid {
+	display: grid;
+	grid-template-columns: max-content minmax(0, 1fr) max-content;
+	column-gap: 0.75rem;
+	row-gap: 0.5rem;
 	align-items: center;
-	flex-wrap: wrap;
-	gap: 8px;
+}
+
+.sync-key-row,
+.sync-key-row > form {
+	display: grid;
+	grid-column: 1 / -1;
+	grid-template-columns: subgrid;
+	align-items: center;
 }
 
 .sync-key-row label {
-	font-size: 12px;
-	letter-spacing: 0.5px;
-	text-transform: uppercase;
+	font-size: 13px;
 }
 
 .noscript {

@@ -567,8 +567,8 @@ WF.render = (function () {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "category-help-btn";
-    btn.setAttribute("aria-label", "About this category");
     btn.textContent = categoryInfo.label + " ?";
+    btn.setAttribute("aria-label", `${btn.textContent} - about this category`); // Must contain the visible text
     btn.addEventListener("click", (event) => {
       event.stopPropagation();
       wrap.classList.toggle("open");

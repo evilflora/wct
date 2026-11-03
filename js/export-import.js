@@ -108,6 +108,7 @@ WF.exportImport = (function () {
 
     let progressToSave = payload.progress;
     if (typeof WF.storage.runMigrations === "function") {
+      await WF.storage.ensureMigrations(payload.schema_version, WF.WCT_VERSION);
       progressToSave = WF.storage.runMigrations(progressToSave, WF.WCT_VERSION, payload.schema_version);
     }
 

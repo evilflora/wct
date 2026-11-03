@@ -1,14 +1,13 @@
 /* This file use "Auto-Minify" in "Visual Studio Code" to create it's compressed version on save */
 
-import migration20261003 from "../migrations/min/20261003000000.min.js"; // because i'm using the Minify storage file i need to go the parent folder
-import migration20261010 from "../migrations/min/20261010000000.min.js"; // because i'm using the Minify storage file i need to go the parent folder
-import migration20261020 from "../migrations/min/20261020000000.min.js"; // because i'm using the Minify storage file i need to go the parent folder
-import migration20261024 from "../migrations/min/20261024000000.min.js"; // because i'm using the Minify storage file i need to go the parent folder
-
 WF.storage = (function () {
   const STORAGE_KEY = "wf_checklist_progress";
   const ARCHIVE_KEY = "wf_checklist_archived_progress";
   const VERSION_KEY = "wf_checklist_current_version";
+
+  const MIGRATION_VERSIONS = [20261003000000, 20261010000000, 20261020000000, 20261024000000];
+  const MIGRATIONS_PATH = "../migrations/min/";
+  const loadedMigrations = new Map();
 
   let _cache = null;
 
@@ -21,13 +20,6 @@ WF.storage = (function () {
       return {};
     }
   }
-
-  const MIGRATIONS = [
-    { version: 20261003000000, renames: migration20261003 },
-    { version: 20261010000000, renames: migration20261010 },
-    { version: 20261020000000, renames: migration20261020 },
-    { version: 20261024000000, renames: migration20261024 },
-  ];
 
   function parseVersion(value) {
     const num = Number(value);
@@ -51,6 +43,37 @@ WF.storage = (function () {
     return changed;
   }
 
+  function getPendingVersions(fromVersion, targetVersion) {
+    const target = parseVersion(targetVersion);
+    if (target === null) return [];
+
+    const current = parseVersion(fromVersion) ?? 0;
+    return MIGRATION_VERSIONS.filter((version) => version > current && version <= target).sort((a, b) => a - b);
+  }
+
+  async function loadMigration(version) {
+    if (loadedMigrations.has(version)) return;
+
+    const module = await import(`${MIGRATIONS_PATH}${version}.min.js`);
+    if (!Array.isArray(module.default)) throw new TypeError(`Migration ${version} does not export a renames array.`);
+    loadedMigrations.set(version, module.default);
+  }
+
+  async function ensureMigrations(fromVersion = null, targetVersion = WF.WCT_VERSION) {
+    const from = fromVersion ?? localStorage.getItem(VERSION_KEY);
+    await Promise.all(getPendingVersions(from, targetVersion).map(loadMigration));
+  }
+
+  function findMissingMigrations() {
+    try {
+      if (localStorage.getItem(STORAGE_KEY) === null) return [];
+      return getPendingVersions(localStorage.getItem(VERSION_KEY), WF.WCT_VERSION).filter((version) => !loadedMigrations.has(version));
+    } catch (err) {
+      console.warn("Could not inspect pending migrations.", err);
+      return [];
+    }
+  }
+
   function runMigrations(progressMap, targetVersion, fromVersion = null) {
     const target = parseVersion(targetVersion);
     if (target === null) return progressMap;
@@ -58,10 +81,13 @@ WF.storage = (function () {
     const current = parseVersion(fromVersion ?? localStorage.getItem(VERSION_KEY)) ?? 0;
     if (current >= target) return progressMap;
 
-    const pending = MIGRATIONS
-      .filter((m) => m.version > current && m.version <= target)
-      .sort((a, b) => a.version - b.version);
-    if (pending.length === 0) return progressMap;
+    const pendingVersions = getPendingVersions(current, target);
+    if (pendingVersions.length === 0) return progressMap;
+
+    const missing = pendingVersions.filter((version) => !loadedMigrations.has(version));
+    if (missing.length > 0) throw new Error(`Migration(s) ${missing.join(", ")} not loaded: await WF.storage.ensureMigrations() first.`);
+
+    const pending = pendingVersions.map((version) => ({ version, renames: loadedMigrations.get(version) }));
 
     try {
       const archive = readArchive();
@@ -107,6 +133,10 @@ WF.storage = (function () {
 
   function load() {
     if (_cache) return _cache;
+
+    const missing = findMissingMigrations();
+    if (missing.length > 0) throw new Error(`Storage not ready, migration(s) ${missing.join(", ")} not loaded: await WF.storage.ready first.`);
+
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
@@ -187,9 +217,24 @@ WF.storage = (function () {
   window.addEventListener("storage", (event) => {
     if (event.key !== STORAGE_KEY) return;
     _cache = null;
-    if (WF.render) WF.render.renderAll();
-    if (WF.mastery) WF.mastery.render();
+    ensureMigrations()
+      .then(() => {
+        if (WF.render) WF.render.renderAll();
+        if (WF.mastery) WF.mastery.render();
+      })
+      .catch((err) => console.error("Could not refresh progress changed in another tab.", err));
   });
 
-  return { load, loadForSync, save, setOwned, setOwnedBulk, clearAll, runMigrations, STORAGE_KEY, ARCHIVE_KEY };
+  const ready = (async function () {
+    try {
+      if (localStorage.getItem(STORAGE_KEY) === null) return;
+    } catch (err) {
+      console.warn("Storage unavailable, no migration to load.", err);
+      return;
+    }
+    await ensureMigrations();
+  })();
+  ready.catch((err) => console.error("Storage migrations could not be loaded.", err));
+
+  return { load, loadForSync, save, setOwned, setOwnedBulk, clearAll, runMigrations, ensureMigrations, ready, STORAGE_KEY, ARCHIVE_KEY };
 })();

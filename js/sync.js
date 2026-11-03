@@ -1,5 +1,3 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import LZString from "../vendor/lz-string.js";
 
 const firebaseConfig = {
@@ -13,14 +11,16 @@ const firebaseConfig = {
 
 const COLLECTION_NAME = "sync_sessions";
 const ERROR_RATE_LIMITED = "CLIENT_RATE_LIMITED";
+const INFO_OFFLINE = "INFO_OFFLINE";
 const ERROR_REMOTE_AHEAD = "REMOTE_AHEAD";
-const WARNING_PAYLOAD_VERSION = "PAYLOAD_VERSION_HIGHER"
+const WARNING_PAYLOAD_VERSION = "PAYLOAD_VERSION_HIGHER";
 const SYNC_KEY_PATTERN = /^[a-f0-9]{64}$/;
 const MAX_PAYLOAD_BYTES = 256000;
 const LAST_PUSH_DATE = "wf_checklist_last_push_date";
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+let app = null;
+let db = null;
+let firebaseInitialized = false;
 
 let _lastPushAt = 0;
 let _lastPullAt = 0;
@@ -30,6 +30,34 @@ const PUSH_COOLDOWN_MS = 10000;
 const PULL_COOLDOWN_MS = 10000;
 
 window.WF = window.WF || {};
+
+function isOffline() {
+  return navigator.onLine === false;
+}
+
+function isLocalProtocol() {
+  return window.location.protocol === "file:";
+}
+
+async function ensureFirebaseInitialized() {
+  if (firebaseInitialized) return true;
+  if (isOffline() || isLocalProtocol()) return false;
+
+  try {
+    const [{ initializeApp }, { getFirestore }] = await Promise.all([
+      import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"),
+      import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js")
+    ]);
+
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    firebaseInitialized = true;
+    return true;
+  } catch (err) {
+    console.warn("[Sync] Failed to load Firebase modules:", err);
+    return false;
+  }
+}
 
 function isValidKey(syncKey) {
   return typeof syncKey === "string" && SYNC_KEY_PATTERN.test(syncKey);
@@ -53,8 +81,11 @@ WF.sync = {
   },
 
   async checkRemoteVersion(syncKey) {
+    if (isOffline() || isLocalProtocol()) return null;
+    if (!await ensureFirebaseInitialized()) return false;
     if (!isValidKey(syncKey)) return null;
 
+    const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const snapshot = await getDoc(doc(db, COLLECTION_NAME, syncKey));
     if (!snapshot.exists()) return null;
 
@@ -65,7 +96,10 @@ WF.sync = {
     };
   },
 
-async pushData(syncKey, { force = false } = {}) {
+  async pushData(syncKey, { force = false } = {}) {
+    if (isLocalProtocol()) return false;
+    if (isOffline()) throw new Error(INFO_OFFLINE);
+    if (!await ensureFirebaseInitialized()) return false;
     if (!isValidKey(syncKey)) return false;
 
     const now = Date.now();
@@ -77,6 +111,7 @@ async pushData(syncKey, { force = false } = {}) {
       const compressedPayload = this.getCompressedPayload();
       if (compressedPayload.length > MAX_PAYLOAD_BYTES) throw new Error("PAYLOAD_TOO_LARGE");
 
+      const { doc, setDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
       const docRef = doc(db, COLLECTION_NAME, syncKey);
       
       if (!force) {
@@ -103,6 +138,9 @@ async pushData(syncKey, { force = false } = {}) {
   },
 
   async pullData(syncKey, { force = false } = {}) {
+    if (isLocalProtocol()) return false;
+    if (isOffline()) throw new Error(INFO_OFFLINE);
+    if (!await ensureFirebaseInitialized()) return false;
     if (!isValidKey(syncKey)) return null;
 
     const now = Date.now();
@@ -116,6 +154,7 @@ async pushData(syncKey, { force = false } = {}) {
         throw new Error(WARNING_PAYLOAD_VERSION);
       }
 
+      const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
       const snapshot = await getDoc(doc(db, COLLECTION_NAME, syncKey));
       _lastPullAt = now;
 
@@ -133,6 +172,7 @@ async pushData(syncKey, { force = false } = {}) {
       const parsedPayload = JSON.parse(decompressedString);
 
       if (parsedPayload && parsedPayload.data && typeof WF.storage?.runMigrations === "function") {
+        await WF.storage.ensureMigrations(remoteInfo.schemaVersion, WF.WCT_VERSION);
         parsedPayload.data = WF.storage.runMigrations(
           parsedPayload.data,
           WF.WCT_VERSION,
@@ -151,8 +191,12 @@ async pushData(syncKey, { force = false } = {}) {
   },
 
   async deleteRemoteData(syncKey) {
+    if (isLocalProtocol()) return false;
+    if (isOffline()) throw new Error(INFO_OFFLINE);
+    if (!await ensureFirebaseInitialized()) return false;
     if (!isValidKey(syncKey)) return false;
     try {
+      const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
       await deleteDoc(doc(db, COLLECTION_NAME, syncKey));
       _lastKnownRemoteAt = 0;
       localStorage.removeItem(LAST_PUSH_DATE);

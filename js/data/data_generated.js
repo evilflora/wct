@@ -1,4 +1,4 @@
-// Generated with "generate.html" on 2026-10-30 12:50:30 ET in 130.20ms - 19509 items source, 10472 lines created.
+// Generated with "generate.html" on 2026-11-03 14:08:54 ET in 151.00ms - 19509 items source, 10477 lines created.
 // Dont change this by hand, use my "generated.html" and download "all.json" from WFCD, or for custom data, use "js/generade/custom_data.js".
 // If you don't know what you're doing, PLEASE do nothing.
 WF.data = WF.data || [];
@@ -355,6 +355,9 @@ WF.data.push(
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/AvatarImageBadgeXaku", display_name: {"en":"Monotone Xaku Glyph"}, category: "glyph", type: null, hidden: true },
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/AvatarImageNightwaveAoiBarbarianGlyph", display_name: {"en":"Morohime Ichigeki Glyph"}, category: "glyph", type: null, hidden: true },
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/XMas20MotherGlyph", display_name: {"en":"Mother Tennobaum Glyph"}, category: "glyph", type: null },
+	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/FanChannel/AvatarImageMovemberBaruukBright", display_name: {"en":"Movember Baruuk Community Glyph - Bright"}, category: "glyph", type: null, hidden: true },
+	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/FanChannel/AvatarImageMovemberBaruukBW", display_name: {"en":"Movember Baruuk Community Glyph - Dark"}, category: "glyph", type: null, hidden: true },
+	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/AvatarImageMovember", display_name: {"en":"Movember Glyph"}, category: "glyph", type: null, hidden: true },
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/Factions/GlyphFactionMurmur", display_name: {"en":"Murmur Glyph"}, category: "glyph", type: null, hidden: true },
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/XMas20OtakGlyph", display_name: {"en":"Necraloid Tennobaum Glyph"}, category: "glyph", type: null },
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/BabyNatahGlyph", display_name: {"en":"Neolyst Natah Glyph"}, category: "glyph", type: null, hidden: true },
@@ -5808,7 +5811,9 @@ WF.data.push(
 	{ item_name: "/Lotus/Upgrades/Skins/Armor/TnCharityRibbonArmor/ConqueraArmorA", display_name: {"en":"Conquera Shoulder Ribbon"}, category: "skin_warframe", type: "Skin" },
 	{ item_name: "/Lotus/Upgrades/Skins/Scarves/TnCharityRibbonSyandana", display_name: {"en":"Conquera Syandana"}, category: "syandana", type: null },
 	{ item_name: "/Lotus/Upgrades/Skins/Scarves/ZephyrQTCCSyandana", display_name: {"en":"Conquera Uplift Syandana"}, category: "syandana", type: null },
+	{ item_name: "/Lotus/Types/Items/ShipDecos/ConqueraValkyrDisplay", display_name: {"en":"Conquera Valkyr Community Display"}, category: "ship_decoration", type: null },
 	{ item_name: "/Lotus/Types/Items/ShipDecos/Plushies/PlushyVirminkQTCC", display_name: {"en":"Conquera Virmink Floof"}, category: "floof", type: null },
+	{ item_name: "/Lotus/Types/Items/ShipDecos/ConqueraVorunaDisplay", display_name: {"en":"Conquera Voruna Community Display"}, category: "ship_decoration", type: null },
 	{ item_name: "/Lotus/Types/Game/KubrowPet/Colors/KubrowPetColorDuviriWolfMid", display_name: {"en":"Conspirator Green"}, category: "companion_cosmetic", type: ["kubrow","kavat"], hidden: true, companion_cosmetic_type: "Fur Color" },
 	{ item_name: "/Lotus/Types/Items/ShipDecos/JS2HunhowStare2in1Display", display_name: {"en":"Constellations Fusion Display"}, category: "ship_decoration", type: null },
 	{ item_name: "/Lotus/Upgrades/Skins/Armor/EntNecraArmorTwo/EntNecraArmorTwoC", display_name: {"en":"Contegorus Chest Plate"}, category: "skin_warframe", type: "Skin", skin_type: "Plates" },

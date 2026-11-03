@@ -8,7 +8,9 @@
 	<meta name="description" content="Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more.">
 	<meta name="robots" content="index, follow">
 	<link rel="canonical" href="https://evilflora.github.io/wct/">
-
+	<link rel="manifest" href="manifest.webmanifest">
+	<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+	<meta name="theme-color" content="#060000">
 	<meta property="og:type" content="website">
 	<meta property="og:site_name" content="Warframe Completion Tracker">
 	<meta property="og:title" content="Warframe Completion Tracker">
@@ -17,8 +19,8 @@
 	<meta property="og:locale" content="en_US">
 	<link rel="stylesheet" href="css/min/style.min.css">
 	<link rel="icon" type="image/x-icon" href="img/favicon.ico">
-	<script src="js/min/constants.min.js"></script>
-	<script src="js/min/logs.min.js"></script>
+	<script src="js/min/constants.min.js" defer></script>
+	<script src="js/min/logs.min.js" defer></script>
 	<script type="application/ld+json">
 	{
 		"@context": "https://schema.org",
@@ -30,8 +32,8 @@
 		"description": "Track your Warframe progress: Warframes, weapons, mods, companions, honoria, challenges, Mastery Ranks and more."
 	}
 	</script>
-	<script>
-		(function () { // this is loaded and executed before theme.js is even loaded
+	<script type="module">
+		(function () {
 			try {
 				var options = JSON.parse(localStorage.getItem("wf_checklist_options") || "{}");
 				var colors = options.themeColors || {};
@@ -117,12 +119,20 @@
 					<p>By pressing "CREATE", a random secret key will be generated, <b>do not lose it</b> (it'll be included in the export file).</p>
 					<p>If you already have a secret key, you can paste it and then SYNC, this allow you to download or upload your save.</p>
 					<p><b>Keep this secret, do not share, do not show it. Anyone with this key will be able to modify your save.</b></p>
-					<div class="sync-key-row">
-						<label for="sync-key">Your secret key:</label>
-						<form>
-							<input id="sync-key" class="sync-key" type="password" placeholder="64 characters key" maxlength="64" minlength="64" pattern="[0-9a-f]{64}" autocomplete="off" spellcheck="false" autocapitalize="off">
-							<button type="button" id="btn-sync-key-reveal" class="item-info-btn" aria-pressed="false" aria-label="Reveal secret key">Reveal</button>
-						</form>
+					<div class="sync-grid">
+						<div class="sync-key-row">
+							<form>
+								<label for="sync-key">Your secret key</label>
+								<input id="sync-key" class="sync-key" type="password" placeholder="64 characters key" maxlength="64" minlength="64" pattern="[0-9a-f]{64}" autocomplete="off" spellcheck="false" autocapitalize="off">
+								<button type="button" id="btn-sync-key-reveal" class="item-info-btn" aria-pressed="false" aria-label="Reveal secret key">Reveal</button>
+							</form>
+						</div>
+						<div class="sync-key-row">
+							<form>
+								<label for="last-upload">Last UPLOAD</label>
+								<input id="last-upload" class="sync-key" disabled value="aaaa">
+							</form>
+						</div>
 					</div>
 					<div class="sync-actions">
 						<div class="sync-row">
@@ -353,23 +363,43 @@
 			</div>
 		</div>
 	</div>
-	<script src="js/min/toast.min.js"></script>
-	<script src="js/version.js"></script>
-	<script src="js/min/update-check.min.js"></script>
-	<script src="js/data/data_generated.js"></script>
+	<script src="js/min/toast.min.js" defer></script>
+	<script src="js/version.js" defer></script>
+	<script src="js/min/update-check.min.js" defer></script>
+	<script src="js/min/patchnotes.min.js" defer></script>
+	<script src="js/data/data_generated.js" defer></script>
 	<script type="module" src="js/min/storage.min.js"></script>
-	<script src="js/min/options.min.js"></script>
-	<script src="js/min/theme.min.js"></script>
-	<script src="js/min/mastery.min.js"></script>
-	<script src="js/min/ui-state.min.js"></script>
-	<script src="js/min/export-import.min.js"></script>
-	<script src="js/min/render.min.js"></script>
-	<script src="js/min/main.min.js"></script>
+	<script src="js/min/options.min.js" defer></script>
+	<script src="js/min/theme.min.js" defer></script>
+	<script src="js/min/mastery.min.js" defer></script>
+	<script src="js/min/ui-state.min.js" defer></script>
+	<script src="js/min/export-import.min.js" defer></script>
+	<script src="js/min/render.min.js" defer></script>
+	<script src="js/min/main.min.js" defer></script>
 	<script type="module">
 		window.WF = window.WF || {};
-		WF.syncReady = (window.location.protocol === "file:")
-			? Promise.resolve(null)
-			: import("./js/min/sync.min.js").then(() => window.WF.sync || null).catch((err) => { console.warn("Sync module could not be loaded.", err); return null; });
+		let syncPromise = null;
+
+		WF.loadSync = function () {
+			if (window.location.protocol === "file:" && !(navigator.onLine === false)) return Promise.resolve(null);
+			syncPromise ??= import("./js/min/sync.min.js?v=" + Date.now()) // hum, I had some issues with the cache
+				.then(() => window.WF.sync || null)
+				.catch((err) => {
+					console.warn("Sync module could not be loaded.", err);
+					syncPromise = null; // Allow a retry once the connection is back
+					return null;
+				});
+			return syncPromise;
+		};
+	</script>
+	<script type="module">
+		const isHosted = !(window.location.protocol === "file:");
+
+		if (isHosted && "serviceWorker" in navigator) { // Should allow the user to use the project without internet
+			window.addEventListener("load", () => {
+				navigator.serviceWorker.register("sw.js").catch((err) => console.warn("Service worker registration failed.", err));
+			});
+		}
 	</script>
 </body>
 </html>

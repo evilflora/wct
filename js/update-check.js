@@ -15,6 +15,12 @@ WF.updateCheck = (function () {
 		updateToggle.addEventListener("click", () => showUpdateAvailable());
 	}
 
+	let hasSettled = false;
+
+	function isOffline() {
+		return navigator.onLine === false;
+	}
+
 	function isLocalCopy() {
 		return window.location.protocol === "file:";
 	}
@@ -90,6 +96,7 @@ WF.updateCheck = (function () {
 	async function check() {
 		const localVersion = Number(WF.WCT_VERSION);
 		if (!localVersion || Number.isNaN(localVersion)) return true;
+		if (isOffline()) return false;
 
 		try {
 			const response = await fetch(versionFileUrl(), {
@@ -122,10 +129,37 @@ WF.updateCheck = (function () {
 		}
 	}
 
-	async function init() {
-		const isSettled = await check();
-		if (isSettled) return;
-		checkIntervalId = setInterval(check, CHECK_INTERVAL_MS);
+	async function runCheck() {
+		const settled = await check();
+		if (settled) {
+			hasSettled = true;
+			stopPeriodicCheck();
+		}
+		return settled;
+	}
+
+	function init() {
+		window.addEventListener("offline", () => {
+			WF.toast.show("You are now offline, it should work as usual.", { type: "info" });
+		});
+
+		window.addEventListener("online", async () => {
+			WF.toast.show("You are back online.", { type: "info" });
+			
+			if (!isOffline()) {
+				await runCheck();
+			}
+		});
+
+		if (!isOffline()) {
+			runCheck().then((settled) => {
+				if (!settled) {
+					checkIntervalId = setInterval(runCheck, CHECK_INTERVAL_MS);
+				}
+			});
+		} else {
+			WF.toast.show("You are offline, it should work as usual.", { type: "info" });
+		}
 	}
 
 	return { check, init };

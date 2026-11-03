@@ -1,6 +1,14 @@
 /* This file use "Auto-Minify" in "Visual Studio Code" to create it's compressed version on save */
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+	
+	try {
+		await WF.storage.ready;
+	} catch (err) {
+		WF.toast.show("Could not load data migrations. Reload the page, your saved data was not modified.", { type: "error", timeoutMs: 0 });
+		return;
+	}
+
 	WF.theme.init();
 	WF.logs.AddLog("Application started");
 	
@@ -42,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	const itemListFooter					= getEl("item-list-footer");
 	const logsOverlay             = getEl("logs-overlay");
 	const importApiOverlay        = getEl("import-api-overlay");
+	const lastUpload              = getEl("last-upload");
 
 	const toggleOverlay = (overlay, show) => overlay.classList.toggle("visible", show);
 	
@@ -49,6 +58,10 @@ document.addEventListener("DOMContentLoaded", function () {
 	tooltip.id = "global-tooltip";
 	tooltip.className = "global-tooltip";
 	document.body.appendChild(tooltip);
+
+	function isOffline() {
+		return navigator.onLine === false;
+	}
 
 	document.addEventListener("mouseover", (event) => {
 		const el = event.target.closest("[data-tooltip]");
@@ -158,32 +171,38 @@ document.addEventListener("DOMContentLoaded", function () {
 		WF.mastery.render();
 	}
 
+	function setHidden(el, isHidden) {
+		el?.classList.toggle("hidden", Boolean(isHidden));
+	}
+
+	function updateLastUpload()
+	{
+		let lastUploadValue = localStorage.getItem("wf_checklist_last_push_date") || null;
+		const hasLastUpload = Boolean(lastUploadValue);
+
+		setHidden(lastUpload, !hasLastUpload);
+		if (hasLastUpload) {
+			const timestamp = Number(lastUploadValue);
+			const date = new Date(timestamp); lastUpload.value = Number.isFinite(timestamp) && !Number.isNaN(date.getTime()) ? date.toLocaleString() : "";
+		}
+	}
+
 	function updateSyncUIState() {
 		const options = WF.options.load();
-		const hasStoredKey = options.syncKey && options.syncKey.length === 64;
-			
+		const hasStoredKey = typeof options.syncKey === "string" && options.syncKey.length === 64;
+
+		updateLastUpload();
+
+		const connectedControls = [syncPushBtn, syncPullBtn, syncDisconnectBtn, syncDeleteBtn];
+		connectedControls.forEach((el) => setHidden(el, !hasStoredKey));
+		setHidden(syncActionBtn, hasStoredKey);
+
+		syncKey.readOnly = hasStoredKey;
+
 		if (hasStoredKey) {
 			syncKey.value = options.syncKey;
-			syncKey.readOnly = true;
-			
-			syncActionBtn.classList.add("hidden");
-			syncPushBtn.classList.remove("hidden");
-			syncPullBtn.classList.remove("hidden");
-			syncDisconnectBtn.classList.remove("hidden");
-			syncDeleteBtn.classList.remove("hidden");
 		} else {
-			syncKey.readOnly = false;
-			syncPushBtn.classList.add("hidden");
-			syncPullBtn.classList.add("hidden");
-			syncDisconnectBtn.classList.add("hidden");
-			syncDeleteBtn.classList.add("hidden");
-			syncActionBtn.classList.remove("hidden");
-			
-			if (syncKey.value.trim().length === 64) {
-				syncActionBtn.textContent = "SYNC";
-			} else {
-				syncActionBtn.textContent = "CREATE";
-			}
+			syncActionBtn.textContent = syncKey.value.trim().length === 64 ? "SYNC" : "CREATE";
 		}
 	}
 
@@ -207,18 +226,25 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 
 	async function requireSync() {
-		const sync = await (WF.syncReady || Promise.resolve(WF.sync || null));
+		const sync = await WF.loadSync();
 		if (!sync) WF.toast.show(`Sync module unavailable (offline, blocked CDN).`, { type: "error", key: "wf-sync-unavailable" });
 		return sync;
+	}
+
+	function syncOfflineToast()
+	{
+		WF.toast.show(`You are offline, SYNC is disabled.`, { type: "info" });
 	}
 
 	function reportSyncError(error, fallbackMessage, actionLabel) {
 		if (error.message === "CLIENT_RATE_LIMITED" || error.message === "RATE_LIMITED") {
 			WF.toast.show(`You are being rate limited, maximum 1 ${actionLabel} per 10 seconds.`, { timeoutMs: 3000, type: "info" });
 			return;
-		}
-		if (error.message === "PAYLOAD_TOO_LARGE") {
+		} else if (error.message === "PAYLOAD_TOO_LARGE") {
 			WF.toast.show(`Your save is too large to be synced (250 KB limit).`, { type: "error" });
+			return;
+		} else if (error.message === "INFO_OFFLINE") {
+			syncOfflineToast();
 			return;
 		}
 		WF.toast.show(fallbackMessage, { type: "error" });
@@ -227,6 +253,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	syncActionBtn.addEventListener("click", () => withBusyButton(syncActionBtn, async () => {
 		if (!checkRealServer()) return;
+		if (isOffline()) { syncOfflineToast(); return; }
 		const inputVal = syncKey.value.trim();
 
 		if (inputVal.length === 64) {
@@ -255,6 +282,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	syncPullBtn.addEventListener("click", () => withBusyButton(syncPullBtn, async () => {
     if (!checkRealServer()) return;
+		if (isOffline()) { syncOfflineToast(); return; }
     const options = WF.options.load();
     if (!options.syncKey) return;
 
@@ -292,6 +320,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	syncPushBtn.addEventListener("click", () => withBusyButton(syncPushBtn, async () => {
     if (!checkRealServer()) return;
+		if (isOffline()) { syncOfflineToast(); return; }
     const options = WF.options.load();
     if (!options.syncKey) return;
 
@@ -320,6 +349,7 @@ document.addEventListener("DOMContentLoaded", function () {
           try {
             await sync.pushData(options.syncKey, { force: true });
             WF.toast.show(`Cloud data overwritten.`, { type: "success" });
+						updateLastUpload();
           } catch (forcedErr) {
             reportSyncError(forcedErr, `Failed to send data.`, "UPLOAD");
           }
@@ -333,7 +363,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }));
 
 	syncDisconnectBtn.addEventListener("click", () => {
-		const msgLabel = "Are you sure you want to disconnect? The key will be lost if it is not manually saved.";
+		let msgLabel = "Are you sure you want to disconnect? The key will be lost if it is not manually saved.";
 		if (!confirm(msgLabel)) return;
 
 		const updatedOptions = { ...WF.options.load() };
@@ -349,9 +379,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	syncDeleteBtn.addEventListener("click", () => withBusyButton(syncDeleteBtn, async () => {
 		if (!checkRealServer()) return;
+		if (isOffline()) { syncOfflineToast(); return; }
 		const options = WF.options.load();
 		const currentKey = options.syncKey;
-		const msgLabel = "Are you sure you want to remove this key and delete all cloud data?";
+		let msgLabel = "Are you sure you want to remove this key and delete all cloud data?";
 
 		if (!currentKey) return;
 		if (!confirm(msgLabel)) return;
@@ -386,6 +417,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	function openSync() {
+		WF.loadSync(); // Warm up the sync module while the user reads the panel
 		updateSyncUIState();
 		toggleOverlay(syncOverlay, true);
 	}
@@ -494,6 +526,8 @@ document.addEventListener("DOMContentLoaded", function () {
 		const fragment = document.createDocumentFragment();
 
 		WF.CHANGELOG.forEach((entry, index) => {
+			if (!entry || !Array.isArray(entry.text)) return;
+
 			const li = document.createElement("li");
 			li.className = "changelog-entry" + (index === 0 ? " expanded" : "");
 
@@ -503,14 +537,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
 			const dateEl = document.createElement("strong");
 			dateEl.textContent = `${entry.date} - Game version: ${entry.version}`;
-
 			header.append(dateEl);
 
-			const body = document.createElement("p");
+			const body = document.createElement("div");
 			body.className = "changelog-entry-text";
-			String(entry.text).split(/<\/?br\s*\/?>/i).forEach((chunk, chunkIndex) => {
-				if (chunkIndex > 0) body.appendChild(document.createElement("br"));
-				body.appendChild(document.createTextNode(chunk));
+
+			entry.text.forEach((textLine) => {
+				const p = document.createElement("p");
+				p.textContent = textLine;
+				body.appendChild(p);
 			});
 
 			if (entry.items && (entry.items.new?.length || entry.items.removed?.length)) {
@@ -521,7 +556,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 				itemList.addEventListener("click", (e) => {
 					e.stopPropagation();
-					openNameListGeneric(`Item changes for update ${entry.date}`, entry.items)
+					openNameListGeneric(`Item changes for update ${entry.date}`, entry.items);
 				});
 
 				header.appendChild(itemList);
