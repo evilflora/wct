@@ -638,7 +638,7 @@ WF.render = (function () {
   }
 
   function createInfoBadge(text, tooltip) {
-    const div = document.createElement("div");
+    const div = document.createElement("span");
     div.className = "item-info";
     div.setAttribute("data-tooltip", tooltip);
     const textEl = document.createElement("span");
@@ -649,14 +649,20 @@ WF.render = (function () {
   }
 
   function appendBadges(row, item) {
+    if (!row || !item) return;
+
     const normalizedItem = { ...item, masteryXp: Number(item.mastery_xp) || null };
     const activeBadges = ITEM_BADGES.filter((badge) => normalizedItem[badge.key]);
     if (activeBadges.length === 0) return;
 
-    const divInfos = document.createElement("div");
-    divInfos.className = "item-infos";
-    activeBadges.forEach((badge) => divInfos.append(createInfoBadge(badge.text, badge.tooltip(normalizedItem))));
-    row.appendChild(divInfos);
+    const spanInfos = document.createElement("span");
+    spanInfos.className = "item-infos";
+    
+    activeBadges.forEach((badge) => {
+      spanInfos.append(createInfoBadge(badge.text, badge.tooltip(normalizedItem)));
+    });
+
+    row.appendChild(spanInfos);
   }
 
   function createItemRowElement(item, { owned = false, interactive = true } = {}) {

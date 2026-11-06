@@ -531,13 +531,18 @@ document.addEventListener("DOMContentLoaded", async function () {
 			const li = document.createElement("li");
 			li.className = "changelog-entry" + (index === 0 ? " expanded" : "");
 
-			const header = document.createElement("button");
-			header.type = "button";
+			const header = document.createElement("div");
 			header.className = "changelog-entry-header";
 
+			const version = document.createElement("button");
+			version.className = "changelog-version";
+			version.type = "button";
+			
 			const dateEl = document.createElement("strong");
 			dateEl.textContent = `${entry.date} - Game version: ${entry.version}`;
-			header.append(dateEl);
+			version.append(dateEl);
+
+			header.append(version);
 
 			const body = document.createElement("div");
 			body.className = "changelog-entry-text";

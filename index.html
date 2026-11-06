@@ -364,10 +364,10 @@
 		</div>
 	</div>
 	<script src="js/min/toast.min.js" defer></script>
-	<script src="js/version.js" defer></script>
+	<script src="js/min/version.min.js" defer></script>
 	<script src="js/min/update-check.min.js" defer></script>
 	<script src="js/min/patchnotes.min.js" defer></script>
-	<script src="js/data/data_generated.js" defer></script>
+	<script src="js/data/min/data_generated.min.js" defer></script>
 	<script type="module" src="js/min/storage.min.js"></script>
 	<script src="js/min/options.min.js" defer></script>
 	<script src="js/min/theme.min.js" defer></script>
@@ -397,7 +397,9 @@
 
 		if (isHosted && "serviceWorker" in navigator) { // Should allow the user to use the project without internet
 			window.addEventListener("load", () => {
-				navigator.serviceWorker.register("sw.js").catch((err) => console.warn("Service worker registration failed.", err));
+				navigator.serviceWorker
+					.register("sw.js", { updateViaCache: "none" })
+					.catch((error) => console.error("[SW] Registration failed:", error));
 			});
 		}
 	</script>

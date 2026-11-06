@@ -275,13 +275,10 @@ ul {
 .item-info-text { font-size: 11px; }
 
 .item-info-btn {
-	display: inline-flex;
 	border: 1px solid var(--border);
 	font-size: 0.75rem;
 	cursor: pointer;
 	padding: 4px;
-	float:right;
-
 }
 
 .item-info-btn:hover {
@@ -1058,6 +1055,10 @@ ul {
 }
 
 .changelog-entry.expanded .changelog-entry-text { display: block; }
+
+.changelog-version {
+	padding: 0;
+}
 
 .info-empty { font-style: italic; font-size: 13px; }
 

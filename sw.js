@@ -1,7 +1,17 @@
 /* Service worker: offline support. Strategy "network first, cache fallback", so users get the newest files whenever they are online. */
 
 const CACHE_PREFIX = "wct-cache-";
-const CACHE_NAME = `${CACHE_PREFIX}v1`;
+
+self.WF = self.WF || {};
+try {
+  importScripts("js/version.js");
+} catch (error) {
+  console.error("[SW] Unable to load js/version.js:", error);
+}
+
+const CACHE_VERSION = String(self.WF.version || "0");
+const CACHE_NAME = `${CACHE_PREFIX}${CACHE_VERSION}`;
+
 const NETWORK_TIMEOUT_MS = 4000;
 
 const PRECACHE_URLS = [
@@ -12,8 +22,8 @@ const PRECACHE_URLS = [
   "img/icon-512.png",
   "css/min/style.min.css",
   "img/favicon.ico",
-  "js/version.js",
-  "js/data/data_generated.js",
+  "js/min/version.min.js",
+  "js/data/min/data_generated.min.js",
   "js/min/constants.min.js",
   "js/min/logs.min.js",
   "js/min/toast.min.js",

@@ -2,6 +2,18 @@
 
 WF.CHANGELOG = [
 	{
+		date: "2026/11/06 00:00:00", 
+		version: "44.1.4", 
+		text: [
+			`New items from Evil Baro.`,
+			`Fixed Protea subsume ability name.`,
+		],
+		items: {
+			"new": [ "Eskhatos Parazon Skin","Last Laugh Ki'Teer Glyph" ],
+			"removed": [],
+		}
+	},
+	{
 		date: "2026/11/03 00:00:00", 
 		version: "44.1.4", 
 		text: [

@@ -1,4 +1,4 @@
-// Generated with "generate.html" on 2026-11-03 14:08:54 ET in 151.00ms - 19509 items source, 10477 lines created.
+// Generated with "generate.html" on 2026-11-06 11:12:22 ET in 123.80ms - 19509 items source, 10479 lines created.
 // Dont change this by hand, use my "generated.html" and download "all.json" from WFCD, or for custom data, use "js/generade/custom_data.js".
 // If you don't know what you're doing, PLEASE do nothing.
 WF.data = WF.data || [];
@@ -333,6 +333,7 @@ WF.data.push(
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/Warframes/KoumeiDiceGlyph", display_name: {"en":"Koumei Dice Glyph"}, category: "glyph", type: null, hidden: true },
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/AvatarImageOroKitty", display_name: {"en":"Kuria Glyph"}, category: "glyph", type: null, hidden: true },
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/Factions/GlyphFactionKuva", display_name: {"en":"Kuva Glyph"}, category: "glyph", type: null, hidden: true },
+	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/AvatarImageEvilBaroIcon", display_name: {"en":"Last Laugh Ki'Teer Glyph"}, category: "glyph", type: null },
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/AvatarImageLettieAccoladeGlyph", display_name: {"en":"Lettie Accolade Glyph"}, category: "glyph", type: null, hidden: true },
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/AvatarImagePixelLettie", display_name: {"en":"Lettie Pixel Glyph"}, category: "glyph", type: null, hidden: true },
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/Minigames/MinigameGlyphStickerC", display_name: {"en":"Lillian Killian Glyph"}, category: "glyph", type: null, hidden: true },
@@ -5640,7 +5641,7 @@ WF.data.push(
 	{ item_name: "/Lotus/Upgrades/Skins/EliteAlerts/EliteAlertAtterax", display_name: {"en":"Atterax Telos Skin"}, category: "skin_weapon", type: null },
 	{ item_name: "/Lotus/Types/Items/ShipDecos/MasteryTrophies/Rank36Trophy", display_name: {"en":"Aurichalc Legendary Mastery Slate"}, category: "trophy", type: "Mastery" },
 	{ item_name: "/Lotus/Types/Items/ShipDecos/Deimos/LisetPropOrokinFloorLight", display_name: {"en":"Auroron"}, category: "ship_decoration", type: null },
-	{ item_name: "/Lotus/Types/Items/ShipDecos/Plants/Nokko/LisetPropZARxTreeNaturalSapling", display_name: {"en":"Autumn Tuvul Sapling "}, category: "ship_decoration", type: null },
+	{ item_name: "/Lotus/Types/Items/ShipDecos/Plants/Nokko/LisetPropZARxTreeNaturalSapling", display_name: {"en":"Autumn Tuvul Sapling"}, category: "ship_decoration", type: null },
 	{ item_name: "/Lotus/Types/Items/ShipDecos/Plants/Nokko/LisetPropDuvxZarimanPlantA", display_name: {"en":"Autumnal Bonsai"}, category: "ship_decoration", type: null },
 	{ item_name: "/Lotus/Upgrades/Skins/Armor/FurisArmor/SolsticeFurisLArmor", display_name: {"en":"Avia Solstice Ankle Plate"}, category: "skin_warframe", type: "Skin", skin_type: "Plates" },
 	{ item_name: "/Lotus/Upgrades/Skins/Armor/FurisArmor/SolsticeFurisCArmor", display_name: {"en":"Avia Solstice Chest Plate"}, category: "skin_warframe", type: "Skin", skin_type: "Plates" },
@@ -6082,6 +6083,7 @@ WF.data.push(
 	{ item_name: "/Lotus/Upgrades/Skins/Armor/CrpHighArmor/EvilBaroArcaArmorA", display_name: {"en":"Eskhatos Ki'Teer Shoulder Guards"}, category: "skin_warframe", type: "Skin", skin_type: "Guard" },
 	{ item_name: "/Lotus/Upgrades/Skins/Necramech/MechWeapon/EvilBaroMausolonSkin", display_name: {"en":"Eskhatos Mausolon Skin"}, category: "skin_warframe", type: "Skin", skin_type: "Skin" },
 	{ item_name: "/Lotus/Upgrades/Skins/Necramech/EvilBaroNecramechSkin", display_name: {"en":"Eskhatos Necramech Skin"}, category: "skin_warframe", type: "Skin", skin_type: "Skin" },
+	{ item_name: "/Lotus/Upgrades/Skins/Parazon/EvilBaroParazonSkin", display_name: {"en":"Eskhatos Parazon Skin"}, category: "skin_warframe", type: "Skin", skin_type: "Skin" },
 	{ item_name: "/Lotus/Upgrades/Skins/Armor/EvilBaroArmour/EvilBaroArmourA", display_name: {"en":"Eskhatos Pauldrons"}, category: "skin_warframe", type: "Skin", skin_type: "Pauldrons" },
 	{ item_name: "/Lotus/Upgrades/Skins/Clan/EvilBaroHaloBadgeItem", display_name: {"en":"Eskhatos Sekhara"}, category: "emblem", type: null },
 	{ item_name: "/Lotus/Upgrades/Skins/MeleeDangles/EvilBaroSugatraMeleeDangle", display_name: {"en":"Eskhatos Sugatra"}, category: "sugatra", type: null },
@@ -7266,8 +7268,8 @@ WF.data.push(
 	{ item_name: "/Lotus/Types/Items/ShipDecos/Props/Seasonal/StarDays2026SquarePictureFrame", display_name: {"en":"Star Days Square Frame Display"}, category: "ship_decoration", type: null },
 	{ item_name: "/Lotus/Types/Game/KubrowPet/Colors/KubrowPetColorMidDiamond", display_name: {"en":"Star White"}, category: "companion_cosmetic", type: ["kubrow","kavat"], hidden: true, companion_cosmetic_type: "Fur Color" },
 	{ item_name: "/Lotus/Upgrades/Skins/Operator/Accessories/UmbraTiara", display_name: {"en":"Star-Child Diadem"}, category: "skin_operator", type: null },
-	{ item_name: "/Lotus/Types/Items/ShipDecos/WraithQuestRewardDeco", display_name: {"en":"Statuette - Sevagoth "}, category: "ship_decoration", type: null },
-	{ item_name: "/Lotus/Types/Items/ShipDecos/LisetPropOstStoneFish", display_name: {"en":"Statuette - Thousand-Year Fish "}, category: "ship_decoration", type: null },
+	{ item_name: "/Lotus/Types/Items/ShipDecos/WraithQuestRewardDeco", display_name: {"en":"Statuette - Sevagoth"}, category: "ship_decoration", type: null },
+	{ item_name: "/Lotus/Types/Items/ShipDecos/LisetPropOstStoneFish", display_name: {"en":"Statuette - Thousand-Year Fish"}, category: "ship_decoration", type: null },
 	{ item_name: "/Lotus/Types/Items/ShipDecos/JadeShadows2FightPoster", display_name: {"en":"Stay Together Display"}, category: "ship_decoration", type: null, hidden: true },
 	{ item_name: "/Lotus/Types/Items/ShipDecos/LisetPropWolfHeadStatueCDeco", display_name: {"en":"Steadfast Dynar Bust"}, category: "ship_decoration", type: null },
 	{ item_name: "/Lotus/Types/Items/ShipDecos/LisetPropWolfHeadStatueDDeco", display_name: {"en":"Steadfast Lycath Bust"}, category: "ship_decoration", type: null },
@@ -7753,7 +7755,7 @@ WF.data.push(
 	{ item_name: "/Lotus/Types/Items/ShipDecos/Props/Nokko/LisetPropZARxPrpPlanterWallMountedA", display_name: {"en":"Zariman Planter (Wall Mounted)"}, category: "ship_decoration", type: "Zariman" },
 	{ item_name: "/Lotus/Types/Items/ShipDecos/ZarimanApartment/ZARxPrpStatuePlinthA", display_name: {"en":"Zariman Plinth"}, category: "ship_decoration", type: "Zariman" },
 	{ item_name: "/Lotus/Types/Items/ShipDecos/ZarimanApartment/ZARxPrpEngineGeneratorA", display_name: {"en":"Zariman Portable Generator"}, category: "ship_decoration", type: "Zariman" },
-	{ item_name: "/Lotus/Types/Items/ShipDecos/ZarimanApartment/ZARxPrpClassRoomPostersAh", display_name: {"en":"Zariman Poster Arrangement "}, category: "poster", type: "Zariman?" },
+	{ item_name: "/Lotus/Types/Items/ShipDecos/ZarimanApartment/ZARxPrpClassRoomPostersAh", display_name: {"en":"Zariman Poster Arrangement"}, category: "poster", type: "Zariman?" },
 	{ item_name: "/Lotus/Types/Items/ShipDecos/ZarimanApartment/ZARxPrpFloatingGlobe", display_name: {"en":"Zariman Pre-Orokin Lua Globe"}, category: "ship_decoration", type: "Zariman" },
 	{ item_name: "/Lotus/Types/Items/ShipDecos/ZarimanApartment/ZARxPrpBannerFloorA", display_name: {"en":"Zariman Rug"}, category: "ship_decoration", type: "Zariman" },
 	{ item_name: "/Lotus/Types/Items/ShipDecos/ZarimanApartment/ZARxPrpBannerFloorB", display_name: {"en":"Zariman Rug (Wrinkled)"}, category: "ship_decoration", type: "Zariman" },
