@@ -56,6 +56,7 @@ WF.CATEGORY = {
 	poster:							{ name: "poster",							label: "Posters"						, description: "Equipement / Orbiter / Decorate" },
 	quest:							{ name: "quest",							label: "Quests"							, description: "Codex / Quets" },
 	relic:							{ name: "relic",							label: "Relics"							, description: "Codex / Universe" },
+	research_entries:   { name: "research_entries",   label: "Research Entries"   , description: "Relay / Console left to Cephalon Simaris" },
 	scene:							{ name: "scene",							label: "Scenes"							, description: "Arsenal / Warframe / Appearance / Camera button" },
 	ship_decoration:		{ name: "ship_decoration",		label: "Other (WIP)"				, description: "Equipement / Orbiter / Decorate" },
 	sigil:							{ name: "sigil",							label: "Sigils"							, description: "Arsenal / Warframe / Appearance / Sigils / Sigil" },
@@ -230,7 +231,7 @@ WF.NAV_GROUPS = [
 	},
 	{
 		label: "Collectible",
-		types: [WF.CATEGORY.airsupport, WF.CATEGORY.field_guide, WF.CATEGORY.framefighter, WF.CATEGORY.helminth, WF.CATEGORY.peelypix, WF.CATEGORY.scene, WF.CATEGORY.simulacrum, WF.CATEGORY.somachord],
+		types: [WF.CATEGORY.airsupport, WF.CATEGORY.field_guide, WF.CATEGORY.framefighter, WF.CATEGORY.helminth, WF.CATEGORY.peelypix, WF.CATEGORY.research_entries, WF.CATEGORY.scene, WF.CATEGORY.simulacrum, WF.CATEGORY.somachord],
 	},
 	{
 		label: "Character Customization",

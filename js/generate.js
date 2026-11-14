@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const body = await res.json();
           if (body && typeof body.message === "string") reason = body.message; // e.g. GitHub rate limit message
         } catch (parseErr) {
-          console.debug("Error body is not JSON.", parseErr);
+          WF.Logs.AddLog("Error body is not JSON", "error", parseErr);
         }
         throw new Error(reason);
       }
@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
             failed.push(`${entry.name} (not a JSON array, skipped)`);
           }
         } catch (err) {
-          console.error(`Failed to fetch ${entry.name}.`, err);
+          WF.Logs.AddLog(`Failed to fetch ${entry.name}`, "error", err);
           failed.push(`${entry.name} (${err.message})`);
         }
 
@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       setStatus(`Merged ${total}/${total} files (${merged.length} raw entries). Result ready.`);
     } catch (err) {
-      console.error("Generation failed.", err);
+      WF.Logs.AddLog("Generation failed", "error", err);
       output.value = `Error: ${err.message}`;
       setStatus(`Generation failed: ${err.message}`, true);
     } finally {
@@ -206,7 +206,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   btnGenerate.addEventListener("click", function () {
     if (!WF.generators || WF.generators.length === 0) {
-      setStatus("No generator loaded.", true);
+      setStatus("No generator loaded", true);
       return;
     }
     runGenerator(WF.generators[0]);
@@ -225,11 +225,11 @@ document.addEventListener("DOMContentLoaded", function () {
         await navigator.clipboard.writeText(output.value);
         return;
       } catch (err) {
-        console.error("Failed to copy text using Clipboard API:", err);
+        WF.Logs.AddLog("Failed to copy text using Clipboard API", "error", err);
         alert("Copy failed. Please select and copy manually.");
       }
     } else {
-      console.warn("Clipboard API is not supported in this environment.");
+      WF.Logs.AddLog("Clipboard API is not supported in this environment");
       alert("Copy failed, Clipboard API is unavailable in this environment.");
     }
   });

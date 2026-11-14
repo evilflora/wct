@@ -21,6 +21,9 @@ WF.render = (function () {
   const SIDEBAR_SEARCH_MIN_LENGTH = 3;
   const SIDEBAR_SEARCH_DROPDOWN_MIN_WIDTH = 320;
 
+  const UNDO_TOOLTIP_MAX_NAMES = 3;
+  const isTouchOnly = () => window.matchMedia("(hover: none)").matches;
+
   let activeCategory = savedUiState.activeCategory || null;
   let activeType = savedUiState.activeType || all;
   let activeFilter = savedUiState.activeFilter || {};
@@ -538,8 +541,12 @@ WF.render = (function () {
     btn.textContent = allOwned ? "Uncheck all visible" : "Check all visible";
     btn.disabled = visibleItems.length === 0;
     btn.addEventListener("click", () => {
-      WF.storage.setOwnedBulk(visibleItems.map((item) => item.item_name), !allOwned);
-      WF.logs.AddLog(`Bulk checked status for ${visibleItems.length} items in ${WF.CATEGORY[activeCategory].label} is now ${!allOwned}.`)
+      const targetState = !allOwned;
+      const uniqueNames = visibleItems.map((item) => item.item_name);
+
+      WF.undo.record(uniqueNames, targetState);
+      WF.storage.setOwnedBulk(uniqueNames, targetState);
+      WF.logs.AddLog(`Bulk checked status for ${visibleItems.length} items in ${WF.CATEGORY[activeCategory].label} is now ${targetState}`);
       renderAll();
     });
     container.appendChild(btn);
@@ -555,6 +562,63 @@ WF.render = (function () {
     });
     container.appendChild(btn);
   }
+
+  function describeUndoEntry(entry) {
+    const names = entry.uniqueNames
+      .slice(0, UNDO_TOOLTIP_MAX_NAMES)
+      .map((uniqueName) => WF.data.find((item) => item.item_name === uniqueName)?.display_name?.en)
+      .filter(Boolean);
+
+    const remaining = entry.count - names.length;
+    const details = names.length > 0 ? ` (${names.join(", ")}${remaining > 0 ? `, +${remaining} more` : ""})` : "";
+
+    return `${entry.count} item(s) set to ${entry.restoreTo ? "checked" : "unchecked"}${details}`;
+  }
+
+  function applyUndoState(btn) {
+    if (!btn) return;
+
+    const count = WF.undo.size();
+    btn.classList.toggle("hidden", count === 0);
+    btn.textContent = `Undo (${count})`;
+
+    if (count > 0 && !isTouchOnly()) btn.dataset.tooltip = `Undo: ${describeUndoEntry(WF.undo.peek())}`;
+    else delete btn.dataset.tooltip;
+  }
+
+  function refreshUndoButton() {
+    applyUndoState(document.getElementById("btn-undo"));
+  }
+
+  function handleUndo() {
+    try {
+      const next = WF.undo.peek();
+
+      document.getElementById("global-tooltip")?.classList.remove("visible");
+
+      const restored = WF.undo.undoLast();
+      if (next && restored > 0) {
+        const message = `Undone: ${describeUndoEntry(next)}.`;
+        WF.logs.AddLog(message);
+      }
+      renderAll();
+    } catch (err) {
+      WF.logs.AddLog(`Undo failed`, "error", err);
+      WF.toast.show("Undo failed", { type: "error" });
+    }
+  }
+
+  function buildUndoButton(container) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.id = "btn-undo";
+    btn.className = "bulk-toggle-btn hidden";
+    btn.addEventListener("click", handleUndo);
+    container.appendChild(btn);
+    applyUndoState(btn);
+  }
+
+  window.addEventListener("wf:undo-changed", refreshUndoButton);
 
   function buildHelpButton(container) {
     const categoryInfo = WF.CATEGORY[activeCategory];
@@ -745,6 +809,7 @@ WF.render = (function () {
       const isChecked = checkbox.checked;
       const row = checkbox.closest(".item-row");
 
+      WF.undo.record([uniqueName], isChecked);
       WF.storage.setOwned(uniqueName, isChecked);
 
       if (hideChecked && isChecked) {
@@ -752,7 +817,7 @@ WF.render = (function () {
       } else if (row) {
         row.classList.toggle("owned", isChecked);
         const item = WF.data.find((item) => item.item_name.includes(uniqueName));
-        WF.logs.AddLog(`"${item.display_name.en}" checked status is now ${isChecked}.`)
+        WF.logs.AddLog(`"${item.display_name.en}" checked status is now ${isChecked}`)
       }
 
       updateUIFast(lastRenderedPool);
@@ -868,6 +933,7 @@ WF.render = (function () {
     actionsRow.className = "bulk-actions-row";
     buildBulkActions(actionsRow, searchedItems, progress);
     buildHideCheckedToggle(actionsRow);
+    buildUndoButton(actionsRow);
     buildSearchCluster(actionsRow);
     zone.appendChild(actionsRow);
 

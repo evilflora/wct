@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 	try {
 		await WF.storage.ready;
 	} catch (err) {
-		WF.toast.show("Could not load data migrations. Reload the page, your saved data was not modified.", { type: "error", timeoutMs: 0 });
+		WF.toast.show("Could not load data migrations. Reload the page, your saved data was not modified", { type: "error", timeoutMs: 0 });
 		return;
 	}
 
@@ -118,12 +118,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 		try {
 			await WF.exportImport.importFromFile(file);
+			WF.undo.clear();
 			WF.render.renderAll();
 			WF.theme.init();
-			WF.toast.show("Import successful.", { type: "success" });
+			WF.toast.show("Import successful", { type: "success" });
 		} catch (err) {
-			console.error("Import failed.", err);
-			WF.toast.show("Invalid file, import canceled.", { type: "error" });
+			WF.logs.AddLog("Import failed", "error", err);
+			WF.toast.show("Invalid file, import canceled", { type: "error" });
 		} finally {
 			event.target.value = "";
 		}
@@ -167,6 +168,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 		if (!remoteObj) return;
 		if (remoteObj.data) WF.storage.save(remoteObj.data);
 		if (remoteObj.options) WF.options.save(remoteObj.options);
+		WF.undo.clear();
 		WF.render.renderAll();
 		WF.mastery.render();
 	}
@@ -248,7 +250,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 			return;
 		}
 		WF.toast.show(fallbackMessage, { type: "error" });
-		WF.logs.AddLog(fallbackMessage)
+		WF.logs.AddLog(fallbackMessage, "error")
 	}
 
 	syncActionBtn.addEventListener("click", () => withBusyButton(syncActionBtn, async () => {
@@ -330,6 +332,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const executePush = async (force = false) => {
       try {
         await sync.pushData(options.syncKey, { force });
+				updateLastUpload();
         WF.toast.show(`Data successfully sent.`, { type: "success" });
       } catch (err) {
         if (err.message === "PAYLOAD_VERSION_HIGHER") {
@@ -483,6 +486,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 		deleteClickCount++;
 
 		if (deleteClickCount > CONFIRM_STEPS.length) {
+			WF.undo.clear();
 			WF.storage.clearAll();
 			location.reload();
 			WF.logs.AddLog("All data are deleted.")
@@ -830,8 +834,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 		for (const log of logs) {
 			appendTableRow(fragment, [
 				new Date(log.Date).toLocaleString(),
-				log.Message
-			]);
+				log.Message,
+			], log.Type);
 		}
 
 		tbody.appendChild(fragment);
@@ -939,7 +943,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 	window.addEventListener("wf:profile-merge-ready", (event) => {
 		const items = event.detail?.items ?? [];
 		if (items.length === 0) {
-			WF.toast.show("Nothing to merge: no new player items to set as owned.", { type: "info" });
+			WF.toast.show("Nothing to merge: no new player items to set as owned", { type: "info" });
 			return;
 		}
 		closeImportApi();
@@ -950,13 +954,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 	getEl("btn-item-list-merge").addEventListener("click", () => {
 		try {
 			const count = WF.exportImport.applyPendingMerge();
+			WF.undo.clear();
 			WF.render.renderAll();
 			WF.mastery.render();
 			WF.toast.show(`Merge successful: ${count} item(s) set as owned.`, { type: "success" });
 		} catch (error) {
-			console.error("Public profile merge failed.", error);
-			WF.logs.AddLog(`Public profile merge failed: ${error.message}`);
-			WF.toast.show("Merge failed.", { type: "error" });
+			WF.logs.AddLog("Public profile merge failed", "error", error);
+			WF.toast.show("Merge failed", { type: "error" });
 		} finally {
 			closeItemList();
 		}
@@ -982,7 +986,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 	includeSyncKeyCheckbox.addEventListener("change", () => {
 		if (includeOptionsCheckbox.checked) {
 			WF.options.save({ ...WF.options.load(), includeSyncKeyInExport: includeSyncKeyCheckbox.checked });
-			if (includeSyncKeyCheckbox.checked) WF.toast.show("Your export file will now contain your secret sync key. Keep it private.", { type: "info", timeoutMs: 5000 });
+			if (includeSyncKeyCheckbox.checked) WF.toast.show("Your export file will now contain your secret sync key. Keep it private", { type: "info", timeoutMs: 5000 });
 		} else {
 			includeSyncKeyCheckbox.checked = false;
 			WF.toast.show(`To export your SYNC key you need to enable "Save options when exporting" first.`, { type: "info", timeoutMs: 5000 });

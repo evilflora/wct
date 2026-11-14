@@ -16,7 +16,7 @@ WF.storage = (function () {
       const raw = localStorage.getItem(ARCHIVE_KEY);
       return raw ? JSON.parse(raw) : {};
     } catch (err) {
-      console.warn("Unreadable archived progress, ignored.", err);
+      WF.logs.AddLog("Unreadable archived progress, ignored", "error", err);
       return {};
     }
   }
@@ -69,7 +69,7 @@ WF.storage = (function () {
       if (localStorage.getItem(STORAGE_KEY) === null) return [];
       return getPendingVersions(localStorage.getItem(VERSION_KEY), WF.WCT_VERSION).filter((version) => !loadedMigrations.has(version));
     } catch (err) {
-      console.warn("Could not inspect pending migrations.", err);
+      WF.logs.AddLog("Could not inspect pending migrations", "error", err);
       return [];
     }
   }
@@ -101,9 +101,9 @@ WF.storage = (function () {
 
       if (progressChanged) localStorage.setItem(STORAGE_KEY, JSON.stringify(progressMap));
       if (archiveChanged) localStorage.setItem(ARCHIVE_KEY, JSON.stringify(archive));
-      console.info(`Applied ${pending.length} storage migration(s) up to ${target}.`);
+      WF.logs.AddLog(`Applied ${pending.length} storage migration(s) up to ${target}.`);
     } catch (err) {
-      console.error("Storage migration failed to persist.", err);
+      WF.logs.AddLog("Storage migration failed to persist", "error", err);
     }
 
     return progressMap;
@@ -122,10 +122,10 @@ WF.storage = (function () {
         localStorage.setItem(ARCHIVE_KEY, JSON.stringify(archive));
         localStorage.setItem(STORAGE_KEY, JSON.stringify(progressMap));
       } catch (err) {
-        console.error("Failed to archive orphan keys.", err);
+        WF.logs.AddLog("Failed to archive orphan keys", "error", err);
         return progressMap;
       }
-      console.info(`Archived ${orphanKeys.length} orphan key(s).`, orphanKeys);
+      WF.logs.AddLog(`Archived ${orphanKeys.length} orphan key(s).`);
     }
 
     return progressMap;
@@ -160,7 +160,7 @@ WF.storage = (function () {
         if (WF.toast) WF.toast.show(logLabel, { type: "info", timeoutMs: 0 });
       }
     } catch (err) {
-      console.error("Unreadable or corrupted localStorage progress, reset.", err);
+      WF.logs.AddLog("Unreadable or corrupted localStorage progress, reset", "error", err);
       _cache = {};
     }
     return _cache;
@@ -176,8 +176,8 @@ WF.storage = (function () {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(progressMap));
       window.dispatchEvent(new CustomEvent("wf:progress-changed"));
     } catch (err) {
-      console.error("Failed to save progress to localStorage.", err);
-      if (WF.toast) WF.toast.show("Save failed: browser storage is full or unavailable.", { type: "error", timeoutMs: 0, key: "wf-storage-full" });
+      WF.logs.AddLogerror("Failed to save progress to localStorage", "error", err);
+      if (WF.toast) WF.toast.show("Save failed browser storage is full or unavailable", { type: "error", timeoutMs: 0, key: "wf-storage-full" });
       throw err; 
     }
   }
@@ -210,7 +210,7 @@ WF.storage = (function () {
       _cache = null;
       window.dispatchEvent(new CustomEvent("wf:progress-changed"));
     } catch (err) {
-      console.error("Failed to clear progress from localStorage.", err);
+      WF.logs.AddLog("Failed to clear progress from localStorage", "error", err);
     }
   }
 
@@ -222,19 +222,19 @@ WF.storage = (function () {
         if (WF.render) WF.render.renderAll();
         if (WF.mastery) WF.mastery.render();
       })
-      .catch((err) => console.error("Could not refresh progress changed in another tab.", err));
+      .catch((err) => WF.logs.AddLog("Could not refresh progress changed in another tab", "error", err));
   });
 
   const ready = (async function () {
     try {
       if (localStorage.getItem(STORAGE_KEY) === null) return;
     } catch (err) {
-      console.warn("Storage unavailable, no migration to load.", err);
+      WF.logs.AddLog("Storage unavailable, no migration to load", "error", err);
       return;
     }
     await ensureMigrations();
   })();
-  ready.catch((err) => console.error("Storage migrations could not be loaded.", err));
+  ready.catch((err) => WF.logs.AddLog("Storage migrations could not be loaded", "error", err));
 
   return { load, loadForSync, save, setOwned, setOwnedBulk, clearAll, runMigrations, ensureMigrations, ready, STORAGE_KEY, ARCHIVE_KEY };
 })();

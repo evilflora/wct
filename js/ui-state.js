@@ -11,7 +11,7 @@ WF.uiState = (function () {
       const raw = localStorage.getItem(STORAGE_KEY);
       _cache = raw ? JSON.parse(raw) : {};
     } catch (err) {
-      console.error("Unreadable or corrupted localStorage UI state, reset.", err);
+      WF.logs.AddLog("Unreadable or corrupted localStorage UI state, reset", "error", err);
       _cache = {};
     }
     return _cache;
@@ -22,7 +22,7 @@ WF.uiState = (function () {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (err) {
-      console.error("Failed to save UI state to localStorage.", err);
+      WF.logs.AddLog("Failed to save UI state to localStorage", "error", err);
     }
   }
 

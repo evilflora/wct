@@ -6,7 +6,7 @@ self.WF = self.WF || {};
 try {
   importScripts("js/version.js");
 } catch (error) {
-  console.error("[SW] Unable to load js/version.js:", error);
+  WF.logs.AddLog("Service worker unable to load js/version.js", "error", error);
 }
 
 const CACHE_VERSION = String(self.WF.version || "0");
@@ -35,6 +35,7 @@ const PRECACHE_URLS = [
   "js/min/mastery.min.js",
   "js/min/ui-state.min.js",
   "js/min/export-import.min.js",
+  "js/min/undo.min.js",
   "js/min/render.min.js",
   "js/min/main.min.js",
 ];
@@ -91,7 +92,7 @@ async function networkFirst(event) {
     if (!response.ok && response.status >= 500 && cached) return cached;
 
     if (response.ok && response.type === "basic" && !response.redirected) {
-      event.waitUntil(cache.put(request, response.clone()).catch((err) => console.warn("[SW] Cache write failed:", err)));
+      event.waitUntil(cache.put(request, response.clone()).catch((err) => WF.logs.AddLog("Service worker cache write failed", "error", err)));
     }
     return response;
   } catch (err) {

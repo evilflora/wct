@@ -27,9 +27,10 @@ WF.logs = (function () {
     if (localStorage.getItem(STORAGE_KEY) === null) _writeLogs([]); 
   }
 
-  function AddLog( message) { 
+  function AddLog(message, type, consoleError) { 
     const logs = _readLogs(); 
-    logs.unshift({ Date: Date.now(), Message: message }); 
+    logs.unshift({ Date: Date.now(),Type: type, Message: message }); 
+    if(consoleError) console.log(message + " : " + consoleError);
     _writeLogs(logs.slice(0, MAX_ENTRIES)); 
   }
 

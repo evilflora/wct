@@ -2,6 +2,18 @@
 
 WF.CHANGELOG = [
 	{
+		date: "2026/11/14 00:00:00", 
+		version: "44.1.4", 
+		text: [
+			`New functionality: you can revert changes up to 10 times with the UNDO button (next to the check buttons). Mistakes can now be fixed.`,
+			`Added "Research Entries" from console in Cephalon Simaris room.`,
+		],
+		items: {
+			"new": [ "Anti MOA","Arid Eviscerator","Corrupted Ancient","Detron Crewman","Guardsman","Lancer","Runner","The Haunted" ],
+			"removed": [],
+		}
+	},
+	{
 		date: "2026/11/06 00:00:00", 
 		version: "44.1.4", 
 		text: [

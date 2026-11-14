@@ -120,7 +120,8 @@ ul {
 	margin: 0;
 }
 
-.alert {
+.alert,
+.error {
 	color: var(--accent-red);
 }
 
@@ -180,6 +181,10 @@ ul {
 	padding: 0 12px;
 	margin-bottom: 14px;
 	transition: border-color 0.15s, color 0.15s;
+}
+
+.bulk-toggle-btn.hidden {
+	display: none;
 }
 
 .bulk-toggle-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
@@ -1104,9 +1109,6 @@ ul {
 	opacity: 1;
 	transform: translateY(0);
 }
-
-.wf-toast-error { border-color: #e5484d; }
-.wf-toast-success { border-color: #2ecc71; }
 
 .wf-toast-clickable {
 	pointer-events: auto;

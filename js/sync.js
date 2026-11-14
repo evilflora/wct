@@ -54,7 +54,7 @@ async function ensureFirebaseInitialized() {
     firebaseInitialized = true;
     return true;
   } catch (err) {
-    console.warn("[Sync] Failed to load Firebase modules:", err);
+    WF.logs.AddLog("Sync failed to load Firebase modules", "error", err);
     return false;
   }
 }
@@ -132,7 +132,7 @@ WF.sync = {
       return true;
     } catch (err) {
       if (err.code === "permission-denied") throw new Error(ERROR_RATE_LIMITED);
-      if (err.message !== ERROR_REMOTE_AHEAD) console.error("[Sync] Error pushing data:", err.code, err.message);
+      if (err.message !== ERROR_REMOTE_AHEAD) WF.logs.AddLog("Sync while pushing data", "error", err);
       throw err;
     }
   },
@@ -184,7 +184,7 @@ WF.sync = {
       return parsedPayload;
     } catch (err) {
       if (err.message !== WARNING_PAYLOAD_VERSION) {
-        console.error("[Sync] Error pulling data:", err.code, err.message);
+        WF.logs.AddLog("Sync while pulling data", "error", err);
       }
       throw err;
     }
@@ -203,7 +203,7 @@ WF.sync = {
       return true;
     } catch (err) {
       if (err.code === "permission-denied") throw new Error(ERROR_RATE_LIMITED);
-      console.error("[Sync] Error deleting remote data:", err.code, err.message);
+      WF.logs.AddLog("Sync while deleting remote data", "error", err);
       throw err;
     }
   },

@@ -1,5 +1,5 @@
-// Generated with "generate.html" on 2026-11-06 11:12:22 ET in 123.80ms - 19509 items source, 10479 lines created.
-// Dont change this by hand, use my "generated.html" and download "all.json" from WFCD, or for custom data, use "js/generade/custom_data.js".
+// Generated with "generate.html" on 2026-11-13 11:17:30 ET in 118.30ms - 19517 items source, 10488 lines created.
+// Dont change this by hand, use my "generated.html" and download "all.json" from WFCD, or for custom data, use "js/generate/custom_data.js".
 // If you don't know what you're doing, PLEASE do nothing.
 WF.data = WF.data || [];
 
@@ -369,6 +369,7 @@ WF.data.push(
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/AvatarImageNoraNightB", display_name: {"en":"Nora Night Glyph"}, category: "glyph", type: null },
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/AvatarImageOberonAccoladeGlyph", display_name: {"en":"Oberon Accolade Glyph"}, category: "glyph", type: null, hidden: true },
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/Warframes/OraxiaActionGlyph", display_name: {"en":"Oraxia In Action Glyph"}, category: "glyph", type: null, hidden: true },
+	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/Factions/GlyphFactionOrokin", display_name: {"en":"Orokin Glyph"}, category: "glyph", type: null, hidden: true },
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/Minigames/MinigameGlyphPixelPerfectC", display_name: {"en":"Pixel Perfect Anna Glyph"}, category: "glyph", type: null, hidden: true },
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/Minigames/MinigameGlyphPixelPerfectD", display_name: {"en":"Pixel Perfect Goon Glyph"}, category: "glyph", type: null, hidden: true },
 	{ item_name: "/Lotus/Types/StoreItems/AvatarImages/Minigames/MinigameGlyphPixelPerfectA", display_name: {"en":"Pixel Perfect Jillian Glyph"}, category: "glyph", type: null, hidden: true },
@@ -8321,6 +8322,7 @@ WF.data.push(
 	{ item_name: "/Lotus/Types/Items/Titles/NarinTitle", display_name: {"en":"On Wings of Ice"}, category: "honoria", type: "Suffix" },
 	{ item_name: "/Lotus/Types/Items/Titles/IcebladeTitle", display_name: {"en":"The Legend Of The Void"}, category: "honoria", type: "Suffix" },
 	{ item_name: "/Lotus/Types/Items/Titles/MoonfleshTitle", display_name: {"en":"The Moon Killer"}, category: "honoria", type: "Suffix" },
+	{ item_name: "/Lotus/Types/Items/Titles/EvilBaroTitle", display_name: {"en":"The Haunted"}, category: "honoria", type: "Suffix" },
 	{ item_name: "/Lotus/Powersuits/PowersuitAbilities/HelminthStrengthAbility", display_name: {"en":"Empower (1st)"}, category: "helminth", type: "Metamorphosis" },
 	{ item_name: "/Lotus/Powersuits/PowersuitAbilities/HelminthSpeedAbility", display_name: {"en":"Infested Mobility (2nd)"}, category: "helminth", type: "Metamorphosis" },
 	{ item_name: "/Lotus/Powersuits/PowersuitAbilities/HelminthCompanionAbility", display_name: {"en":"Master's Summons (3rd)"}, category: "helminth", type: "Metamorphosis" },
@@ -10482,4 +10484,11 @@ WF.data.push(
 	{ item_name: "/Lotus/Types/Items/MushroomJournal/ToxinMushroomJournalItem", display_name: {"en":"Muck Bonnet (0/3)"}, category: "field_guide", type: "normal" },
 	{ item_name: "/Lotus/Types/Items/MushroomJournal/ViralMushroomJournalItem", display_name: {"en":"Violet's Bane (0/3)"}, category: "field_guide", type: "normal" },
 	{ item_name: "/Lotus/Types/Items/MushroomJournal/VoidMushroomJournalItem", display_name: {"en":"Nonono (0/3)"}, category: "field_guide", type: "normal" },
+	{ item_name: "/Lotus/Types/Lore/Imprint/Enemies/Lancer", display_name: {"en":"Lancer"}, category: "research_entries", type: null },
+	{ item_name: "/Lotus/Types/Lore/Imprint/Enemies/AntiMOA", display_name: {"en":"Anti MOA"}, category: "research_entries", type: null },
+	{ item_name: "/Lotus/Types/Lore/Imprint/Enemies/AridEviscerator", display_name: {"en":"Arid Eviscerator"}, category: "research_entries", type: null },
+	{ item_name: "/Lotus/Types/Lore/Imprint/Enemies/CorruptedAncient", display_name: {"en":"Corrupted Ancient"}, category: "research_entries", type: null },
+	{ item_name: "/Lotus/Types/Lore/Imprint/Enemies/DetronCrewman", display_name: {"en":"Detron Crewman"}, category: "research_entries", type: null },
+	{ item_name: "/Lotus/Types/Lore/Imprint/Enemies/Runner", display_name: {"en":"Runner"}, category: "research_entries", type: null },
+	{ item_name: "/Lotus/Types/Lore/Imprint/Enemies/Guardsman", display_name: {"en":"Guardsman"}, category: "research_entries", type: null },
 );

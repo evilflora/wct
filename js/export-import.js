@@ -90,7 +90,7 @@ WF.exportImport = (function () {
 
     if (!isValidPayload(payload)) {
       const errorLabel = "Invalid payload format";
-      WF.logs.AddLog(errorLabel);
+      WF.logs.AddLog(errorLabel, "error");
       throw new Error(errorLabel);
     }
 
@@ -101,7 +101,7 @@ WF.exportImport = (function () {
       if (!confirmed) {
         const errorLabel = `Import canceled by the user, imported file schema version is higher than local.`;
         WF.toast.show(errorLabel, { type: "error", timeoutMs: 5000 });
-        WF.logs.AddLog(errorLabel);
+        WF.logs.AddLog(errorLabel, "error");
         throw new Error(errorLabel);
       }
     }
@@ -300,7 +300,7 @@ WF.exportImport = (function () {
     openButton.addEventListener("click", () => {
       if (!isValidAccountId(idInput.value.trim())) {
         const errorLabel = `ACCOUNTID is empty or wrong or invalid.`;
-        WF.logs.AddLog(errorLabel);
+        WF.logs.AddLog(errorLabel, "error");
         WF.toast.show(errorLabel, { type: "error", timeoutMs: 3000 });
         return;
       }
@@ -312,7 +312,7 @@ WF.exportImport = (function () {
     readButton.addEventListener("click", async () => {
       if (isReading || !(fileInput.files && fileInput.files.length === 1)) {
         const errorLabel = `No file selected`;
-        WF.logs.AddLog(errorLabel);
+        WF.logs.AddLog(errorLabel, "error");
         WF.toast.show(errorLabel, { type: "error", timeoutMs: 3000 });
         return;
       }
@@ -320,10 +320,9 @@ WF.exportImport = (function () {
       isReading = true;
       try {
         await readPublicProfileFile(fileInput.files[0]);
-        WF.logs.AddLog("Public profile file read successfully.");
       } catch (error) {
-        const errorLabel = `Public profile import failed: ${error.message}`;
-        WF.logs.AddLog(errorLabel);
+        const errorLabel = `Public profile import failed`;
+        WF.logs.AddLog(errorLabel, "error", error);
         WF.toast.show(errorLabel, { type: "error", timeoutMs: 3000 });
       } finally {
         isReading = false;

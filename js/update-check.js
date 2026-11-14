@@ -40,7 +40,7 @@ WF.updateCheck = (function () {
 		try {
 			localStorage.setItem(LAST_SEEN_KEY, String(currentRemoteVersion));
 		} catch (err) {
-			console.warn("Unable to persist last seen version.", err);
+			WF.logs.AddLog("Unable to persist last seen version", "error", err);
 		}
 	}
 
@@ -124,7 +124,7 @@ WF.updateCheck = (function () {
 			stopPeriodicCheck();
 			return true;
 		} catch (err) {
-			console.warn("Error while fetching remote version.", err);
+			WF.logs.AddLog("Error while fetching remote version", "error", err);
 			return false;
 		}
 	}
@@ -140,11 +140,11 @@ WF.updateCheck = (function () {
 
 	function init() {
 		window.addEventListener("offline", () => {
-			WF.toast.show("You are now offline, it should work as usual.", { type: "info" });
+			WF.toast.show("You are now offline, it should work as usual", { type: "info" });
 		});
 
 		window.addEventListener("online", async () => {
-			WF.toast.show("You are back online.", { type: "info" });
+			WF.toast.show("You are back online", { type: "info" });
 			
 			if (!isOffline()) {
 				await runCheck();
@@ -158,7 +158,7 @@ WF.updateCheck = (function () {
 				}
 			});
 		} else {
-			WF.toast.show("You are offline, it should work as usual.", { type: "info" });
+			WF.toast.show("You are offline, it should work as usual", { type: "info" });
 		}
 	}
 

@@ -19,7 +19,7 @@ WF.options = (function () {
       const raw = localStorage.getItem(STORAGE_KEY);
       _cache = raw ? { ...DEFAULTS, ...JSON.parse(raw) } : { ...DEFAULTS };
     } catch (err) {
-      console.error("Unreadable or corrupted localStorage options, reset.", err);
+      WF.logs.AddLog("Unreadable or corrupted localStorage options, reset", "error", err);
       _cache = { ...DEFAULTS };
     }
     return _cache;
@@ -31,8 +31,8 @@ WF.options = (function () {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(sanitized));
     } catch (err) {
-      console.error("Failed to save options to localStorage.", err);
-      if (WF.toast) WF.toast.show("Options could not be saved: browser storage is full.", { type: "error", key: "wf-options-full" });
+      WF.logs.AddLog("Failed to save options to localStorage", "error", err);
+      if (WF.toast) WF.toast.show("Options could not be saved: browser storage is full", { type: "error", key: "wf-options-full" });
     }
   }
 
