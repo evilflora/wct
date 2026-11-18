@@ -1,4 +1,4 @@
-// Generated with "generate.html" on 2026-11-13 11:17:30 ET in 118.30ms - 19517 items source, 10488 lines created.
+// Generated with "generate.html" on 2026-11-17 11:52:47 ET in 118.50ms - 19517 items source, 10490 lines created.
 // Dont change this by hand, use my "generated.html" and download "all.json" from WFCD, or for custom data, use "js/generate/custom_data.js".
 // If you don't know what you're doing, PLEASE do nothing.
 WF.data = WF.data || [];
@@ -904,6 +904,7 @@ WF.data.push(
 	{ item_name: "/Lotus/Types/Items/PhotoBooth/TauOldPeace/PhotoboothTileTauOldPeaceObjLiminalBossArena", display_name: {"en":"Perita Manifestation Scene"}, category: "scene", type: "Captura" },
 	{ item_name: "/Lotus/Types/Items/MiscItems/PhotoboothTileEidolonLandscape", display_name: {"en":"Plains Of Eidolon Scene"}, category: "scene", type: "Captura" },
 	{ item_name: "/Lotus/Types/Items/PhotoBooth/JadeShadows/PhotoboothTileJS2Hub", display_name: {"en":"Pontis Tower Scene"}, category: "scene", type: "Captura" },
+	{ item_name: "/Lotus/Types/Items/MiscItems/PhotoboothTileQuestTauNarmerThroneRoom", display_name: {"en":"Praghasa Awakened Scene"}, category: "scene", type: "Captura" },
 	{ item_name: "/Lotus/Types/Items/MiscItems/PhotoboothTileTNWBallasThroneRoomEnding", display_name: {"en":"Praghasa Throne Room Scene"}, category: "scene", type: "Captura" },
 	{ item_name: "/Lotus/Weapons/Sentients/OperatorAmplifiers/Set2/Barrel/SentAmpSet2BarrelPartA", display_name: {"en":"Rahn Prism"}, category: "weapon", type: "primary", weapon_category: "amp", rank: "non prime", mastery_xp: 3000 },
 	{ item_name: "/Lotus/Weapons/Sentients/OperatorAmplifiers/Set1/Barrel/SentAmpSet1BarrelPartA", display_name: {"en":"Raplak Prism"}, category: "weapon", type: "primary", weapon_category: "amp", rank: "non prime", mastery_xp: 3000 },
@@ -3359,6 +3360,7 @@ WF.data.push(
 	{ item_name: "/Lotus/Types/Keys/WraithQuest/WraithQuestKeyChain", display_name: {"en":"Call Of The Tempestarii"}, category: "quest", type: "warframe quest" },
 	{ item_name: "/Lotus/Types/Keys/PriestFrameQuest/PriestQuestKeyChain", display_name: {"en":"Chains Of Harrow"}, category: "quest", type: "main quest" },
 	{ item_name: "/Lotus/Types/Keys/ChimeraQuest/ChimeraKeyChain", display_name: {"en":"Chimera Prologue"}, category: "quest", type: "main quest", hidden: true },
+	{ item_name: "/Lotus/Types/Keys/TauPrologue/TauPrologueKeyChainC", display_name: {"en":"Eris Mortem"}, category: "quest", type: "main quest" },
 	{ item_name: "/Lotus/Types/Keys/NewWarIntroQuest/NewWarIntroKeyChain", display_name: {"en":"Erra"}, category: "quest", type: "main quest", hidden: true },
 	{ item_name: "/Lotus/Types/Keys/InfestedMicroplanetQuest/InfestedMicroplanetQuestKeyChain", display_name: {"en":"Heart Of Deimos"}, category: "quest", type: "main quest" },
 	{ item_name: "/Lotus/Types/Keys/MirageQuest/MirageQuestKeyChain", display_name: {"en":"Hidden Messages"}, category: "quest", type: "warframe quest" },

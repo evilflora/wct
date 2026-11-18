@@ -2,34 +2,34 @@
 
 const MASTERY_BREAKDOWN_GROUPS = [
 	[
-		{ label: "Warframes",								match: (item) => item.category === WF.CATEGORY.warframe.name },
-		{ label: "Primary Weapons",					match: (item) => item.category === WF.CATEGORY.weapon.name && item.type === WF.TYPES.weapon.primary	 && item.weapon_category === WF.TYPES.weapon_category.normal },
-		{ label: "Secondary Weapons",				match: (item) => item.category === WF.CATEGORY.weapon.name && item.type === WF.TYPES.weapon.secondary && item.weapon_category === WF.TYPES.weapon_category.normal },
-		{ label: "Melee Weapons",						match: (item) => item.category === WF.CATEGORY.weapon.name && item.type === WF.TYPES.weapon.melee },
-		{ label: "Kitguns",									match: (item) => item.category === WF.CATEGORY.weapon.name && item.type === WF.TYPES.weapon.secondary && item.weapon_category === WF.TYPES.weapon_category.kitgun },
+		{ label: "Warframes",								category: "total", match: (item) => item.category === WF.CATEGORY.warframe.name },
+		{ label: "Primary Weapons",					category: "total", match: (item) => item.category === WF.CATEGORY.weapon.name && item.type === WF.TYPES.weapon.primary	 && item.weapon_category === WF.TYPES.weapon_category.normal },
+		{ label: "Secondary Weapons",				category: "total", match: (item) => item.category === WF.CATEGORY.weapon.name && item.type === WF.TYPES.weapon.secondary && item.weapon_category === WF.TYPES.weapon_category.normal },
+		{ label: "Melee Weapons",						category: "total", match: (item) => item.category === WF.CATEGORY.weapon.name && item.type === WF.TYPES.weapon.melee },
+		{ label: "Kitguns",									category: "total", match: (item) => item.category === WF.CATEGORY.weapon.name && item.type === WF.TYPES.weapon.secondary && item.weapon_category === WF.TYPES.weapon_category.kitgun },
 	],
 	[
-		{ label: "Missions",								match: (item) => item.category === WF.CATEGORY.node.name && item.node_difficulty === WF.TYPES.node_difficulty.normal },
-		{ label: "The Steel Path Missions",	match: (item) => item.category === WF.CATEGORY.node.name && item.node_difficulty === WF.TYPES.node_difficulty.steel },
-		{ label: "Railjack Intrinsics",			match: (item) => item.category === WF.CATEGORY.intrinsic.name && item.type === WF.TYPES.intrinsic.railjack },
-		{ label: "Drifter Intrinsics",			match: (item) => item.category === WF.CATEGORY.intrinsic.name && item.type === WF.TYPES.intrinsic.drifter },
+		{ label: "Missions",								category: "mission", match: (item) => item.category === WF.CATEGORY.node.name && item.node_difficulty === WF.TYPES.node_difficulty.normal },
+		{ label: "The Steel Path Missions",	category: "mission", match: (item) => item.category === WF.CATEGORY.node.name && item.node_difficulty === WF.TYPES.node_difficulty.steel },
+		{ label: "Railjack Intrinsics",			category: "intrinsic", match: (item) => item.category === WF.CATEGORY.intrinsic.name && item.type === WF.TYPES.intrinsic.railjack },
+		{ label: "Drifter Intrinsics",			category: "intrinsic", match: (item) => item.category === WF.CATEGORY.intrinsic.name && item.type === WF.TYPES.intrinsic.drifter },
 	],
 	[
-		{ label: "Sentinels",								match: (item) => item.category === WF.CATEGORY.companion.name && item.type === WF.TYPES.companion.robotic && item.companion_category === WF.TYPES.companion_category.sentinel },
-		{ label: "Sentinel Weapons",				match: (item) => item.category === WF.CATEGORY.companion.name && item.type === WF.TYPES.companion.robotic && item.companion_category.includes(WF.CATEGORY.weapon.name) },
-		{ label: "Companions",							match: (item) => (item.category === WF.CATEGORY.companion.name && item.type !== WF.TYPES.companion.robotic) || (
+		{ label: "Sentinels",								category: "total", match: (item) => item.category === WF.CATEGORY.companion.name && item.type === WF.TYPES.companion.robotic && item.companion_category === WF.TYPES.companion_category.sentinel },
+		{ label: "Sentinel Weapons",				category: "total", match: (item) => item.category === WF.CATEGORY.companion.name && item.type === WF.TYPES.companion.robotic && item.companion_category.includes(WF.CATEGORY.weapon.name) },
+		{ label: "Companions",							category: "total", match: (item) => (item.category === WF.CATEGORY.companion.name && item.type !== WF.TYPES.companion.robotic) || (
 																													item.category === WF.CATEGORY.companion.name && 
 																													((item.type === WF.TYPES.companion.robotic && item.companion_category === WF.TYPES.companion_category.moa) || 
 																													 (item.type === WF.TYPES.companion.robotic && item.companion_category === WF.TYPES.companion_category.hound))) ||
 																													 (item.category === WF.CATEGORY.vehicle.name && item.type === WF.TYPES.vehicle.plexus) },
 	],
 	[
-		{ label: "Archwing",								match: (item) => item.category === WF.CATEGORY.vehicle.name && item.type === WF.TYPES.vehicle.archwing },
-		{ label: "Archgun",									match: (item) => item.category === WF.CATEGORY.archweapon.name && item.type === WF.TYPES.archweapon.archgun },
-		{ label: "Archmelee",								match: (item) => item.category === WF.CATEGORY.archweapon.name && item.type === WF.TYPES.archweapon.archmelee },
-		{ label: "Amps",										match: (item) => item.category === WF.CATEGORY.weapon.name && item.type === WF.TYPES.weapon.primary && item.weapon_category === WF.TYPES.weapon_category.amp },
-		{ label: "K-Drives",								match: (item) => item.category === WF.CATEGORY.vehicle.name && item.type === WF.TYPES.vehicle.kdrive },
-		{ label: "Necramechs",							match: (item) => item.category === WF.CATEGORY.vehicle.name && item.type === WF.TYPES.vehicle.necramech },
+		{ label: "Archwing",								category: "total", match: (item) => item.category === WF.CATEGORY.vehicle.name && item.type === WF.TYPES.vehicle.archwing },
+		{ label: "Archgun",									category: "total", match: (item) => item.category === WF.CATEGORY.archweapon.name && item.type === WF.TYPES.archweapon.archgun },
+		{ label: "Archmelee",								category: "total", match: (item) => item.category === WF.CATEGORY.archweapon.name && item.type === WF.TYPES.archweapon.archmelee },
+		{ label: "Amps",										category: "total", match: (item) => item.category === WF.CATEGORY.weapon.name && item.type === WF.TYPES.weapon.primary && item.weapon_category === WF.TYPES.weapon_category.amp },
+		{ label: "K-Drives",								category: "total", match: (item) => item.category === WF.CATEGORY.vehicle.name && item.type === WF.TYPES.vehicle.kdrive },
+		{ label: "Necramechs",							category: "total", match: (item) => item.category === WF.CATEGORY.vehicle.name && item.type === WF.TYPES.vehicle.necramech },
 	],
 ];
 
@@ -102,24 +102,57 @@ WF.mastery = (function () {
 		if (totalTextEl) totalTextEl.textContent = `Total : ${formatNumber(info.totalXp)}`;
 	}
 
-	function getBreakdown(progress) {
-		const includeFounder = WF.options.load().includeFounderItems;
 
-		const ownedItems = WF.data.filter((item) => {
-			if (item.founder && !includeFounder) return false;
-			return !!progress[item.item_name];
+	function getEligibleItems() {
+		const options = WF.options.load();
+
+		return WF.data.filter((item) => {
+			if (item.founder && !options.includeFounderItems) return false;
+			if (item.conclave && !options.includePvpItems) return false;
+			return itemMasteryXp(item) > 0;
 		});
+	}
+
+	function getBreakdown(progress) {
+		const eligibleItems = getEligibleItems();
 
 		return MASTERY_BREAKDOWN_GROUPS.map((group) =>
 			group.map((row) => {
 				let xp = 0;
-				for (let i = 0; i < ownedItems.length; i++) {
-					const item = ownedItems[i];
-					if (row.match(item)) xp += itemMasteryXp(item);
+				let owned = 0;
+				let total = 0;
+
+				for (const item of eligibleItems) {
+					if (!row.match(item)) continue;
+
+					total++;
+					if (progress[item.item_name]) {
+						owned++;
+						xp += itemMasteryXp(item);
+					}
 				}
-				return { label: row.label, xp };
+
+				return { label: row.label, xp, owned, total };
 			})
 		);
+	}
+
+	function getBreakdownFor(progress, category) {
+		const rows = MASTERY_BREAKDOWN_GROUPS.flat();
+		let xp = 0;
+		let owned = 0;
+		let total = 0;
+
+		for (const item of getEligibleItems()) {
+			if (!rows.some((row) => row.match(item) && row.category === category)) continue;
+
+			total++;
+			if (progress[item.item_name]) {
+				owned++;
+				xp += itemMasteryXp(item);
+			}
+		}
+		return { xp, owned, total };
 	}
 
 	function getGroupRowItems(groupIndex, rowIndex) {
@@ -129,5 +162,5 @@ WF.mastery = (function () {
 		return WF.data.filter((item) => (includeFounder || !item.founder) && row.match(item));
 	}
 
-	return { xpRequiredForRank, computeTotalXp, rankForXp, rankLabel, getInfo, render, itemMasteryXp, getBreakdown, getGroupRowItems };
+	return { xpRequiredForRank, computeTotalXp, rankForXp, rankLabel, getInfo, render, itemMasteryXp, getBreakdown, getBreakdownFor, getGroupRowItems };
 })();

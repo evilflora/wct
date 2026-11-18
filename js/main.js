@@ -718,33 +718,64 @@ document.addEventListener("DOMContentLoaded", async function () {
     openItemListGeneric(title, matching);
   }
 
+	function buildBreakdownItem(value, label, onShowList = null) {
+		const item = document.createElement("div");
+		item.className = "breakdown-item";
+
+		const valueEl = document.createElement("span");
+		valueEl.className = "breakdown-value";
+		valueEl.textContent = formatNumber(value);
+
+		const labelEl = document.createElement("span");
+		labelEl.className = "breakdown-label";
+		labelEl.textContent = label;
+
+		item.append(valueEl, labelEl);
+
+		if (onShowList) {
+			const showBtn = document.createElement("button");
+			showBtn.type = "button";
+			showBtn.className = "item-info-btn";
+			showBtn.textContent = "Show item list";
+			showBtn.addEventListener("click", onShowList);
+			item.appendChild(showBtn);
+		}
+
+		return item;
+	}
+
+	const formatOwnedTotal = (owned, total) => `(${formatNumber(owned)}/${formatNumber(total)})`;
+
 	function renderMasteryBreakdown() {
 		const container = getEl("mastery-breakdown");
 		container.textContent = "";
 
-		const groups = WF.mastery.getBreakdown(WF.storage.load());
+		const progress = WF.storage.load();
+		const groups = WF.mastery.getBreakdown(progress);
+		const totals = WF.mastery.getInfo(progress);
+		const equipments = WF.mastery.getBreakdownFor(progress, "total");
+		const missions = WF.mastery.getBreakdownFor(progress, "mission");
+		const intrinsics = WF.mastery.getBreakdownFor(progress, "intrinsic");
 		const fragment = document.createDocumentFragment();
+
+		const globalSeparator = document.createElement("div");
+		globalSeparator.className = "breakdown-separator";
+		fragment.appendChild(globalSeparator);
+
+		fragment.appendChild(buildBreakdownItem(totals.totalXp, `Mastery`));
+		fragment.appendChild(buildBreakdownItem(equipments.xp, `Equipments ${formatOwnedTotal(equipments.owned, equipments.total)} (Ingame count is wrong)`));
+		fragment.appendChild(buildBreakdownItem(missions.xp, `Missions ${formatOwnedTotal(missions.owned, missions.total)}`));
+		fragment.appendChild(buildBreakdownItem(intrinsics.xp, `Intrinsics`));
+
+		fragment.appendChild(globalSeparator);
 
 		groups.forEach((group, groupIndex) => {
 			group.forEach((row, rowIndex) => {
-				const item = document.createElement("div");
-				item.className = "breakdown-item";
-				const valueEl = document.createElement("span");
-				valueEl.className = "breakdown-value";
-				valueEl.textContent = formatNumber(row.xp);
-				const labelEl = document.createElement("span");
-				labelEl.className = "breakdown-label";
-				labelEl.textContent = row.label;
-				item.append(valueEl, labelEl);
-
-				const showBtn = document.createElement("button");
-				showBtn.type = "button";
-				showBtn.className = "item-info-btn";
-				showBtn.textContent = "Show item list";
-				showBtn.addEventListener("click", () => openBreakdownItemList(groupIndex, rowIndex, row.label));
-				item.appendChild(showBtn);
-
-				fragment.appendChild(item);
+				fragment.appendChild(buildBreakdownItem(
+					row.xp,
+					`${row.label} ${formatOwnedTotal(row.owned, row.total)}`,
+					() => openBreakdownItemList(groupIndex, rowIndex, row.label)
+				));
 			});
 
 			if (groupIndex < groups.length - 1) {

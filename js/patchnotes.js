@@ -2,6 +2,18 @@
 
 WF.CHANGELOG = [
 	{
+		date: "2026/11/18 00:00:00", 
+		version: "44.1.4", 
+		text: [
+			`Updated a bit the "Mastery Breakdown" in "STATS".`,
+			`Added new items from the end of "Epoch Operation".`,
+		],
+		items: {
+			"new": [ "Eris Mortem","Praghasa Awakened Scene" ],
+			"removed": [],
+		}
+	},
+	{
 		date: "2026/11/14 00:00:00", 
 		version: "44.1.4", 
 		text: [
